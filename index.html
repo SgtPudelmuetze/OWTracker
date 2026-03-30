@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.17.00 - LeagueOfLosers Rebrand & Anime List DB Restructure -->
+<!-- Version: 1.21.00 - Compact Anime Form, Collapsed Legend & Dynamic Scaling -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,7 +84,7 @@
             background-color: rgba(59, 130, 246, 0.05);
         }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
 
@@ -94,9 +94,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        select.custom-select {
-            display: none;
-        }
+        select.custom-select { display: none; }
 
         .player-details {
             max-height: 0;
@@ -122,10 +120,6 @@
             border-bottom-color: var(--accent-blue);
         }
 
-        .divider-dark {
-            border-color: var(--divider);
-        }
-
         /* Anime Ratings Colors */
         .rank-S-plus { color: #facc15; border-color: rgba(250, 204, 21, 0.3); background-color: rgba(250, 204, 21, 0.1); }
         .rank-S { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); background-color: rgba(251, 146, 60, 0.1); }
@@ -136,29 +130,24 @@
         .rank-E { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background-color: rgba(244, 114, 182, 0.1); }
         .rank-F { color: #f87171; border-color: rgba(248, 113, 113, 0.3); background-color: rgba(248, 113, 113, 0.1); }
 
-        /* Custom Number Input for Anime */
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { 
             -webkit-appearance: none; margin: 0; 
         }
         input[type="number"] { -moz-appearance: textfield; }
         
-        /* Subtabs Anime */
-        .anime-tab {
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
+        .anime-tab { transition: all 0.3s; white-space: nowrap; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
 
-    <nav class="border-b border-white/10 py-4 px-8 sticky top-0 bg-[#0f172a]/95 backdrop-blur-2xl z-40 flex items-center justify-between">
-        <div class="flex items-center gap-6">
+    <nav class="border-b border-white/10 py-4 px-4 sm:px-8 sticky top-0 bg-[#0f172a]/95 backdrop-blur-2xl z-40 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-4 sm:gap-6">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="window.showPage('dashboard')">
-                <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-105 transition-transform">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"></path></svg>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-105 transition-transform">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"></path></svg>
                 </div>
-                <h1 class="text-xl font-black tracking-tight uppercase italic text-white group-hover:text-orange-400 transition-colors">LeagueOfLosers</h1>
+                <h1 class="text-lg sm:text-xl font-black tracking-tight uppercase italic text-white group-hover:text-orange-400 transition-colors">LeagueOfLosers</h1>
             </div>
             
             <div class="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full" id="cloudStatusContainer">
@@ -167,37 +156,37 @@
             </div>
         </div>
 
-        <div class="flex gap-4 md:gap-8 overflow-x-auto custom-scrollbar">
-            <button onclick="window.showPage('dashboard')" id="nav-dashboard" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Dashboard</button>
-            <button onclick="window.showPage('players')" id="nav-players" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Spieler</button>
-            <button onclick="window.showPage('entry')" id="nav-entry" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Eintragen</button>
-            <button onclick="window.showPage('anime')" id="nav-anime" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0 text-yellow-500/80 hover:text-yellow-400">Animes</button>
-            <button onclick="window.showPage('tickets')" id="nav-tickets" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 flex items-center gap-2 shrink-0">
+        <div class="flex gap-2 sm:gap-6 overflow-x-auto custom-scrollbar w-full md:w-auto pb-2 md:pb-0">
+            <button onclick="window.showPage('dashboard')" id="nav-dashboard" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Dashboard</button>
+            <button onclick="window.showPage('players')" id="nav-players" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Spieler</button>
+            <button onclick="window.showPage('entry')" id="nav-entry" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Eintragen</button>
+            <button onclick="window.showPage('anime')" id="nav-anime" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0 text-yellow-500/80 hover:text-yellow-400">Animes</button>
+            <button onclick="window.showPage('tickets')" id="nav-tickets" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 flex items-center gap-2 shrink-0">
                 <span class="w-2 h-2 bg-red-500 rounded-full hidden shadow-[0_0_8px_rgba(239,68,68,0.6)]" id="ticketAlert"></span> Tickets
             </button>
         </div>
     </nav>
 
-    <div id="filter-bar" class="max-w-[1500px] mx-auto px-8 pt-6 flex flex-wrap justify-between items-end border-b border-white/10 gap-4">
-        <div class="flex gap-10">
-            <button onclick="window.setSeason(21)" id="season-21" class="season-tab pb-4 text-xs font-black uppercase tracking-[0.2em] active">Season 21</button>
-            <button onclick="window.setSeason(22)" id="season-22" class="season-tab pb-4 text-xs font-black uppercase tracking-[0.2em]">Season 22</button>
+    <div id="filter-bar" class="max-w-[1500px] mx-auto px-4 sm:px-8 pt-6 flex flex-col md:flex-row flex-wrap justify-between items-start md:items-end border-b border-white/10 gap-4 pb-4 md:pb-0">
+        <div class="flex gap-4 sm:gap-10 overflow-x-auto w-full md:w-auto">
+            <button onclick="window.setSeason(21)" id="season-21" class="season-tab pb-2 md:pb-4 text-xs font-black uppercase tracking-[0.2em] active shrink-0">Season 21</button>
+            <button onclick="window.setSeason(22)" id="season-22" class="season-tab pb-2 md:pb-4 text-xs font-black uppercase tracking-[0.2em] shrink-0">Season 22</button>
         </div>
-        <div class="flex gap-1">
-            <button onclick="window.setViewMode('Alle')" id="viewModeAlle" class="dash-tab active">Alle Modi</button>
-            <button onclick="window.setViewMode('Rangliste')" id="viewModeRanked" class="dash-tab">Rangliste</button>
-            <button onclick="window.setViewMode('Stadion')" id="viewModeStadium" class="dash-tab">Stadion</button>
+        <div class="flex gap-1 overflow-x-auto w-full md:w-auto">
+            <button onclick="window.setViewMode('Alle')" id="viewModeAlle" class="dash-tab active shrink-0">Alle Modi</button>
+            <button onclick="window.setViewMode('Rangliste')" id="viewModeRanked" class="dash-tab shrink-0">Rangliste</button>
+            <button onclick="window.setViewMode('Stadion')" id="viewModeStadium" class="dash-tab shrink-0">Stadion</button>
         </div>
     </div>
 
-    <main class="max-w-[1500px] mx-auto p-8">
+    <main class="max-w-[1500px] mx-auto p-4 sm:p-8">
 
         <!-- DASHBOARD -->
-        <div id="page-dashboard" class="page space-y-10 animate-in hidden">
-            <div class="flex items-center justify-between">
+        <div id="page-dashboard" class="page space-y-6 sm:space-y-10 animate-in hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-3xl font-black italic uppercase tracking-tighter">Performance <span class="active-season-label text-orange-500">S21</span></h2>
-                    <p class="text-slate-500 text-[11px] font-bold uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
+                    <h2 class="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter">Performance <span class="active-season-label text-orange-500">S21</span></h2>
+                    <p class="text-slate-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
                         <span class="w-3 h-[1px] bg-slate-700"></span> <span id="active-mode-label">Alle Modi</span>
                     </p>
                 </div>
@@ -208,194 +197,207 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="glass-card p-6 text-center border-t-4 border-orange-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Winrate</p>
-                        <p id="globalWinrate" class="text-4xl font-black text-orange-400">0%</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-orange-500">
+                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Winrate</p>
+                        <p id="globalWinrate" class="text-2xl sm:text-4xl font-black text-orange-400">0%</p>
                     </div>
-                    <div class="glass-card p-6 text-center border-t-4 border-slate-600">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Matches</p>
-                        <p id="globalMatches" class="text-4xl font-black text-white">0</p>
+                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-slate-600">
+                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Matches</p>
+                        <p id="globalMatches" class="text-2xl sm:text-4xl font-black text-white">0</p>
                     </div>
-                    <div class="glass-card p-6 text-center border-t-4 border-green-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Wins</p>
-                        <p id="globalWins" class="text-4xl font-black text-green-400">0</p>
+                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-green-500">
+                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Wins</p>
+                        <p id="globalWins" class="text-2xl sm:text-4xl font-black text-green-400">0</p>
                     </div>
-                    <div class="glass-card p-6 text-center border-t-4 border-red-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Losses</p>
-                        <p id="globalLosses" class="text-4xl font-black text-red-500">0</p>
+                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-red-500">
+                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Losses</p>
+                        <p id="globalLosses" class="text-2xl sm:text-4xl font-black text-red-500">0</p>
                     </div>
                     
-                    <div class="glass-card p-6 col-span-2 flex items-center justify-between border-l-4 border-green-500/50">
-                        <span class="text-xs font-black uppercase tracking-[0.1em] text-slate-400">Longest Win Streak</span>
-                        <span id="maxWinStreak" class="text-3xl font-black text-green-400">0</span>
+                    <div class="glass-card p-4 sm:p-6 col-span-2 flex items-center justify-between border-l-4 border-green-500/50">
+                        <span class="text-[10px] sm:text-xs font-black uppercase tracking-[0.1em] text-slate-400">Longest Win Streak</span>
+                        <span id="maxWinStreak" class="text-2xl sm:text-3xl font-black text-green-400">0</span>
                     </div>
-                    <div class="glass-card p-6 col-span-2 flex items-center justify-between border-l-4 border-red-500/50">
-                        <span class="text-xs font-black uppercase tracking-[0.1em] text-slate-400">Longest Loss Streak</span>
-                        <span id="maxLossStreak" class="text-3xl font-black text-red-400">0</span>
+                    <div class="glass-card p-4 sm:p-6 col-span-2 flex items-center justify-between border-l-4 border-red-500/50">
+                        <span class="text-[10px] sm:text-xs font-black uppercase tracking-[0.1em] text-slate-400">Longest Loss Streak</span>
+                        <span id="maxLossStreak" class="text-2xl sm:text-3xl font-black text-red-400">0</span>
                     </div>
                 </div>
 
-                <div class="glass-card p-8 flex flex-col items-center justify-center min-h-[400px]">
-                    <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-8">Win / Loss Ratio</h3>
-                    <div class="w-full h-full max-w-[260px] relative">
+                <div class="glass-card p-6 sm:p-8 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[400px]">
+                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 sm:mb-8">Win / Loss Ratio</h3>
+                    <div class="w-full h-full max-w-[200px] sm:max-w-[260px] relative">
                         <canvas id="winLossChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-4">
                 <div>
-                    <h3 class="text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
+                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
                         <span class="w-2 h-2 bg-green-500 rounded-full"></span> Best Teams
                     </h3>
-                    <div id="bestCombos" class="space-y-4"></div>
+                    <div id="bestCombos" class="space-y-3 sm:space-y-4"></div>
                 </div>
                 <div>
-                    <h3 class="text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
+                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
                         <span class="w-2 h-2 bg-red-500 rounded-full"></span> Hard Matches
                     </h3>
-                    <div id="worstCombos" class="space-y-4"></div>
+                    <div id="worstCombos" class="space-y-3 sm:space-y-4"></div>
                 </div>
             </div>
         </div>
 
         <!-- PLAYERS -->
         <div id="page-players" class="page hidden animate-in">
-             <div id="playersGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-8"></div>
+             <div id="playersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"></div>
         </div>
 
         <!-- ANIMES -->
-        <div id="page-anime" class="page hidden flex flex-col gap-8 animate-in">
-            <div class="glass-card p-10 space-y-8">
-                <div class="flex items-center gap-5">
-                    <div class="w-14 h-14 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20 shadow-lg shadow-yellow-500/5">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+        <div id="page-anime" class="page hidden flex flex-col gap-6 sm:gap-8 animate-in">
+            <div class="glass-card p-6 sm:p-8 space-y-6 sm:space-y-8">
+                <div class="flex items-center gap-4 sm:gap-5">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20 shrink-0">
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-black italic uppercase tracking-tighter text-yellow-500">Anime Fragebogen</h2>
-                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Detaillierte Rank Kalkulation (Max 100 Pkt)</p>
+                        <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-yellow-500">Anime Fragebogen</h2>
+                        <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Detaillierte Rank Kalkulation</p>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-700 pt-8">
-                    <!-- Linke Spalte: Kategorien -->
-                    <div class="space-y-5">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2.5 col-span-2">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Titel des Animes</label>
-                                <input type="text" id="animeTitle" placeholder="z.B. Jujutsu Kaisen..." class="w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5 col-span-2 md:col-span-1">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kategorie / Genre</label>
-                                <select id="animeGenre" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
-                                    <option value="Shonen">Shonen (Action/Fighting)</option>
-                                    <option value="Isekai">Isekai (Andere Welt)</option>
-                                    <option value="Seinen">Seinen (Erwachsen/Dark)</option>
-                                    <option value="Slice of Life">Slice of Life (Alltag)</option>
-                                    <option value="Romance">Romance (Liebe)</option>
-                                    <option value="Comedy">Comedy (Humor)</option>
-                                    <option value="Fantasy">Fantasy / Magic</option>
-                                    <option value="Sci-Fi / Mecha">Sci-Fi / Mecha</option>
-                                    <option value="Mystery / Thriller">Mystery / Thriller</option>
-                                    <option value="Sports">Sports</option>
-                                    <option value="Sonstiges">Sonstiges</option>
-                                </select>
-                            </div>
-                            <div class="space-y-2.5 col-span-2 md:col-span-1">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Bewerter</label>
-                                <select id="animeReviewer" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
-                                    <!-- Optionen werden durch JS geladen -->
-                                </select>
-                            </div>
+                <div class="space-y-6 border-t border-slate-700 pt-6 sm:pt-8">
+                    <!-- Top Reihe: Titel, Bewerter, Genres -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Titel des Animes</label>
+                            <input type="text" id="animeTitle" placeholder="z.B. Jujutsu Kaisen..." class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white focus:border-yellow-500 transition-colors">
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 pt-2">
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Story & Plot <span>(1-10)</span></label>
-                                <input type="number" id="animeStory" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Animation & Art <span>(1-10)</span></label>
-                                <input type="number" id="animeAnim" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Cast & Charaktere <span>(1-10)</span></label>
-                                <input type="number" id="animeCast" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Charakter-Entw. <span>(1-10)</span></label>
-                                <input type="number" id="animeDev" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Worldbuilding <span>(1-10)</span></label>
-                                <input type="number" id="animeWorld" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Pacing (Tempo) <span>(1-10)</span></label>
-                                <input type="number" id="animePacing" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Soundtrack (OST) <span>(1-10)</span></label>
-                                <input type="number" id="animeSound" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Voice Acting <span>(1-10)</span></label>
-                                <input type="number" id="animeVoice" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5 col-span-2">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Emotionen & Impact <span>(1-10)</span></label>
-                                <input type="number" id="animeImpact" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
-                            </div>
-                            <div class="space-y-2.5 col-span-2">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Persönliches Enjoyment <span>(1-10)</span></label>
-                                <input type="number" id="animeEnjoy" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-gradient-to-r from-[#0f172a] to-[#1e293b] border border-yellow-500/30 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-yellow-500 focus:border-yellow-500 transition-colors shadow-inner">
+                        <div class="space-y-2">
+                            <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Bewerter</label>
+                            <select id="animeReviewer" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white"></select>
+                        </div>
+                        <div class="space-y-2 md:col-span-3">
+                            <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Genres (Mehrfachauswahl)</label>
+                            <div id="animeGenreContainer" class="flex flex-wrap gap-2 bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl max-h-[140px] overflow-y-auto custom-scrollbar shadow-inner">
+                                <!-- JS Injected Buttons -->
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Mitte: 10 Kategorien extrem kompakt -->
+                    <div class="space-y-2 pt-2">
+                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Punktevergabe (1 - 10)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Story & Plot</span><input type="number" id="animeStory" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Animation</span><input type="number" id="animeAnim" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Cast</span><input type="number" id="animeCast" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Char.-Entw.</span><input type="number" id="animeDev" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Worldbuilding</span><input type="number" id="animeWorld" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Pacing</span><input type="number" id="animePacing" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Soundtrack</span><input type="number" id="animeSound" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Voice Acting</span><input type="number" id="animeVoice" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Impact</span><input type="number" id="animeImpact" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
+                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-yellow-500 text-center uppercase tracking-widest">Enjoyment</span><input type="number" id="animeEnjoy" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-yellow-500/30 p-2 rounded-lg text-xs font-bold text-center text-yellow-500 focus:border-yellow-500"></div>
+                        </div>
+                    </div>
 
-                    <!-- Rechte Spalte: Fazit & Ergebnis -->
-                    <div class="space-y-5 flex flex-col">
-                        <div class="flex-1 space-y-2.5 flex flex-col">
-                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
-                            <textarea id="animeComment" placeholder="Was hat dir gefallen? Was nicht?" class="w-full flex-1 bg-[#1e293b] border border-white/10 p-5 rounded-xl outline-none text-sm font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
+                    <!-- Unten: Fazit & Ergebnis -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                        <div class="md:col-span-2 space-y-2.5">
+                            <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
+                            <textarea id="animeComment" rows="2" placeholder="Was hat dir gefallen? Was nicht?" class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
                         </div>
                         
-                        <div class="glass-card p-5 flex items-center justify-between border-slate-700 bg-black/20 mt-auto">
+                        <div class="glass-card p-4 flex items-center justify-between border-slate-700 bg-black/20 h-full">
                             <div>
-                                <p class="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em]">Kalkulierter Rang</p>
-                                <p class="text-xs text-slate-400 font-bold mt-1"><span id="animeTotalScore" class="text-white text-lg font-black">50</span>/100 Punkte</p>
+                                <p class="text-[9px] sm:text-[10px] text-slate-500 uppercase font-black tracking-[0.2em]">Kalkulierter Rang</p>
+                                <p class="text-xs text-slate-400 font-bold mt-1"><span id="animeTotalScore" class="text-white text-lg font-black">50</span>/100 Pkt.</p>
                             </div>
-                            <span id="animeCalcRank" class="text-3xl font-black px-5 py-2 rounded-xl border rank-C shadow-lg">C</span>
+                            <span id="animeCalcRank" class="text-2xl sm:text-3xl font-black px-4 py-2 rounded-xl border rank-C shadow-lg">C</span>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="window.saveAnime()" class="w-full py-5 bg-yellow-500 hover:bg-yellow-400 text-[#0f172a] rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-95">
+                <button onclick="window.saveAnime()" class="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-[#0f172a] rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-95 text-xs sm:text-sm">
                     Zum Archiv Hinzufügen
                 </button>
             </div>
+
+            <!-- Anime Legende Einklappbar -->
+            <div class="glass-card p-6 border-slate-700 flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-700 pb-3 cursor-pointer group" onclick="document.getElementById('animeLegendContent').classList.toggle('hidden')">
+                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400 group-hover:text-slate-300 transition-colors">📖 Legende: Ränge & Genres</h2>
+                    <span class="text-slate-500 text-[9px] uppercase font-bold tracking-widest bg-white/5 px-2 py-1 rounded">Auf/Zuklappen</span>
+                </div>
+                
+                <div id="animeLegendContent" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                    <div class="md:col-span-1">
+                        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">IHK Punkte-Schlüssel</h3>
+                        <div class="grid grid-cols-2 gap-1.5 text-[9px] font-bold text-center">
+                            <div class="bg-[#0f172a] rounded p-1 border border-yellow-500/30 text-yellow-500">S+ 98+</div>
+                            <div class="bg-[#0f172a] rounded p-1 border border-orange-500/30 text-orange-500">S 90+</div>
+                            <div class="bg-[#0f172a] rounded p-1 border border-green-500/30 text-green-500">A 80+</div>
+                            <div class="bg-[#0f172a] rounded p-1 border border-blue-500/30 text-blue-400">B 65+</div>
+                            <div class="bg-[#0f172a] rounded p-1 border border-indigo-500/30 text-indigo-400">C 50+</div>
+                            <div class="bg-[#0f172a] rounded p-1 border border-purple-500/30 text-purple-400">D 35+</div>
+                            <div class="bg-[#0f172a] rounded p-1 border border-pink-500/30 text-pink-400">E 20+</div>
+                            <div class="bg-[#0f172a] rounded p-1 border border-red-500/30 text-red-400">F &lt;20</div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Alle Genres & Kategorien</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-[9px] font-medium text-slate-300">
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Shōnen</strong> Aktion/Jungs</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Shōjo</strong> Romantik/Mädchen</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Seinen</strong> Reifer/Dark</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Josei</strong> Reifer/Frauen</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Action</strong> Kämpfe</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Abenteuer</strong> Reise</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Comedy</strong> Humor</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Drama</strong> Ernst/Konflikt</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Ecchi</strong> Leichte Erotik</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Fantasy</strong> Magie/Welten</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Harem</strong> Viele Verehrer</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Historisch</strong> Vergangenheit</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Horror</strong> Grusel</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Isekai</strong> Andere Welt</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Mecha</strong> Riesenroboter</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Musik</strong> Idols/Bands</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Mystery</strong> Geheimnisse</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Psycho</strong> Mindgames</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Romance</strong> Liebe</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Sci-Fi</strong> Zukunft/Tech</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Slice/Life</strong> Alltag</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Sports</strong> Wettkampf</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Thriller</strong> Spannung</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <!-- Compact List -->
-            <div class="glass-card p-8 flex flex-col border border-slate-700">
-                <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-3 mb-6 border-b border-slate-700" id="animeTabsContainer">
+            <div class="glass-card p-6 sm:p-8 flex flex-col border border-slate-700">
+                <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-3 mb-4 sm:mb-6 border-b border-slate-700" id="animeTabsContainer">
                     <!-- JS injected Subtabs -->
                 </div>
 
-                <div class="flex items-center justify-between pb-4 mb-4">
-                    <h2 class="text-xs font-black uppercase tracking-[0.2em] italic text-slate-400" id="animeListTitle">Archiv</h2>
-                    <span class="text-[10px] font-bold text-slate-600 bg-white/5 px-3 py-1 rounded-full"><span id="animeCount">0</span> Titel</span>
+                <div class="flex items-center justify-between pb-4 mb-2 sm:mb-4">
+                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400" id="animeListTitle">Archiv</h2>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-slate-600 bg-white/5 px-3 py-1 rounded-full"><span id="animeCount">0</span> Titel</span>
                 </div>
                 
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left border-collapse min-w-[600px]">
+                <div class="overflow-x-auto custom-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0">
+                    <table class="w-full text-left border-collapse min-w-[500px]">
                         <thead>
-                            <tr class="border-b border-slate-700 text-[10px] text-slate-500 uppercase tracking-widest">
-                                <th class="py-3 px-4 font-black">Titel & Details</th>
-                                <th class="py-3 px-4 text-center font-black w-24">Score</th>
-                                <th class="py-3 px-4 text-center font-black w-24">Rang</th>
-                                <th class="py-3 px-4 text-right font-black w-16" id="animeTableActionHead">Aktion</th>
+                            <tr class="border-b border-slate-700 text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest">
+                                <th class="py-2 sm:py-3 px-2 sm:px-4 font-black">Titel & Details</th>
+                                <th class="py-2 sm:py-3 px-2 sm:px-4 text-center font-black w-20 sm:w-24">Score</th>
+                                <th class="py-2 sm:py-3 px-2 sm:px-4 text-center font-black w-20 sm:w-24">Rang</th>
+                                <th class="py-2 sm:py-3 px-2 sm:px-4 text-right font-black w-14 sm:w-16" id="animeTableActionHead">Aktion</th>
                             </tr>
                         </thead>
                         <tbody id="animesListBody">
@@ -407,108 +409,108 @@
         </div>
 
         <!-- TICKETS -->
-        <div id="page-tickets" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-8 animate-in">
-            <div class="md:col-span-2 glass-card p-10 space-y-8 h-fit">
-                <div class="flex items-center gap-5">
-                    <div class="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 border border-red-500/20 shadow-lg shadow-red-500/5">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+        <div id="page-tickets" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 animate-in">
+            <div class="md:col-span-2 glass-card p-6 sm:p-10 space-y-6 sm:space-y-8 h-fit">
+                <div class="flex items-center gap-4 sm:gap-5">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 border border-red-500/20 shadow-lg shadow-red-500/5 shrink-0">
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-black italic uppercase tracking-tighter">Support</h2>
-                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Feedback & Bugs</p>
+                        <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tighter">Support</h2>
+                        <p class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Feedback & Bugs</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-2.5">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kategorie</label>
-                        <select id="ticketType" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kategorie</label>
+                        <select id="ticketType" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white">
                             <option value="Problem">⚠️ Problem / Bug</option>
                             <option value="Feature">✨ Feature Vorschlag</option>
                             <option value="Content">🗺️ Fehlendes</option>
                         </select>
                     </div>
-                    <div class="space-y-2.5">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Absender</label>
-                        <input type="text" id="ticketAuthor" placeholder="Dein Name" class="w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
+                    <div class="space-y-2">
+                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Absender</label>
+                        <input type="text" id="ticketAuthor" placeholder="Dein Name" class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white">
                     </div>
                 </div>
-                <div class="space-y-2.5">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nachricht</label>
-                    <textarea id="ticketMessage" rows="5" placeholder="..." class="w-full bg-[#1e293b] border border-white/10 p-5 rounded-xl outline-none text-sm font-medium text-slate-200 resize-none"></textarea>
+                <div class="space-y-2">
+                    <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nachricht</label>
+                    <textarea id="ticketMessage" rows="5" placeholder="..." class="w-full bg-[#1e293b] border border-white/10 p-4 sm:p-5 rounded-xl outline-none text-xs sm:text-sm font-medium text-slate-200 resize-none"></textarea>
                 </div>
-                <button onclick="window.saveTicket()" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-black uppercase tracking-[0.2em] shadow-lg transition-all hover:scale-[1.01]">
+                <button onclick="window.saveTicket()" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-black uppercase tracking-[0.2em] shadow-lg transition-all hover:scale-[1.01] text-xs sm:text-sm">
                     Absenden
                 </button>
             </div>
             <div class="glass-card p-6 space-y-6 flex flex-col border border-slate-700">
-                <h2 class="text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Alle Tickets</h2>
+                <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Alle Tickets</h2>
                 <div id="ticketsList" class="space-y-4 overflow-y-auto max-h-[600px] custom-scrollbar pr-2"></div>
             </div>
         </div>
 
         <!-- ENTRY -->
-        <div id="page-entry" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-8 animate-in">
-            <div class="md:col-span-2 glass-card p-10 space-y-8">
+        <div id="page-entry" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 animate-in">
+            <div class="md:col-span-2 glass-card p-6 sm:p-10 space-y-6 sm:space-y-8">
                 <h2 class="text-2xl font-black italic uppercase tracking-tighter">Match Logbuch</h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-2.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Season</label>
-                        <select id="matchSeason" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm text-orange-500 font-black italic">
+                        <select id="matchSeason" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm text-orange-500 font-black italic">
                             <option value="21" selected>Season 21</option>
                             <option value="22">Season 22</option>
                         </select>
                     </div>
-                    <div class="space-y-2.5">
+                    <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Modus</label>
-                        <div class="flex gap-3">
-                            <button onclick="window.setMatchType('Rangliste')" id="typeRanked" class="flex-1 py-4 btn-toggle active text-[11px] font-black uppercase tracking-widest">Rangliste</button>
-                            <button onclick="window.setMatchType('Stadion')" id="typeStadium" class="flex-1 py-4 btn-toggle text-[11px] font-black uppercase tracking-widest">Stadion</button>
+                        <div class="flex gap-2 sm:gap-3">
+                            <button onclick="window.setMatchType('Rangliste')" id="typeRanked" class="flex-1 py-3 sm:py-4 btn-toggle active text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Rangliste</button>
+                            <button onclick="window.setMatchType('Stadion')" id="typeStadium" class="flex-1 py-3 sm:py-4 btn-toggle text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Stadion</button>
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-2.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Ergebnis</label>
-                        <div class="flex gap-3">
-                            <button onclick="window.setResult('Win')" id="resWin" class="flex-1 py-4 btn-toggle active border-green-500/40 text-green-400 text-[11px] font-black uppercase tracking-widest">Win</button>
-                            <button onclick="window.setResult('Lose')" id="resLoss" class="flex-1 py-4 btn-toggle border-red-500/40 text-red-400 text-[11px] font-black uppercase tracking-widest">Lose</button>
+                        <div class="flex gap-2 sm:gap-3">
+                            <button onclick="window.setResult('Win')" id="resWin" class="flex-1 py-3 sm:py-4 btn-toggle active border-green-500/40 text-green-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Win</button>
+                            <button onclick="window.setResult('Lose')" id="resLoss" class="flex-1 py-3 sm:py-4 btn-toggle border-red-500/40 text-red-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Lose</button>
                         </div>
                     </div>
-                    <div class="space-y-2.5 min-w-0">
+                    <div class="space-y-2 min-w-0">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Lobby Rang</label>
-                        <div class="flex items-center gap-3 w-full bg-[#1e293b] border border-white/10 p-2 rounded-xl">
-                            <select id="matchRankStart" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-xs font-bold"></select>
-                            <span class="text-slate-600 font-black text-[10px] uppercase">bis</span>
-                            <select id="matchRankEnd" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-xs font-bold"></select>
+                        <div class="flex items-center gap-2 sm:gap-3 w-full bg-[#1e293b] border border-white/10 p-1.5 sm:p-2 rounded-xl">
+                            <select id="matchRankStart" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-[10px] sm:text-xs font-bold"></select>
+                            <span class="text-slate-600 font-black text-[9px] sm:text-[10px] uppercase">bis</span>
+                            <select id="matchRankEnd" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-[10px] sm:text-xs font-bold"></select>
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-2.5" id="mapContainer">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2" id="mapContainer">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Karte / Arena</label>
-                        <select id="matchMap" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white"></select>
+                        <select id="matchMap" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white"></select>
                     </div>
-                    <div class="space-y-2.5 hidden" id="punkteContainer">
+                    <div class="space-y-2 hidden" id="punkteContainer">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Punkte Score</label>
-                        <input type="text" id="matchScore" placeholder="12.500" class="w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
+                        <input type="text" id="matchScore" placeholder="12.500" class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white">
                     </div>
                 </div>
-                <div class="flex items-center gap-4 p-4 bg-red-500/5 rounded-2xl border border-red-500/20 w-max">
-                    <input type="checkbox" id="matchLeaver" class="w-5 h-5 rounded-md border-white/20 bg-[#0f172a] accent-red-500 cursor-pointer">
-                    <label for="matchLeaver" class="text-[11px] font-black text-red-400 uppercase tracking-widest cursor-pointer">Leaver Vorfall?</label>
+                <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-red-500/5 rounded-2xl border border-red-500/20 w-max">
+                    <input type="checkbox" id="matchLeaver" class="w-4 h-4 sm:w-5 sm:h-5 rounded-md border-white/20 bg-[#0f172a] accent-red-500 cursor-pointer">
+                    <label for="matchLeaver" class="text-[10px] sm:text-[11px] font-black text-red-400 uppercase tracking-widest cursor-pointer">Leaver Vorfall?</label>
                 </div>
-                <div class="pt-8 border-t border-slate-700 space-y-5">
-                    <h3 class="text-xs font-black uppercase text-slate-400 tracking-[0.2em]">Team Setup</h3>
-                    <div id="matchPlayersList" class="space-y-4"></div>
-                    <button onclick="window.addPlayerToMatch()" id="btnAddPlayer" class="text-[10px] font-black text-blue-400 hover:text-white transition-all uppercase bg-blue-500/10 hover:bg-blue-600 px-4 py-2 rounded-xl border border-blue-500/20">+ Spieler</button>
+                <div class="pt-6 sm:pt-8 border-t border-slate-700 space-y-4 sm:space-y-5">
+                    <h3 class="text-[10px] sm:text-xs font-black uppercase text-slate-400 tracking-[0.2em]">Team Setup</h3>
+                    <div id="matchPlayersList" class="space-y-3 sm:space-y-4"></div>
+                    <button onclick="window.addPlayerToMatch()" id="btnAddPlayer" class="text-[9px] sm:text-[10px] font-black text-blue-400 hover:text-white transition-all uppercase bg-blue-500/10 hover:bg-blue-600 px-3 sm:px-4 py-2 rounded-xl border border-blue-500/20">+ Spieler</button>
                 </div>
-                <button onclick="window.saveMatch()" class="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl transition-all hover:scale-[1.01]">
+                <button onclick="window.saveMatch()" class="w-full py-4 sm:py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl transition-all hover:scale-[1.01] text-xs sm:text-sm">
                     Match Speichern
                 </button>
             </div>
             <div class="glass-card p-6 space-y-6 flex flex-col border border-slate-700">
-                <h2 class="text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
-                <div id="recentMatchesList" class="space-y-4 overflow-y-auto max-h-[800px] pr-2 custom-scrollbar"></div>
+                <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
+                <div id="recentMatchesList" class="space-y-3 sm:space-y-4 overflow-y-auto max-h-[800px] pr-2 custom-scrollbar"></div>
             </div>
         </div>
 
@@ -579,6 +581,14 @@
         const ranksRanked = [{ name: "Bronze", icon: "🥉" }, { name: "Silver", icon: "🥈" }, { name: "Gold", icon: "🥇" }, { name: "Platinum", icon: "💠" }, { name: "Diamond", icon: "💎" }, { name: "Master", icon: "🔱" }, { name: "Grandmaster", icon: "⚛️" }, { name: "Champion", icon: "🌌" }];
         const ranksStadium = [{ name: "Rookie", emoji: "🥉" }, { name: "Novice", emoji: "🥈" }, { name: "Contender", emoji: "🛡️" }, { name: "Elite", emoji: "💎" }, { name: "Pro", emoji: "🏆" }, { name: "All-Star", emoji: "⚡" }, { name: "Legend", emoji: "👑" }];
 
+        const animeGenresList = [
+            "Shōnen", "Shōjo", "Seinen", "Josei", 
+            "Action", "Abenteuer", "Comedy", "Drama", "Ecchi", "Fantasy", "Harem", 
+            "Historisch", "Horror", "Isekai", "Mecha", "Musik", "Mystery", 
+            "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Thriller"
+        ];
+        let selectedAnimeGenres = [];
+
         function setSafeText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
 
         // Setup Anime Form
@@ -597,10 +607,10 @@
         function initAnimeTabs() {
             const container = document.getElementById('animeTabsContainer');
             if(!container) return;
-            let html = `<button onclick="window.setAnimeTab('Gesamt')" id="tab-anime-Gesamt" class="anime-tab active px-4 py-2 text-xs font-black uppercase tracking-widest text-yellow-500 border-b-2 border-yellow-500 hover:text-yellow-400">Gesamt-Ranking</button>`;
+            let html = `<button onclick="window.setAnimeTab('Gesamt')" id="tab-anime-Gesamt" class="anime-tab active px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-yellow-500 border-b-2 border-yellow-500 hover:text-yellow-400 shrink-0">Gesamt</button>`;
             for(let i=0; i<knownPlayers.length; i++) {
                 const p = knownPlayers[i];
-                html += `<button onclick="window.setAnimeTab('${p}')" id="tab-anime-${p}" class="anime-tab px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-500 border-b-2 border-transparent hover:text-slate-300">${p}</button>`;
+                html += `<button onclick="window.setAnimeTab('${p}')" id="tab-anime-${p}" class="anime-tab px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 border-b-2 border-transparent hover:text-slate-300 shrink-0">${p}</button>`;
             }
             container.innerHTML = html;
         }
@@ -620,7 +630,31 @@
             window.updateAnimeList();
         }
 
-        // Helper: Custom Select
+        window.initAnimeGenresUI = function() {
+            const container = document.getElementById('animeGenreContainer');
+            if(!container) return;
+            
+            let html = '';
+            for(let i = 0; i < animeGenresList.length; i++) {
+                const g = animeGenresList[i];
+                const isActive = selectedAnimeGenres.indexOf(g) > -1;
+                const baseClass = "px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all cursor-pointer select-none";
+                const activeClass = isActive ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/30" : "border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500 bg-[#0f172a]";
+                html += `<div onclick="window.toggleAnimeGenre('${g}')" class="${baseClass} ${activeClass}">${g}</div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        window.toggleAnimeGenre = function(g) {
+            const idx = selectedAnimeGenres.indexOf(g);
+            if(idx > -1) {
+                selectedAnimeGenres.splice(idx, 1);
+            } else {
+                selectedAnimeGenres.push(g);
+            }
+            window.initAnimeGenresUI();
+        }
+
         function initCustomSelects() {
             const selects = document.querySelectorAll('select.custom-select');
             for(let s = 0; s < selects.length; s++) {
@@ -730,7 +764,6 @@
                 tickets = snapshot.docs.map(d => d.data()).sort((a, b) => b.id - a.id);
                 if (!document.getElementById('page-tickets').classList.contains('hidden')) window.updateTicketsList();
             });
-            // Neu: Anime Datenstrukturen aus anime_lists
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), (snapshot) => {
                 let loadedAnimes = [];
                 snapshot.docs.forEach(d => {
@@ -853,7 +886,10 @@
                 if(filterBar) filterBar.classList.remove('hidden');
             }
             
-            if(id === 'anime') window.calcAnimeRank(); // Initialberechnung 
+            if(id === 'anime') {
+                window.calcAnimeRank();
+                window.initAnimeGenresUI();
+            }
             refreshCurrentPage();
         }
 
@@ -912,8 +948,8 @@
         window.addPlayerToMatch = function() {
             const container = document.getElementById('matchPlayersList'); if (!container || container.children.length >= 5) return;
             const index = container.children.length, defaultRole = index >= 3 ? 'support' : (index === 0 ? 'tank' : 'dps');
-            const div = document.createElement('div'); div.className = "flex gap-3 items-center animate-in bg-white/[0.02] p-3 rounded-2xl border border-slate-700";
-            div.innerHTML = `<div class="grid grid-cols-3 gap-3 flex-1"><select class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-bold text-white">${knownPlayers.map((p, i) => `<option ${i === index ? 'selected' : ''}>${p}</option>`).join('')}</select><select onchange="window.updateHeroSelect(this)" class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs text-slate-400 font-bold"><option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option><option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option><option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option></select><select class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-bold text-white"><option value="">Held wählen</option></select></div><button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-3 text-red-500/40 hover:text-red-500">🗑️</button>`;
+            const div = document.createElement('div'); div.className = "flex gap-2 sm:gap-3 items-center animate-in bg-white/[0.02] p-2 sm:p-3 rounded-2xl border border-slate-700";
+            div.innerHTML = `<div class="grid grid-cols-3 gap-2 sm:gap-3 flex-1"><select class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white">${knownPlayers.map((p, i) => `<option ${i === index ? 'selected' : ''}>${p}</option>`).join('')}</select><select onchange="window.updateHeroSelect(this)" class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs text-slate-400 font-bold"><option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option><option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option><option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option></select><select class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white"><option value="">Held wählen</option></select></div><button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-2 sm:p-3 text-red-500/40 hover:text-red-500">🗑️</button>`;
             container.appendChild(div); window.updateHeroSelect(div.querySelectorAll('select')[1]); window.updateAddButtonState();
         }
 
@@ -954,18 +990,18 @@
         window.deleteTicket = function(id) { if(confirm("Löschen?") && currentUser && db) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString())); }
         window.updateTicketsList = function() {
             const list = document.getElementById('ticketsList'); if(!list) return;
-            list.innerHTML = tickets.map(t => `<div class="glass-card p-5 border-slate-700 border-l-4 ${t.status === 'Abgeschlossen' ? 'ticket-closed' : (t.type === 'Problem' ? 'ticket-bug' : 'ticket-open')}"><div class="flex justify-between items-start mb-2"><span class="text-[10px] font-black uppercase text-slate-500">${t.type} · ${t.date}</span><div class="flex gap-2"><button onclick="window.toggleTicketStatus(${t.id})" class="text-xs p-1 bg-white/5 border border-slate-700 rounded">${t.status === 'Abgeschlossen' ? '✅' : '✔️'}</button><button onclick="window.deleteTicket(${t.id})" class="text-xs p-1 bg-white/5 border border-slate-700 rounded opacity-40">🗑️</button></div></div><p class="text-[12px] font-bold text-slate-200 ${t.status === 'Abgeschlossen' ? 'line-through text-slate-500' : ''}">${t.message}</p><div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-700"><p class="text-[10px] text-slate-600 font-bold">Reporter: ${t.author}</p><span class="text-[9px] bg-white/10 px-2 py-0.5 rounded text-slate-400 font-black uppercase">${t.status}</span></div></div>`).join('');
+            list.innerHTML = tickets.map(t => `<div class="glass-card p-4 sm:p-5 border-slate-700 border-l-4 ${t.status === 'Abgeschlossen' ? 'ticket-closed' : (t.type === 'Problem' ? 'ticket-bug' : 'ticket-open')}"><div class="flex justify-between items-start mb-2"><span class="text-[9px] sm:text-[10px] font-black uppercase text-slate-500">${t.type} · ${t.date}</span><div class="flex gap-2"><button onclick="window.toggleTicketStatus(${t.id})" class="text-[10px] sm:text-xs p-1 bg-white/5 border border-slate-700 rounded">${t.status === 'Abgeschlossen' ? '✅' : '✔️'}</button><button onclick="window.deleteTicket(${t.id})" class="text-[10px] sm:text-xs p-1 bg-white/5 border border-slate-700 rounded opacity-40">🗑️</button></div></div><p class="text-[10px] sm:text-[12px] font-bold text-slate-200 ${t.status === 'Abgeschlossen' ? 'line-through text-slate-500' : ''}">${t.message}</p><div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-700"><p class="text-[9px] sm:text-[10px] text-slate-600 font-bold">Reporter: ${t.author}</p><span class="text-[8px] sm:text-[9px] bg-white/10 px-2 py-0.5 rounded text-slate-400 font-black uppercase">${t.status}</span></div></div>`).join('');
         }
 
         /* ANIME LOGIC */
         function getAnimeRankFromScore(total) {
-            if(total >= 95) return 'S+';
-            if(total >= 85) return 'S';
-            if(total >= 75) return 'A';
-            if(total >= 60) return 'B';
-            if(total >= 45) return 'C';
-            if(total >= 30) return 'D';
-            if(total >= 15) return 'E';
+            if(total >= 98) return 'S+';
+            if(total >= 90) return 'S';
+            if(total >= 80) return 'A';
+            if(total >= 65) return 'B';
+            if(total >= 50) return 'C';
+            if(total >= 35) return 'D';
+            if(total >= 20) return 'E';
             return 'F';
         }
 
@@ -989,21 +1025,30 @@
             if(rankEl) {
                 rankEl.innerText = rank;
                 const formatRating = (val) => val === 'S+' ? 'S-plus' : val;
-                rankEl.className = `text-3xl font-black px-5 py-2 rounded-xl border shadow-lg rank-${formatRating(rank)}`;
+                rankEl.className = `text-2xl sm:text-3xl font-black px-4 sm:px-5 py-1.5 sm:py-2 rounded-xl border shadow-lg rank-${formatRating(rank)}`;
             }
             return { total, rank };
         };
 
         window.saveAnime = function() {
             const title = document.getElementById('animeTitle').value.trim();
-            const genre = document.getElementById('animeGenre').value;
             const reviewer = document.getElementById('animeReviewer').value;
             const comment = document.getElementById('animeComment').value.trim();
             if(!title) { showBanner("Bitte einen Titel eingeben!", "error"); return; }
+            if(selectedAnimeGenres.length === 0) { showBanner("Wähle mindestens ein Genre aus!", "error"); return; }
 
             const { total, rank } = window.calcAnimeRank();
 
-            const anime = { id: Date.now(), title, genre, reviewer, rating: rank, score: total, comment, date: new Date().toLocaleDateString('de-DE') };
+            const anime = { 
+                id: Date.now(), 
+                title, 
+                genres: [...selectedAnimeGenres], 
+                reviewer, 
+                rating: rank, 
+                score: total, 
+                comment, 
+                date: new Date().toLocaleDateString('de-DE') 
+            };
             
             if(currentUser && db) {
                 const reviewerAnimes = animes.filter(a => a.reviewer === reviewer);
@@ -1014,6 +1059,9 @@
                     showBanner("Anime im Archiv gespeichert!", "success");
                     document.getElementById('animeTitle').value = '';
                     document.getElementById('animeComment').value = '';
+                    selectedAnimeGenres = [];
+                    window.initAnimeGenresUI();
+                    
                     const cats = ['animeStory', 'animeAnim', 'animeCast', 'animeDev', 'animeWorld', 'animePacing', 'animeSound', 'animeVoice', 'animeImpact', 'animeEnjoy'];
                     for(let i=0; i<cats.length; i++) {
                         const el = document.getElementById(cats[i]);
@@ -1054,7 +1102,12 @@
                     if(!agg[t]) agg[t] = { title: a.title, scoreSum: 0, count: 0, genres: {}, raters: {} };
                     agg[t].scoreSum += a.score;
                     agg[t].count++;
-                    if(a.genre) agg[t].genres[a.genre] = true;
+                    
+                    if(a.genres && Array.isArray(a.genres)) {
+                        for(let g=0; g<a.genres.length; g++) agg[t].genres[a.genres[g]] = true;
+                    } else if (a.genre) {
+                        agg[t].genres[a.genre] = true;
+                    }
                     if(a.reviewer) agg[t].raters[a.reviewer] = true;
                 }
                 
@@ -1069,7 +1122,7 @@
                     
                     aggregatedList.push({
                         title: g.title, score: avgScore, rank: rank,
-                        genres: genreArray.join(', '),
+                        genres: genreArray,
                         raters: raterArray.join(', '),
                         count: g.count
                     });
@@ -1078,26 +1131,29 @@
                 
                 setSafeText('animeCount', aggregatedList.length);
                 
-                html = aggregatedList.map((a, i) => `
+                html = aggregatedList.map((a, i) => {
+                    const badges = a.genres.length > 0 
+                        ? a.genres.map(g => `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">${g}</span>`).join('')
+                        : `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">Unbekannt</span>`;
+                        
+                    return `
                     <tr class="border-b border-slate-700 hover:bg-white/[0.02] transition-colors">
-                        <td class="py-4 px-4 min-w-[200px]">
-                            <div class="flex items-center gap-3">
-                                <span class="text-sm font-black text-white italic tracking-tight"><span class="text-slate-500 mr-1">#${i+1}</span> ${a.title}</span>
-                                <span class="text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-0.5 rounded-full uppercase tracking-widest">${a.genres || 'Unbekannt'}</span>
-                            </div>
-                            <div class="text-[9px] text-slate-500 mt-2 font-bold uppercase tracking-widest">Gesehen von: ${a.raters}</div>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 min-w-[200px]">
+                            <div class="text-[11px] sm:text-sm font-black text-white italic tracking-tight mb-1 sm:mb-1.5"><span class="text-slate-500 mr-1">#${i+1}</span> ${a.title}</div>
+                            <div class="flex flex-wrap gap-1 mb-1 sm:mb-2">${badges}</div>
+                            <div class="text-[8px] sm:text-[9px] text-slate-500 mt-1.5 sm:mt-2 font-bold uppercase tracking-widest">Gesehen von: ${a.raters}</div>
                         </td>
-                        <td class="py-4 px-4 text-center align-middle">
-                            <span class="text-xs font-black text-slate-300 bg-black/20 px-2 py-1 rounded-md border border-slate-700">${a.score}/100 Ø</span>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
+                            <span class="text-[10px] sm:text-xs font-black text-slate-300 bg-black/20 px-1.5 sm:px-2 py-1 rounded-md border border-slate-700">${a.score}/100 Ø</span>
                         </td>
-                        <td class="py-4 px-4 text-center align-middle">
-                            <span class="text-xs font-black px-3 py-1.5 rounded-xl border rank-${formatRating(a.rank)}">${a.rank}</span>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
+                            <span class="text-[10px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border rank-${formatRating(a.rank)}">${a.rank}</span>
                         </td>
-                        <td class="py-4 px-4 text-right align-middle">
-                            <span class="text-[9px] font-black text-slate-500 bg-black/20 px-2 py-1 rounded-lg">${a.count} Votes</span>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-right align-middle">
+                            <span class="text-[8px] sm:text-[9px] font-black text-slate-500 bg-black/20 px-1.5 sm:px-2 py-1 rounded-lg">${a.count} Votes</span>
                         </td>
                     </tr>
-                `).join('');
+                `}).join('');
                 
             } else {
                 if(listTitle) listTitle.innerText = `Archiv: ${currentAnimeTab}`;
@@ -1106,36 +1162,33 @@
                 const filtered = animes.filter(a => a.reviewer === currentAnimeTab);
                 setSafeText('animeCount', filtered.length);
                 
-                html = filtered.map(a => `
+                html = filtered.map(a => {
+                    const gList = (a.genres && Array.isArray(a.genres)) ? a.genres : (a.genre ? [a.genre] : []);
+                    const badges = gList.length > 0 
+                        ? gList.map(g => `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">${g}</span>`).join('')
+                        : `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">Unbekannt</span>`;
+                    
+                    return `
                     <tr class="border-b border-slate-700 hover:bg-white/[0.02] transition-colors group">
-                        <td class="py-4 px-4 min-w-[200px]">
-                            <div class="flex items-center gap-3">
-                                <span class="text-sm font-black text-white italic tracking-tight">${a.title}</span>
-                                <span class="text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-0.5 rounded-full uppercase tracking-widest">${a.genre || 'Unbekannt'}</span>
-                            </div>
-                            ${a.comment ? `<div class="text-[10px] text-slate-400 mt-1.5 italic line-clamp-2 max-w-md">"${a.comment}"</div>` : ''}
-                            <div class="text-[9px] text-slate-600 mt-2 font-bold uppercase tracking-widest">${a.date}</div>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 min-w-[200px]">
+                            <div class="text-[11px] sm:text-sm font-black text-white italic tracking-tight mb-1 sm:mb-1.5">${a.title}</div>
+                            <div class="flex flex-wrap gap-1 mb-1 sm:mb-2">${badges}</div>
+                            ${a.comment ? `<div class="text-[9px] sm:text-[10px] text-slate-400 italic line-clamp-2 max-w-md">"${a.comment}"</div>` : ''}
+                            <div class="text-[8px] sm:text-[9px] text-slate-600 mt-1.5 sm:mt-2 font-bold uppercase tracking-widest">${a.date}</div>
                         </td>
-                        <td class="py-4 px-4 text-center align-middle">
-                            <span class="text-xs font-black text-slate-300 bg-black/20 px-2 py-1 rounded-md border border-slate-700">${a.score !== undefined ? a.score : '-'}/100</span>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
+                            <span class="text-[10px] sm:text-xs font-black text-slate-300 bg-black/20 px-1.5 sm:px-2 py-1 rounded-md border border-slate-700">${a.score !== undefined ? a.score : '-'}/100</span>
                         </td>
-                        <td class="py-4 px-4 text-center align-middle">
-                            <span class="text-xs font-black px-3 py-1.5 rounded-xl border rank-${formatRating(a.rating)}">${a.rating}</span>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
+                            <span class="text-[10px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border rank-${formatRating(a.rating)}">${a.rating}</span>
                         </td>
-                        <td class="py-4 px-4 text-right align-middle">
-                            <button onclick="window.deleteAnime(${a.id})" class="opacity-0 group-hover:opacity-100 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-all">🗑️</button>
+                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-right align-middle">
+                            <button onclick="window.deleteAnime(${a.id})" class="opacity-0 group-hover:opacity-100 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-1.5 sm:p-2 rounded-lg transition-all">🗑️</button>
                         </td>
                     </tr>
-                `).join('');
+                `}).join('');
             }
             listBody.innerHTML = html;
-        }
-
-        window.toggleDetails = function(pName) {
-            const el = document.getElementById(`details-${pName}`), btn = document.getElementById(`btn-${pName}`);
-            if(!el || !btn) return;
-            if(el.classList.contains('open')) { el.classList.remove('open'); btn.innerText = "Details Anzeigen"; openPlayerDetails.delete(pName); }
-            else { el.classList.add('open'); btn.innerText = "Details Ausblenden"; openPlayerDetails.add(pName); }
         }
 
         window.updateDashboard = function() {
@@ -1149,7 +1202,7 @@
             const combos = {};
             filtered.forEach(m => { if (!m.players) return; for (let i = 0; i < m.players.length; i++) for (let j = i + 1; j < m.players.length; j++) { const key = [m.players[i].name, m.players[j].name].sort().join(' · '); if (!combos[key]) combos[key] = { wins: 0, total: 0 }; combos[key].total++; if (m.result === 'Win') combos[key].wins++; } });
             const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total));
-            const renderC = (name, s) => `<div class="glass-card p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-xs font-bold text-slate-300">${name}</p></div><p class="text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const renderC = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[11px] sm:text-xs font-bold text-slate-300">${name}</p></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
             const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
             if(bestEl) bestEl.innerHTML = sorted.slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
             if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
@@ -1162,6 +1215,21 @@
             statsChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: hasData ? [wins, losses] : [1], backgroundColor: hasData ? ['#22c55e', '#ef4444'] : ['#334155'], borderColor: 'rgba(255,255,255,0.05)', borderWidth: 4, cutout: '72%', borderRadius: 8 }] }, options: { plugins: { legend: { display: false } }, animation: { duration: 1200 } } });
         }
 
+        window.toggleDetails = function(pName) {
+            const el = document.getElementById(`details-${pName}`);
+            const btn = document.getElementById(`btn-${pName}`);
+            if(!el || !btn) return;
+            if(el.classList.contains('open')) { 
+                el.classList.remove('open'); 
+                btn.innerText = "Details Anzeigen"; 
+                openPlayerDetails.delete(pName); 
+            } else { 
+                el.classList.add('open'); 
+                btn.innerText = "Details Ausblenden"; 
+                openPlayerDetails.add(pName); 
+            }
+        }
+
         window.updatePlayerDashboards = function() {
             const grid = document.getElementById('playersGrid'); if(!grid) return; grid.innerHTML = "";
             const seasonMatches = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
@@ -1169,43 +1237,57 @@
                 const pMatches = seasonMatches.filter(m => m.players.some(p => p.name === pName));
                 const total = pMatches.length, wins = pMatches.filter(m => m.result === 'Win').length;
                 const ranks = playerRanks[pName] || {};
+                
                 const createSelects = (cat) => ['tank', 'dps', 'support'].map(r => {
                     const val = ranks[`${r}_${cat}`] || '-'; const list = cat === 'ranked' ? ranksRanked : ranksStadium; const pref = cat === 'ranked' ? 'icon' : 'emoji';
-                    return `<div class="flex items-center justify-between mb-2 bg-[#0f172a] border border-slate-700 rounded-xl px-3 py-1.5"><span class="text-[10px] font-black flex items-center gap-1.5 text-slate-400 shrink-0 w-16"><span class="${roles[r].color}">${roles[r].icon}</span> ${roles[r].name}</span><select onchange="window.savePlayerRank('${pName}', '${cat}', '${r}', this.value)" class="custom-select flex-1 bg-transparent text-[11px] font-black text-orange-500 text-right"><option value="-">-</option>${list.map(rr => { let os = ''; for(let i=5; i>=1; i--) { const v = `${rr[pref]} ${rr.name} ${i}`; os += `<option value="${v}" ${val === v ? 'selected' : ''}>${v}</option>`; } return os; }).join('')}</select></div>`;
+                    return `<div class="flex items-center justify-between mb-1.5 sm:mb-2 bg-[#0f172a] border border-slate-700 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5"><span class="text-[9px] sm:text-[10px] font-black flex items-center gap-1 sm:gap-1.5 text-slate-400 shrink-0 w-14 sm:w-16"><span class="${roles[r].color}">${roles[r].icon}</span> ${roles[r].name}</span><select onchange="window.savePlayerRank('${pName}', '${cat}', '${r}', this.value)" class="custom-select flex-1 bg-transparent text-[10px] sm:text-[11px] font-black text-orange-500 text-right"><option value="-">-</option>${list.map(rr => { let os = ''; for(let i=5; i>=1; i--) { const v = `${rr[pref]} ${rr.name} ${i}`; os += `<option value="${v}" ${val === v ? 'selected' : ''}>${v}</option>`; } return os; }).join('')}</select></div>`;
                 }).join('');
-                let roleStats = { tank: {w:0, t:0}, dps: {w:0, t:0}, support: {w:0, t:0} }, heroStats = {};
-                pMatches.forEach(m => { let p = m.players.find(x => x.name === pName); if(p && roleStats[p.role]) { roleStats[p.role].t++; if(m.result === 'Win') roleStats[p.role].w++; if(p.hero && p.hero !== "Held wählen" && p.hero !== "") { if(!heroStats[p.hero]) heroStats[p.hero] = {w:0, t:0}; heroStats[p.hero].t++; if(m.result === 'Win') heroStats[p.hero].w++; } } });
-                const validH = []; for(const h in heroStats) validH.push([h, heroStats[h]]); validH.sort((a,b) => (b[1].w/b[1].t) - (a[1].w/a[1].t));
-                const topHero = validH[0], flopHero = [...validH].reverse()[0], isOpen = openPlayerDetails.has(pName);
-                const winRateString = total > 0 ? Math.round((wins/total)*100) + '%' : '';
-                const div = document.createElement('div'); div.className = "glass-card p-6 border-slate-700";
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-black text-white italic">${pName}</h2>
-                        <div class="text-right">
-                            <div class="text-xl font-black text-[var(--text-yellow)]">${winRateString}</div>
-                            <div class="text-[9px] text-slate-500 uppercase font-black">${total > 0 ? total + ' Gms' : ''}</div>
+                
+                const div = document.createElement('div'); 
+                div.className = "glass-card p-5 sm:p-6 border-slate-700";
+                
+                if (total === 0) {
+                    div.innerHTML = `
+                        <div class="flex justify-between items-center py-2 opacity-40">
+                            <h2 class="text-xl sm:text-2xl font-black text-white italic">${pName}</h2>
+                            <div class="text-[8px] sm:text-[9px] text-slate-500 uppercase font-black tracking-widest bg-white/5 px-3 py-1 rounded-full">0 Matches</div>
                         </div>
-                    </div>
-                    <div class="border border-slate-700 rounded-2xl p-3 grid grid-cols-2 gap-3 mb-6 bg-black/20">
-                        <div><div class="text-[9px] text-slate-600 mb-2 font-black px-1">Ranked</div>${createSelects('ranked')}</div>
-                        <div><div class="text-[9px] text-slate-600 mb-2 font-black px-1">Stadium</div>${createSelects('stadium')}</div>
-                    </div>
-                    <button onclick="window.toggleDetails('${pName}')" id="btn-${pName}" class="w-full py-3 bg-white/5 hover:bg-white/10 text-slate-400 text-[10px] font-black uppercase rounded-xl border border-slate-700">${isOpen ? 'Details Ausblenden' : 'Details Anzeigen'}</button>
-                    <div id="details-${pName}" class="player-details space-y-6 pt-6 ${isOpen ? 'open' : ''}">
-                        <div class="grid grid-cols-3 gap-3">
-                            ${['tank', 'dps', 'support'].map(r => { const wr = roleStats[r].t > 0 ? Math.round((roleStats[r].w/roleStats[r].t)*100) + '%' : ''; return `<div class="border border-slate-700 bg-white/[0.03] rounded-2xl flex flex-col items-center py-4"><div class="text-lg mb-1.5 ${roles[r].color}">${roles[r].icon}</div><div class="text-[13px] font-black text-white">${wr}</div><div class="text-[9px] text-slate-600">${roleStats[r].t > 0 ? roleStats[r].t + 'x' : ''}</div></div>` }).join('')}
+                    `;
+                } else {
+                    let roleStats = { tank: {w:0, t:0}, dps: {w:0, t:0}, support: {w:0, t:0} }, heroStats = {};
+                    pMatches.forEach(m => { let p = m.players.find(x => x.name === pName); if(p && roleStats[p.role]) { roleStats[p.role].t++; if(m.result === 'Win') roleStats[p.role].w++; if(p.hero && p.hero !== "Held wählen" && p.hero !== "") { if(!heroStats[p.hero]) heroStats[p.hero] = {w:0, t:0}; heroStats[p.hero].t++; if(m.result === 'Win') heroStats[p.hero].w++; } } });
+                    const validH = []; for(const h in heroStats) validH.push([h, heroStats[h]]); validH.sort((a,b) => (b[1].w/b[1].t) - (a[1].w/a[1].t));
+                    const topHero = validH[0], flopHero = [...validH].reverse()[0], isOpen = openPlayerDetails.has(pName);
+                    const winRateString = total > 0 ? Math.round((wins/total)*100) + '%' : '';
+                    
+                    div.innerHTML = `
+                        <div class="flex justify-between items-center mb-4 sm:mb-6">
+                            <h2 class="text-xl sm:text-2xl font-black text-white italic">${pName}</h2>
+                            <div class="text-right">
+                                <div class="text-lg sm:text-xl font-black text-[var(--text-yellow)]">${winRateString}</div>
+                                <div class="text-[8px] sm:text-[9px] text-slate-500 uppercase font-black">${total > 0 ? total + ' Gms' : ''}</div>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-6 text-[10px]">
-                            <div><p class="text-slate-500 uppercase font-black mb-2">🏆 Top Held</p><p class="text-white text-xs font-black">${topHero ? topHero[0] : '-'}</p></div>
-                            <div><p class="text-slate-500 uppercase font-black mb-2">📉 Flop Held</p><p class="text-white text-xs font-black">${flopHero ? flopHero[0] : '-'}</p></div>
+                        <div class="border border-slate-700 rounded-xl sm:rounded-2xl p-2 sm:p-3 grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6 bg-black/20">
+                            <div><div class="text-[8px] sm:text-[9px] text-slate-600 mb-1 sm:mb-2 font-black px-1">Ranked</div>${createSelects('ranked')}</div>
+                            <div><div class="text-[8px] sm:text-[9px] text-slate-600 mb-1 sm:mb-2 font-black px-1">Stadium</div>${createSelects('stadium')}</div>
                         </div>
-                        <div class="pt-4 border-t border-slate-700">
-                            <table class="w-full text-[10px] text-slate-300 font-bold uppercase">
-                                <tbody>${pMatches.slice(0, 5).map(m => `<tr class="border-b border-white/5 last:border-0"><td class="py-2 opacity-60">${m.date.slice(0, 5)}</td><td class="py-2 ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result}</td><td class="py-2 text-right">${roles[m.players.find(p => p.name === pName).role].icon}</td></tr>`).join('')}</tbody>
-                            </table>
-                        </div>
-                    </div>`;
+                        <button onclick="window.toggleDetails('${pName}')" id="btn-${pName}" class="w-full py-2 sm:py-3 bg-white/5 hover:bg-white/10 text-slate-400 text-[9px] sm:text-[10px] font-black uppercase rounded-lg sm:rounded-xl border border-slate-700">${isOpen ? 'Details Ausblenden' : 'Details Anzeigen'}</button>
+                        <div id="details-${pName}" class="player-details space-y-4 sm:space-y-6 pt-4 sm:pt-6 ${isOpen ? 'open' : ''}">
+                            <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                                ${['tank', 'dps', 'support'].map(r => { const wr = roleStats[r].t > 0 ? Math.round((roleStats[r].w/roleStats[r].t)*100) + '%' : ''; return `<div class="border border-slate-700 bg-white/[0.03] rounded-xl sm:rounded-2xl flex flex-col items-center py-3 sm:py-4"><div class="text-base sm:text-lg mb-1 sm:mb-1.5 ${roles[r].color}">${roles[r].icon}</div><div class="text-xs sm:text-[13px] font-black text-white">${wr}</div><div class="text-[8px] sm:text-[9px] text-slate-600">${roleStats[r].t > 0 ? roleStats[r].t + 'x' : ''}</div></div>` }).join('')}
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 sm:gap-6 text-[9px] sm:text-[10px]">
+                                <div><p class="text-slate-500 uppercase font-black mb-1 sm:mb-2">🏆 Top Held</p><p class="text-white text-[10px] sm:text-xs font-black">${topHero ? topHero[0] : '-'}</p></div>
+                                <div><p class="text-slate-500 uppercase font-black mb-1 sm:mb-2">📉 Flop Held</p><p class="text-white text-[10px] sm:text-xs font-black">${flopHero ? flopHero[0] : '-'}</p></div>
+                            </div>
+                            <div class="pt-3 sm:pt-4 border-t border-slate-700">
+                                <table class="w-full text-[9px] sm:text-[10px] text-slate-300 font-bold uppercase">
+                                    <tbody>${pMatches.slice(0, 5).map(m => `<tr class="border-b border-white/5 last:border-0"><td class="py-1.5 sm:py-2 opacity-60">${m.date.slice(0, 5)}</td><td class="py-1.5 sm:py-2 ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result}</td><td class="py-1.5 sm:py-2 text-right">${roles[m.players.find(p => p.name === pName).role].icon}</td></tr>`).join('')}</tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                }
                 grid.appendChild(div);
             });
             initCustomSelects(); 
@@ -1214,17 +1296,17 @@
         window.updateRecentMatches = function() {
             const list = document.getElementById('recentMatchesList'); if(!list) return;
             list.innerHTML = matches.slice(0, 15).map(m => `
-                <div class="glass-card p-6 space-y-4 border-slate-700 relative group animate-in">
-                    <button onclick="window.deleteMatch(${m.id})" class="absolute right-5 top-5 opacity-0 group-hover:opacity-100 text-red-500 transition-opacity">🗑️</button>
+                <div class="glass-card p-4 sm:p-6 space-y-3 sm:space-y-4 border-slate-700 relative group animate-in">
+                    <button onclick="window.deleteMatch(${m.id})" class="absolute right-4 sm:right-5 top-4 sm:top-5 opacity-0 group-hover:opacity-100 text-red-500 transition-opacity">🗑️</button>
                     <div class="flex justify-between items-start">
                         <div>
-                            <div class="text-[12px] font-black uppercase italic ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result === 'Win' ? 'Victory' : 'Defeat'}</div>
-                            <div class="text-[10px] text-slate-500 font-black mt-1 uppercase">S${m.season} · ${m.type} · ${m.rank}</div>
+                            <div class="text-[11px] sm:text-[12px] font-black uppercase italic ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result === 'Win' ? 'Victory' : 'Defeat'}</div>
+                            <div class="text-[9px] sm:text-[10px] text-slate-500 font-black mt-1 uppercase">S${m.season} · ${m.type} · ${m.rank}</div>
                         </div>
-                        ${m.score ? `<div class="text-[11px] font-black text-orange-500 bg-orange-500/10 px-3 py-1.5 rounded-xl border border-orange-500/20">${m.score}</div>` : ''}
+                        ${m.score ? `<div class="text-[10px] sm:text-[11px] font-black text-orange-500 bg-orange-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-orange-500/20">${m.score}</div>` : ''}
                     </div>
-                    <div class="flex flex-wrap gap-2">${(m.players || []).map(p => `<div class="bg-white/[0.04] border border-slate-700 px-3 py-1.5 rounded-xl text-[10px] font-black text-slate-200 uppercase flex items-center gap-1.5"><span>${roles[p.role].icon}</span> ${p.name} <span class="text-slate-600 italic font-medium ml-1">${p.hero && p.hero !== 'Held wählen' ? p.hero : ''}</span></div>`).join('')}</div>
-                    <div class="text-[10px] text-slate-600 font-black border-t border-slate-700 pt-3 flex justify-between uppercase"><span>${m.date}</span><span>${m.map || '-'}</span></div>
+                    <div class="flex flex-wrap gap-1.5 sm:gap-2">${(m.players || []).map(p => `<div class="bg-white/[0.04] border border-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black text-slate-200 uppercase flex items-center gap-1 sm:gap-1.5"><span>${roles[p.role].icon}</span> ${p.name} <span class="text-slate-600 italic font-medium ml-1">${p.hero && p.hero !== 'Held wählen' ? p.hero : ''}</span></div>`).join('')}</div>
+                    <div class="text-[9px] sm:text-[10px] text-slate-600 font-black border-t border-slate-700 pt-2 sm:pt-3 flex justify-between uppercase"><span>${m.date}</span><span>${m.map || '-'}</span></div>
                 </div>`).join('');
         }
 
@@ -1248,8 +1330,8 @@
         window.addPlayerToMatch();
     </script>
 
-    <div class="fixed bottom-4 right-6 text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-3 py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.17.00
+    <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
+        v.1.21.00
     </div>
 </body>
 </html>
