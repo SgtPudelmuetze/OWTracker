@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+<!-- Version: 1.1 - Dashboard & Ticket Update -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -356,7 +357,7 @@
         let matches = [];
         let playerRanks = {};
         let tickets = [];
-        let openPlayerDetails = new Set(); // Merkt sich, wer ausgeklappt ist
+        let openPlayerDetails = new Set(); 
         let currentSeason = 21;
         let currentViewMode = 'Alle';
         let currentMatchType = 'Rangliste';
@@ -510,7 +511,6 @@
             if (!db) return;
             setCloudStatus('Verbinde...', 'warn');
             
-            // Matches Sync
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), (snapshot) => {
                 setCloudStatus('Cloud Sync Active', 'success');
                 matches = snapshot.docs.map(d => d.data());
@@ -519,7 +519,6 @@
                 refreshCurrentPage();
             }, (error) => console.error("Firebase Sync Fehler:", error));
 
-            // Ranks Sync
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), (docSnap) => {
                 if (docSnap.exists()) {
                     playerRanks = docSnap.data();
@@ -530,11 +529,9 @@
                 }
             });
 
-            // Tickets Sync
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), (snapshot) => {
                 const newTickets = snapshot.docs.map(d => d.data());
                 newTickets.sort((a, b) => (b.id || 0) - (a.id || 0));
-                
                 if(newTickets.length > tickets.length && tickets.length > 0) {
                     document.getElementById('ticketAlert').classList.remove('hidden');
                 }
@@ -590,7 +587,6 @@
                 const alert = document.getElementById('ticketAlert');
                 if(alert) alert.classList.add('hidden');
             }
-            
             refreshCurrentPage();
         }
 
@@ -781,7 +777,6 @@
             const btn = document.getElementById(`btn-${pName}`);
             if(!el || !btn) return;
             const isOpen = el.classList.contains('open');
-            
             if(isOpen) {
                 el.classList.remove('open');
                 btn.innerText = "Details anzeigen";
@@ -833,7 +828,6 @@
                     const pMatches = seasonMatches.filter(m => m.players.some(p => p.name === pName));
                     const total = pMatches.length, wins = pMatches.filter(m => m.result === 'Win').length;
                     const ranks = playerRanks[pName] || {};
-                    
                     const createSelects = (cat) => ['tank', 'dps', 'support'].map(r => {
                         const val = ranks[`${r}_${cat}`] || '-';
                         const list = cat === 'ranked' ? ranksRanked : ranksStadium;
@@ -871,7 +865,6 @@
                     const validH = Object.entries(heroStats).sort((a,b) => (b[1].w/b[1].t) - (a[1].w/a[1].t));
                     const topHero = validH[0];
                     const flopHero = [...validH].reverse()[0];
-
                     const isOpen = openPlayerDetails.has(pName);
                     const div = document.createElement('div');
                     div.className = "glass-card p-5 animate-in flex flex-col";
@@ -883,16 +876,13 @@
                                 <div class="text-[9px] text-slate-400 font-bold uppercase">${total} Matches</div>
                             </div>
                         </div>
-
                         <div class="border border-white/5 rounded-xl p-2 grid grid-cols-2 gap-2 mb-4 bg-black/20">
                             <div><div class="text-[8px] text-slate-400 uppercase tracking-widest mb-1.5 font-bold px-1">Rangliste</div>${createSelects('ranked')}</div>
                             <div><div class="text-[8px] text-slate-400 uppercase tracking-widest mb-1.5 font-bold px-1">Stadion</div>${createSelects('stadium')}</div>
                         </div>
-
                         <button onclick="window.toggleDetails('${pName}')" id="btn-${pName}" class="w-full py-2 bg-white/5 hover:bg-white/10 text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-xl border border-white/5 transition-all">
                             ${isOpen ? 'Details ausblenden' : 'Details anzeigen'}
                         </button>
-
                         <div id="details-${pName}" class="player-details space-y-4 pt-4 ${isOpen ? 'open' : ''}">
                             <div class="grid grid-cols-3 gap-2">
                                 ${['tank', 'dps', 'support'].map(r => `<div class="border border-white/5 bg-white/[0.02] rounded-xl flex flex-col items-center py-3"><div class="text-sm mb-1 ${roles[r].color}">${roles[r].icon}</div><div class="text-sm font-black text-white">${roleStats[r].t > 0 ? Math.round((roleStats[r].w/roleStats[r].t)*100) : '-'}%</div><div class="text-[8px] text-slate-600 font-bold">${roleStats[r].t}x</div></div>`).join('')}
@@ -949,7 +939,6 @@
         });
         signInAnonymously(auth).catch(e => setCloudStatus('Auth Error', 'error'));
         
-        // --- INITIALISIERUNG ---
         window.showPage('dashboard');
         window.updateRankOptions(true);
         window.updateMapOptions(true);
