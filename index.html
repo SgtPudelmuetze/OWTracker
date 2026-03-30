@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.1 - Dashboard & Ticket Update -->
+<!-- Version: 1.2 - Diagramm & Ticket Management Update -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OW2 Team Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js für das Kuchendiagramm -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
         
@@ -83,7 +85,6 @@
             display: none;
         }
 
-        /* Detail-Sektion Animation */
         .player-details {
             max-height: 0;
             overflow: hidden;
@@ -94,6 +95,11 @@
             max-height: 1500px;
             opacity: 1;
         }
+
+        /* Status Farben für Tickets */
+        .ticket-open { border-left-color: #3b82f6 !important; }
+        .ticket-closed { border-left-color: #10b981 !important; opacity: 0.8; }
+        .ticket-bug { border-left-color: #ef4444 !important; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -150,37 +156,51 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div class="glass-card p-6 text-center border-t-4 border-orange-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Winrate</p>
-                    <p id="globalWinrate" class="text-3xl font-black text-orange-400">0%</p>
-                </div>
-                <div class="glass-card p-6 text-center border-t-4 border-white/5">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Matches</p>
-                    <p id="globalMatches" class="text-3xl font-black">0</p>
-                </div>
-                <div class="glass-card p-6 text-center border-t-4 border-green-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Wins</p>
-                    <p id="globalWins" class="text-3xl font-black text-[var(--text-yellow)]">0</p>
-                </div>
-                <div class="glass-card p-6 text-center border-t-4 border-white/5">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Losses</p>
-                    <p id="globalLosses" class="text-3xl font-black text-[var(--text-yellow)]">0</p>
-                </div>
-                <div class="glass-card p-6 text-center border-t-4 border-red-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Leaver</p>
-                    <p class="text-3xl font-black text-red-500"><span id="globalLeavers">0</span> <span class="text-[10px] text-slate-500 font-normal ml-1">(<span id="globalLeaverPerc">0%</span>)</span></p>
-                </div>
-            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Stat Cards -->
+                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-card p-6 text-center border-t-4 border-orange-500">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Winrate</p>
+                        <p id="globalWinrate" class="text-3xl font-black text-orange-400">0%</p>
+                    </div>
+                    <div class="glass-card p-6 text-center border-t-4 border-white/5">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Matches</p>
+                        <p id="globalMatches" class="text-3xl font-black">0</p>
+                    </div>
+                    <div class="glass-card p-6 text-center border-t-4 border-green-500">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Wins</p>
+                        <p id="globalWins" class="text-3xl font-black text-green-400">0</p>
+                    </div>
+                    <div class="glass-card p-6 text-center border-t-4 border-red-500">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Losses</p>
+                        <p id="globalLosses" class="text-3xl font-black text-red-500">0</p>
+                    </div>
+                    
+                    <div class="glass-card p-5 col-span-2 flex items-center justify-between border-l-4 border-green-500">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Längste Siegesserie</span>
+                        <span id="maxWinStreak" class="text-2xl font-black text-green-400">0</span>
+                    </div>
+                    <div class="glass-card p-5 col-span-2 flex items-center justify-between border-l-4 border-red-500">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Längste Niederlagenserie</span>
+                        <span id="maxLossStreak" class="text-2xl font-black text-red-400">0</span>
+                    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="glass-card p-5 flex items-center justify-between border-l-4 border-green-500">
-                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Längste Siegesserie</span>
-                    <span id="maxWinStreak" class="text-2xl font-black text-green-400">0</span>
+                    <div class="glass-card p-6 col-span-2 text-center border-t-4 border-red-500/50">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Leaver Quote</p>
+                        <p class="text-2xl font-black text-red-400"><span id="globalLeavers">0</span> <span class="text-[10px] text-slate-500 font-normal ml-1">(<span id="globalLeaverPerc">0%</span>)</span></p>
+                    </div>
+                    <div class="glass-card p-6 col-span-2 text-center border-t-4 border-slate-500">
+                         <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Zuletzt Gespielt</p>
+                         <p id="lastPlayedDate" class="text-xl font-bold text-white">-</p>
+                    </div>
                 </div>
-                <div class="glass-card p-5 flex items-center justify-between border-l-4 border-red-500">
-                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Längste Niederlagenserie</span>
-                    <span id="maxLossStreak" class="text-2xl font-black text-red-400">0</span>
+
+                <!-- Kuchendiagramm -->
+                <div class="glass-card p-8 flex flex-col items-center justify-center min-h-[350px]">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-6 italic">Win / Loss Verteilung</h3>
+                    <div class="w-full h-full max-w-[250px] relative">
+                        <canvas id="winLossChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -207,7 +227,7 @@
 
         <!-- TICKETS -->
         <div id="page-tickets" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-6 animate-in">
-            <div class="md:col-span-2 glass-card p-8 space-y-6">
+            <div class="md:col-span-2 glass-card p-8 space-y-6 h-fit">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-red-500/20 rounded-2xl flex items-center justify-center text-red-500">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
@@ -245,7 +265,10 @@
             </div>
 
             <div class="glass-card p-6 space-y-5 flex flex-col">
-                <h2 class="text-xs font-black uppercase tracking-widest italic text-slate-400">Aktuelle Tickets</h2>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xs font-black uppercase tracking-widest italic text-slate-400">Aktuelle Tickets</h2>
+                    <span class="text-[8px] font-bold text-slate-600 uppercase">Live Update</span>
+                </div>
                 <div id="ticketsList" class="space-y-3 overflow-y-auto max-h-[600px] custom-scrollbar pr-2"></div>
             </div>
         </div>
@@ -332,7 +355,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase Config
         const myFirebaseConfig = {
@@ -347,6 +370,8 @@
         const appId = 'ow2-tracker-data';
 
         let app, auth, db, currentUser = null;
+        let statsChart = null;
+
         try {
             app = initializeApp(myFirebaseConfig);
             auth = getAuth(app);
@@ -579,9 +604,15 @@
             const targetPage = document.getElementById(`page-${id}`);
             if(targetPage) targetPage.classList.remove('hidden');
             
-            document.querySelectorAll('nav button').forEach(b => b.classList.replace('text-white', 'text-slate-400'));
+            document.querySelectorAll('nav button').forEach(b => {
+                b.classList.replace('text-white', 'text-slate-400');
+                b.classList.remove('text-white'); // Sicherheitshalber
+            });
             const activeBtn = document.getElementById(`nav-${id}`);
-            if(activeBtn) activeBtn.classList.replace('text-slate-400', 'text-white');
+            if(activeBtn) {
+                activeBtn.classList.replace('text-slate-400', 'text-white');
+                activeBtn.classList.add('text-white');
+            }
             
             if(id === 'tickets') {
                 const alert = document.getElementById('ticketAlert');
@@ -757,17 +788,38 @@
             }
         }
 
+        window.toggleTicketStatus = function(id) {
+            if(!currentUser || !db) return;
+            const ticket = tickets.find(t => t.id === id);
+            if(!ticket) return;
+            const newStatus = ticket.status === 'Abgeschlossen' ? 'Offen' : 'Abgeschlossen';
+            updateDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString()), { status: newStatus })
+            .then(() => showBanner(`Status: ${newStatus}`, "success"));
+        }
+
+        window.deleteTicket = function(id) {
+            if(!confirm("Ticket wirklich löschen?") || !currentUser || !db) return;
+            deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString()))
+            .then(() => showBanner("Ticket gelöscht", "success"));
+        }
+
         window.updateTicketsList = function() {
             const list = document.getElementById('ticketsList');
             if(!list) return;
             list.innerHTML = tickets.map(t => `
-                <div class="glass-card p-4 space-y-2 border-l-4 ${t.type === 'Problem' ? 'border-red-500' : t.type === 'Feature' ? 'border-blue-500' : 'border-slate-500'}">
+                <div class="glass-card p-4 space-y-2 border-l-4 ${t.status === 'Abgeschlossen' ? 'ticket-closed' : (t.type === 'Problem' ? 'ticket-bug' : 'ticket-open')} transition-all">
                     <div class="flex justify-between items-start">
                         <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">${t.type} · ${t.date}</span>
-                        <span class="text-[8px] bg-white/5 px-1.5 py-0.5 rounded text-slate-400 font-bold">${t.status}</span>
+                        <div class="flex gap-2">
+                             <button onclick="window.toggleTicketStatus(${t.id})" class="text-[10px] hover:scale-110 transition-transform">${t.status === 'Abgeschlossen' ? '✅' : '✔️'}</button>
+                             <button onclick="window.deleteTicket(${t.id})" class="text-[10px] hover:scale-110 transition-transform opacity-40 hover:opacity-100">🗑️</button>
+                        </div>
                     </div>
-                    <p class="text-[11px] font-bold text-white leading-relaxed break-words">${t.message}</p>
-                    <p class="text-[9px] text-slate-600 font-bold italic">Von: ${t.author}</p>
+                    <p class="text-[11px] font-bold text-white leading-relaxed break-words ${t.status === 'Abgeschlossen' ? 'line-through text-slate-500' : ''}">${t.message}</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] text-slate-600 font-bold italic text-ellipsis overflow-hidden whitespace-nowrap max-w-[150px]">Von: ${t.author}</p>
+                        <span class="text-[8px] bg-white/5 px-1.5 py-0.5 rounded text-slate-400 font-bold uppercase">${t.status}</span>
+                    </div>
                 </div>
             `).join('');
         }
@@ -792,13 +844,32 @@
             try {
                 const filtered = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
                 const total = filtered.length, wins = filtered.filter(m => m.result === 'Win').length, leavers = filtered.filter(m => m.leaver).length;
+                const losses = total - wins;
+                
                 document.getElementById('globalWinrate').innerText = total > 0 ? Math.round((wins / total) * 100) + "%" : "0%";
                 document.getElementById('globalMatches').innerText = total;
                 document.getElementById('globalWins').innerText = wins;
-                document.getElementById('globalLosses').innerText = total - wins;
+                document.getElementById('globalLosses').innerText = losses;
                 document.getElementById('globalLeavers').innerText = leavers;
                 document.getElementById('globalLeaverPerc').innerText = total > 0 ? Math.round((leavers / total) * 100) + "%" : "0%";
                 
+                if (filtered.length > 0) {
+                    document.getElementById('lastPlayedDate').innerText = filtered[0].date;
+                } else {
+                    document.getElementById('lastPlayedDate').innerText = "-";
+                }
+
+                // Chart Update
+                updateStatsChart(wins, losses);
+
+                let curW = 0, curL = 0, maxW = 0, maxL = 0;
+                [...filtered].reverse().forEach(m => {
+                    if (m.result === 'Win') { curW++; curL = 0; if (curW > maxW) maxW = curW; }
+                    else { curL++; curW = 0; if (curL > maxL) maxL = curL; }
+                });
+                document.getElementById('maxWinStreak').innerText = maxW;
+                document.getElementById('maxLossStreak').innerText = maxL;
+
                 const combos = {};
                 filtered.forEach(m => {
                     if (!m.players) return;
@@ -815,6 +886,45 @@
                 document.getElementById('bestCombos').innerHTML = sorted.slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
                 document.getElementById('worstCombos').innerHTML = [...sorted].reverse().slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
             } catch(e) { console.error(e); }
+        }
+
+        function updateStatsChart(wins, losses) {
+            const ctx = document.getElementById('winLossChart');
+            if(!ctx) return;
+
+            if(statsChart) statsChart.destroy();
+
+            // Falls keine Daten da sind, ein graues Diagramm anzeigen
+            const hasData = wins > 0 || losses > 0;
+            const data = hasData ? [wins, losses] : [1];
+            const colors = hasData ? ['#10b981', '#ef4444'] : ['#1e253c'];
+            const labels = hasData ? ['Wins', 'Losses'] : ['Keine Matches'];
+
+            statsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: 'transparent',
+                        hoverOffset: 10,
+                        cutout: '75%',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
         }
 
         window.updatePlayerDashboards = function() {
