@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.24.00 - Exact Hero Name Matching (Stadion DPS Fix) -->
+<!-- Version: 1.26.00 - Added Map Stats & Multi-Hero Selection for Ranked -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -238,7 +238,20 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-4">
+            <!-- New Grid: 4 Columns including Top Maps -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-4">
+                <div>
+                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
+                        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> Top Helden
+                    </h3>
+                    <div id="topHeroes" class="space-y-3 sm:space-y-4"></div>
+                </div>
+                <div>
+                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Top Maps
+                    </h3>
+                    <div id="topMaps" class="space-y-3 sm:space-y-4"></div>
+                </div>
                 <div>
                     <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
                         <span class="w-2 h-2 bg-green-500 rounded-full"></span> Best Teams
@@ -293,19 +306,18 @@
                     
                     <!-- Mitte: 10 Kategorien extrem kompakt -->
                     <div class="space-y-2 pt-2">
-                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Punktevergabe (1 - 10)</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Story & Plot</span><input type="number" id="animeStory" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Animation</span><input type="number" id="animeAnim" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Cast</span><input type="number" id="animeCast" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Char.-Entw.</span><input type="number" id="animeDev" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Worldbuilding</span><input type="number" id="animeWorld" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Pacing</span><input type="number" id="animePacing" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Soundtrack</span><input type="number" id="animeSound" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Voice Acting</span><input type="number" id="animeVoice" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-slate-400 text-center uppercase tracking-widest">Impact</span><input type="number" id="animeImpact" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-slate-700 p-2 rounded-lg text-xs font-bold text-center text-white focus:border-yellow-500"></div>
-                            <div class="flex flex-col gap-1.5"><span class="text-[9px] font-black text-yellow-500 text-center uppercase tracking-widest">Enjoyment</span><input type="number" id="animeEnjoy" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="bg-[#0f172a] border border-yellow-500/30 p-2 rounded-lg text-xs font-bold text-center text-yellow-500 focus:border-yellow-500"></div>
+                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-1 block">Punktevergabe (1 - 10)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Story</span><input type="number" id="animeStory" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Anim.</span><input type="number" id="animeAnim" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Cast</span><input type="number" id="animeCast" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Entw.</span><input type="number" id="animeDev" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">World</span><input type="number" id="animeWorld" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Pacing</span><input type="number" id="animePacing" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Sound</span><input type="number" id="animeSound" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Voice</span><input type="number" id="animeVoice" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2 rounded-lg"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Impact</span><input type="number" id="animeImpact" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-white focus:outline-none"></div>
+                            <div class="flex items-center justify-between bg-gradient-to-r from-[#0f172a] to-[#1e293b] border border-yellow-500/30 p-2 rounded-lg"><span class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">Enjoy</span><input type="number" id="animeEnjoy" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-10 bg-transparent text-xs font-bold text-right text-yellow-500 focus:outline-none"></div>
                         </div>
                     </div>
 
@@ -466,7 +478,7 @@
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Season</label>
                         <select id="matchSeason" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm text-orange-500 font-black italic">
                             <option value="21" selected>Season 21</option>
-                            <option value="22">Season 22</option>
+                            <option value="22" selected>Season 22</option>
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -509,7 +521,10 @@
                     <label for="matchLeaver" class="text-[10px] sm:text-[11px] font-black text-red-400 uppercase tracking-widest cursor-pointer">Leaver Vorfall?</label>
                 </div>
                 <div class="pt-6 sm:pt-8 border-t border-slate-700 space-y-4 sm:space-y-5">
-                    <h3 class="text-[10px] sm:text-xs font-black uppercase text-slate-400 tracking-[0.2em]">Team Setup</h3>
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-[10px] sm:text-xs font-black uppercase text-slate-400 tracking-[0.2em]">Team Setup</h3>
+                        <span class="text-[9px] text-slate-500 italic bg-black/20 px-2 py-1 rounded">Ranked = Mehrfachauswahl möglich</span>
+                    </div>
                     <div id="matchPlayersList" class="space-y-3 sm:space-y-4"></div>
                     <button onclick="window.addPlayerToMatch()" id="btnAddPlayer" class="text-[9px] sm:text-[10px] font-black text-blue-400 hover:text-white transition-all uppercase bg-blue-500/10 hover:bg-blue-600 px-3 sm:px-4 py-2 rounded-xl border border-blue-500/20">+ Spieler</button>
                 </div>
@@ -552,7 +567,7 @@
 
         let matches = [], playerRanks = {}, tickets = [], animes = [];
         let openPlayerDetails = new Set(); 
-        let currentSeason = 21, currentViewMode = 'Alle', currentMatchType = 'Rangliste', currentResult = 'Win';
+        let currentSeason = 22, currentViewMode = 'Alle', currentMatchType = 'Rangliste', currentResult = 'Win';
         let currentAnimeTab = 'Gesamt';
         
         const knownPlayers = ["Pudelmuetze", "Nora", "Philipp", "Simon", "Noobie", "Christoph"];
@@ -563,13 +578,13 @@
         };
 
         const heroesByRole = {
-            tank: ["D.Va", "Domina", "Doomfist", "Harzard", "Junker Queen", "Orisa", "Ramattra", "Reinhardt", "Roadhog", "Sigma", "Winston", "Wrecking Ball", "Zarya"].sort(),
+            tank: ["D.Va", "Domina", "Doomfist", "Hazard", "Junker Queen", "Orisa", "Ramattra", "Reinhardt", "Roadhog", "Sigma", "Winston", "Wrecking Ball", "Zarya"].sort(),
             dps: ["Anran", "Ashe", "Bastion", "Cassidy", "Echo", "Emre", "Freya", "Genji", "Hanzo", "Junkrat", "Mei", "Pharah", "Reaper", "Sojourn", "Soldier:76", "Sombra", "Symmetra", "Torbjörn", "Tracer", "Vendetta", "Venture", "Widowmaker"].sort(),
             support: ["Ana", "Baptiste", "Brigitte", "Cat", "Illari", "Juno", "Kiriko", "Lifeweaver", "Lucio", "Mercy", "Mizuki", "Moira", "Wuyang", "Zenyatta"].sort()
         };
 
         const stadiumHeroes = {
-            tank: ["D.Va", "Doomfist", "Harzard", "Junker Queen", "Orisa", "Reinhardt", "Sigma", "Winston", "Zarya"].sort(),
+            tank: ["D.Va", "Doomfist", "Hazard", "Junker Queen", "Orisa", "Reinhardt", "Sigma", "Winston", "Zarya"].sort(),
             dps: ["Ashe", "Cassidy", "Freya", "Genji", "Junkrat", "Mei", "Pharah", "Reaper", "Soldier:76", "Torbjörn", "Tracer", "Vendetta"].sort(),
             support: ["Ana", "Brigitte", "Juno", "Kiriko", "Lucio", "Mercy", "Moira", "Wuyang", "Zenyatta"].sort()
         };
@@ -673,15 +688,28 @@
                 if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-container')) select.nextElementSibling.remove();
                 select.style.display = 'none';
                 
+                const isMulti = select.hasAttribute('multiple');
+                
                 const container = document.createElement('div');
                 container.className = 'relative custom-select-container ' + (select.classList.contains('flex-1')?'flex-1 ':'') + (select.classList.contains('w-full')?'w-full ':'');
                 container.tabIndex = 0;
                 
                 const trigger = document.createElement('div');
-                trigger.className = select.className.replace('custom-select','') + ' flex justify-between items-center cursor-pointer select-none';
+                trigger.className = select.className.replace('custom-select','') + ' flex justify-between items-center cursor-pointer select-none min-h-[36px] sm:min-h-[44px]';
                 
-                const selectedOpt = select.options[select.selectedIndex];
-                trigger.innerHTML = `<span class="truncate">${selectedOpt ? selectedOpt.text : ''}</span><span class="text-slate-500 text-[10px]">▼</span>`;
+                function updateTrigger() {
+                    if(isMulti) {
+                        const selTexts = [];
+                        for(let i=0; i<select.options.length; i++) {
+                            if(select.options[i].selected && select.options[i].value !== "") selTexts.push(select.options[i].text);
+                        }
+                        trigger.innerHTML = `<span class="truncate">${selTexts.length > 0 ? selTexts.join(', ') : 'Held wählen'}</span><span class="text-slate-500 text-[10px] ml-2 shrink-0">▼</span>`;
+                    } else {
+                        const selectedOpt = select.options[select.selectedIndex];
+                        trigger.innerHTML = `<span class="truncate">${selectedOpt ? selectedOpt.text : ''}</span><span class="text-slate-500 text-[10px] ml-2 shrink-0">▼</span>`;
+                    }
+                }
+                updateTrigger();
                 
                 const dropdown = document.createElement('div');
                 dropdown.className = 'absolute left-0 top-[calc(100%+4px)] min-w-full w-max bg-[#1e293b] border border-slate-700 rounded-xl shadow-2xl opacity-0 invisible transition-all z-[100] max-h-60 overflow-y-auto custom-scrollbar';
@@ -707,6 +735,7 @@
                 });
 
                 const children = select.children;
+                let optIndex = 0;
                 for(let i = 0; i < children.length; i++) {
                     const child = children[i];
                     if (child.tagName === 'OPTGROUP') {
@@ -715,10 +744,10 @@
                         groupLabel.innerText = child.label; dropdown.appendChild(groupLabel);
                         const options = child.querySelectorAll('option');
                         for(let j = 0; j < options.length; j++) {
-                            addOption(options[j], dropdown, select, trigger);
+                            addOption(options[j], dropdown, select, updateTrigger, isMulti, optIndex++);
                         }
                     } else if (child.tagName === 'OPTION') {
-                        addOption(child, dropdown, select, trigger);
+                        addOption(child, dropdown, select, updateTrigger, isMulti, optIndex++);
                     }
                 }
                 container.appendChild(trigger); container.appendChild(dropdown);
@@ -726,20 +755,60 @@
             }
         }
         
-        function addOption(opt, dropdown, select, trigger) {
+        function addOption(opt, dropdown, select, updateTrigger, isMulti, index) {
             const item = document.createElement('div');
-            item.className = 'px-4 py-2.5 text-[10px] sm:text-xs text-slate-300 hover:bg-white/10 cursor-pointer transition-colors border-b border-slate-700 last:border-0 whitespace-nowrap';
+            item.className = 'px-4 py-2.5 text-[10px] sm:text-xs text-slate-300 hover:bg-white/10 cursor-pointer transition-colors border-b border-slate-700 last:border-0 whitespace-nowrap flex items-center justify-between';
+            
+            const textSpan = document.createElement('span');
+            textSpan.innerText = opt.text;
+            item.appendChild(textSpan);
+
+            const checkMark = document.createElement('span');
+            checkMark.className = 'text-orange-500 ml-2 font-bold';
+            checkMark.innerText = '✓';
+            checkMark.style.display = opt.selected ? 'inline' : 'none';
+            if (isMulti) item.appendChild(checkMark);
+
             if (opt.selected) item.classList.add('text-orange-400', 'font-bold');
-            item.innerHTML = opt.text;
+            
             item.addEventListener('mousedown', (e) => e.preventDefault());
-            item.addEventListener('click', () => {
-                select.value = opt.value; 
-                trigger.querySelector('span').innerText = opt.text;
-                dropdown.classList.remove('opacity-100', 'visible');
-                dropdown.classList.add('opacity-0', 'invisible');
-                const divItems = dropdown.querySelectorAll('div');
-                for(let d = 0; d < divItems.length; d++) divItems[d].classList.remove('text-orange-400', 'font-bold');
-                item.classList.add('text-orange-400', 'font-bold');
+            item.addEventListener('click', (e) => {
+                if(isMulti) {
+                    e.stopPropagation();
+                    if(opt.value === "") { 
+                        for(let k=0; k<select.options.length; k++) select.options[k].selected = false;
+                        opt.selected = true;
+                    } else {
+                        if(select.options[0].value === "") select.options[0].selected = false;
+                        opt.selected = !opt.selected;
+                        let anySelected = false;
+                        for(let k=0; k<select.options.length; k++) if(select.options[k].selected && select.options[k].value !== "") anySelected = true;
+                        if(!anySelected) select.options[0].selected = true;
+                    }
+                    
+                    const allItems = dropdown.querySelectorAll('div.cursor-pointer');
+                    for(let k=0; k<select.options.length; k++) {
+                        const o = select.options[k];
+                        const divItem = allItems[k];
+                        if(divItem) {
+                            if(o.selected) {
+                                divItem.classList.add('text-orange-400', 'font-bold');
+                                if(divItem.children[1]) divItem.children[1].style.display = 'inline';
+                            } else {
+                                divItem.classList.remove('text-orange-400', 'font-bold');
+                                if(divItem.children[1]) divItem.children[1].style.display = 'none';
+                            }
+                        }
+                    }
+                } else {
+                    select.value = opt.value; 
+                    dropdown.classList.remove('opacity-100', 'visible');
+                    dropdown.classList.add('opacity-0', 'invisible');
+                    const divItems = dropdown.querySelectorAll('div.cursor-pointer');
+                    for(let d = 0; d < divItems.length; d++) divItems[d].classList.remove('text-orange-400', 'font-bold');
+                    item.classList.add('text-orange-400', 'font-bold');
+                }
+                updateTrigger();
                 select.dispatchEvent(new Event('change', { bubbles: true }));
             });
             dropdown.appendChild(item);
@@ -952,6 +1021,9 @@
         window.updateHeroSelect = function(roleSelect) {
             const heroSelect = roleSelect.parentElement.querySelectorAll('select')[2]; if (!heroSelect) return;
             heroSelect.innerHTML = '<option value="">Held wählen</option>';
+            if (currentMatchType === 'Rangliste') heroSelect.setAttribute('multiple', 'multiple');
+            else heroSelect.removeAttribute('multiple');
+            
             const listSource = currentMatchType === 'Stadion' ? stadiumHeroes : heroesByRole;
             const currentList = listSource[roleSelect.value === 'heal' ? 'support' : roleSelect.value];
             if (currentList) currentList.forEach(h => { const opt = document.createElement('option'); opt.value = h; opt.textContent = h; heroSelect.appendChild(opt); });
@@ -962,7 +1034,7 @@
             const container = document.getElementById('matchPlayersList'); if (!container || container.children.length >= 5) return;
             const index = container.children.length, defaultRole = index >= 3 ? 'support' : (index === 0 ? 'tank' : 'dps');
             const div = document.createElement('div'); div.className = "flex gap-2 sm:gap-3 items-center animate-in bg-white/[0.02] p-2 sm:p-3 rounded-2xl border border-slate-700";
-            div.innerHTML = `<div class="grid grid-cols-3 gap-2 sm:gap-3 flex-1"><select class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white">${knownPlayers.map((p, i) => `<option ${i === index ? 'selected' : ''}>${p}</option>`).join('')}</select><select onchange="window.updateHeroSelect(this)" class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs text-slate-400 font-bold"><option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option><option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option><option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option></select><select class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white"><option value="">Held wählen</option></select></div><button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-2 sm:p-3 text-red-500/40 hover:text-red-500">🗑️</button>`;
+            div.innerHTML = `<div class="grid grid-cols-3 gap-2 sm:gap-3 flex-1"><select class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white">${knownPlayers.map((p, i) => `<option ${i === index ? 'selected' : ''}>${p}</option>`).join('')}</select><select onchange="window.updateHeroSelect(this)" class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs text-slate-400 font-bold"><option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option><option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option><option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option></select><select ${currentMatchType === 'Rangliste' ? 'multiple' : ''} class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white"><option value="">Held wählen</option></select></div><button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-2 sm:p-3 text-red-500/40 hover:text-red-500">🗑️</button>`;
             container.appendChild(div); window.updateHeroSelect(div.querySelectorAll('select')[1]); window.updateAddButtonState();
         }
 
@@ -976,7 +1048,15 @@
             for (let row of rows) {
                 const selects = row.querySelectorAll('select');
                 if (names.has(selects[0].value)) { showBanner("Spieler doppelt!", "error"); return; }
-                names.add(selects[0].value); players.push({ name: selects[0].value, role: selects[1].value, hero: selects[2].value });
+                names.add(selects[0].value); 
+                
+                const heroSelect = selects[2];
+                const selHeroes = [];
+                for(let i=0; i<heroSelect.options.length; i++) {
+                    if(heroSelect.options[i].selected && heroSelect.options[i].value !== "") selHeroes.push(heroSelect.options[i].value);
+                }
+                
+                players.push({ name: selects[0].value, role: selects[1].value, heroes: selHeroes });
             }
             if (!players.length) return;
             const rStart = document.getElementById('matchRankStart').value, rEnd = document.getElementById('matchRankEnd').value;
@@ -1205,10 +1285,18 @@
         }
 
         window.toggleDetails = function(pName) {
-            const el = document.getElementById(`details-${pName}`), btn = document.getElementById(`btn-${pName}`);
+            const el = document.getElementById(`details-${pName}`);
+            const btn = document.getElementById(`btn-${pName}`);
             if(!el || !btn) return;
-            if(el.classList.contains('open')) { el.classList.remove('open'); btn.innerText = "Details Anzeigen"; openPlayerDetails.delete(pName); }
-            else { el.classList.add('open'); btn.innerText = "Details Ausblenden"; openPlayerDetails.add(pName); }
+            if(el.classList.contains('open')) { 
+                el.classList.remove('open'); 
+                btn.innerText = "Details Anzeigen"; 
+                openPlayerDetails.delete(pName); 
+            } else { 
+                el.classList.add('open'); 
+                btn.innerText = "Details Ausblenden"; 
+                openPlayerDetails.add(pName); 
+            }
         }
 
         window.updateDashboard = function() {
@@ -1219,13 +1307,60 @@
             let curW = 0, curL = 0, maxW = 0, maxL = 0;
             [...filtered].reverse().forEach(m => { if (m.result === 'Win') { curW++; curL = 0; if (curW > maxW) maxW = curW; } else { curL++; curW = 0; if (curL > maxL) maxL = curL; } });
             setSafeText('maxWinStreak', maxW); setSafeText('maxLossStreak', maxL);
+            
             const combos = {};
-            filtered.forEach(m => { if (!m.players) return; for (let i = 0; i < m.players.length; i++) for (let j = i + 1; j < m.players.length; j++) { const key = [m.players[i].name, m.players[j].name].sort().join(' · '); if (!combos[key]) combos[key] = { wins: 0, total: 0 }; combos[key].total++; if (m.result === 'Win') combos[key].wins++; } });
-            const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total));
+            const heroStats = {};
+            const mapStats = {};
+            
+            filtered.forEach(m => { 
+                if (m.map && m.map !== "Wähle Karte") {
+                    if (!mapStats[m.map]) mapStats[m.map] = { wins: 0, total: 0 };
+                    mapStats[m.map].total++;
+                    if (m.result === 'Win') mapStats[m.map].wins++;
+                }
+                
+                if (!m.players) return; 
+                for (let i = 0; i < m.players.length; i++) { 
+                    const p = m.players[i];
+                    const hList = p.heroes ? p.heroes : (p.hero ? [p.hero] : []);
+                    for(let h=0; h<hList.length; h++) {
+                        const hName = hList[h];
+                        if (hName && hName !== "Held wählen" && hName !== "") {
+                            if (!heroStats[hName]) heroStats[hName] = { wins: 0, total: 0, role: p.role };
+                            heroStats[hName].total++;
+                            if (m.result === 'Win') heroStats[hName].wins++;
+                        }
+                    }
+                    for (let j = i + 1; j < m.players.length; j++) { 
+                        const key = [m.players[i].name, m.players[j].name].sort().join(' · '); 
+                        if (!combos[key]) combos[key] = { wins: 0, total: 0 }; 
+                        combos[key].total++; 
+                        if (m.result === 'Win') combos[key].wins++; 
+                    } 
+                } 
+            });
+            
+            const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
             const renderC = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[11px] sm:text-xs font-bold text-slate-300">${name}</p></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
             const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
             if(bestEl) bestEl.innerHTML = sorted.slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
             if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
+            
+            const sortedHeroes = []; 
+            for(const h in heroStats) sortedHeroes.push([h, heroStats[h]]); 
+            sortedHeroes.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
+            
+            const renderH = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><div class="flex items-center gap-1.5"><span class="${roles[s.role].color} text-[10px]">${roles[s.role].icon}</span><p class="text-[11px] sm:text-xs font-bold text-slate-300">${name}</p></div></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const topHeroesEl = document.getElementById('topHeroes');
+            if(topHeroesEl) topHeroesEl.innerHTML = sortedHeroes.slice(0, 3).map(([n,s]) => renderH(n,s)).join('');
+            
+            const sortedMaps = []; 
+            for(const m in mapStats) sortedMaps.push([m, mapStats[m]]); 
+            sortedMaps.sort((a,b) => b[1].total - a[1].total);
+            
+            const renderM = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-blue-400 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[11px] sm:text-xs font-bold text-slate-300 truncate max-w-[100px]" title="${name}">${name}</p></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const topMapsEl = document.getElementById('topMaps');
+            if(topMapsEl) topMapsEl.innerHTML = sortedMaps.slice(0, 3).map(([n,s]) => renderM(n,s)).join('');
         }
 
         function updateStatsChart(wins, losses) {
@@ -1260,7 +1395,21 @@
                     `;
                 } else {
                     let roleStats = { tank: {w:0, t:0}, dps: {w:0, t:0}, support: {w:0, t:0} }, heroStats = {};
-                    pMatches.forEach(m => { let p = m.players.find(x => x.name === pName); if(p && roleStats[p.role]) { roleStats[p.role].t++; if(m.result === 'Win') roleStats[p.role].w++; if(p.hero && p.hero !== "Held wählen" && p.hero !== "") { if(!heroStats[p.hero]) heroStats[p.hero] = {w:0, t:0}; heroStats[p.hero].t++; if(m.result === 'Win') heroStats[p.hero].w++; } } });
+                    pMatches.forEach(m => { 
+                        let p = m.players.find(x => x.name === pName); 
+                        if(p && roleStats[p.role]) { 
+                            roleStats[p.role].t++; 
+                            if(m.result === 'Win') roleStats[p.role].w++; 
+                            const hList = p.heroes ? p.heroes : (p.hero ? [p.hero] : []);
+                            hList.forEach(hName => {
+                                if(hName && hName !== "Held wählen" && hName !== "") { 
+                                    if(!heroStats[hName]) heroStats[hName] = {w:0, t:0}; 
+                                    heroStats[hName].t++; 
+                                    if(m.result === 'Win') heroStats[hName].w++; 
+                                } 
+                            });
+                        } 
+                    });
                     const validH = []; for(const h in heroStats) validH.push([h, heroStats[h]]); validH.sort((a,b) => (b[1].w/b[1].t) - (a[1].w/a[1].t));
                     const topHero = validH[0], flopHero = [...validH].reverse()[0], isOpen = openPlayerDetails.has(pName);
                     const winRateString = total > 0 ? Math.round((wins/total)*100) + '%' : '';
@@ -1324,7 +1473,13 @@
                         </div>
                         ${m.score ? `<div class="text-[10px] sm:text-[11px] font-black text-orange-500 bg-orange-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-orange-500/20">${m.score}</div>` : ''}
                     </div>
-                    <div class="flex flex-wrap gap-1.5 sm:gap-2">${(m.players || []).map(p => `<div class="bg-white/[0.04] border border-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black text-slate-200 uppercase flex items-center gap-1 sm:gap-1.5"><span>${roles[p.role].icon}</span> ${p.name} <span class="text-slate-600 italic font-medium ml-1">${p.hero && p.hero !== 'Held wählen' ? p.hero : ''}</span></div>`).join('')}</div>
+                    <div class="flex flex-wrap gap-1.5 sm:gap-2">${(m.players || []).map(p => {
+                        let heroStr = '';
+                        if(p.heroes && p.heroes.length > 0) heroStr = p.heroes.join(', ');
+                        else if(p.hero && p.hero !== 'Held wählen') heroStr = p.hero;
+                        
+                        return `<div class="bg-white/[0.04] border border-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black text-slate-200 uppercase flex items-center gap-1 sm:gap-1.5"><span>${roles[p.role].icon}</span> ${p.name} <span class="text-slate-600 italic font-medium ml-1">${heroStr}</span></div>`;
+                    }).join('')}</div>
                     <div class="text-[9px] sm:text-[10px] text-slate-600 font-black border-t border-slate-700 pt-2 sm:pt-3 flex justify-between uppercase"><span>${m.date}</span><span>${m.map || '-'}</span></div>
                 </div>`).join('');
         }
@@ -1350,7 +1505,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.24.00
+        v.1.26.00
     </div>
 </body>
 </html>
