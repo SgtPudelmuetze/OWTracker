@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.32.00 - Added Changelogs Tab -->
+<!-- Version: 1.33.00 - Dashboard Redesign, History Refactoring & Changelog Filter Fix -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -189,7 +189,7 @@
     <main class="max-w-[1500px] mx-auto p-4 sm:p-8">
 
         <!-- DASHBOARD -->
-        <div id="page-dashboard" class="page space-y-6 sm:space-y-10 animate-in hidden">
+        <div id="page-dashboard" class="page space-y-6 sm:space-y-8 animate-in hidden">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter">Performance <span class="active-season-label text-orange-500">S21</span></h2>
@@ -204,68 +204,83 @@
                 </div>
             </div>
 
+            <!-- Top Stats & Chart Row -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-orange-500">
-                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Winrate</p>
-                        <p id="globalWinrate" class="text-2xl sm:text-4xl font-black text-orange-400">0%</p>
+                
+                <!-- Quick Stats -->
+                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center relative overflow-hidden group">
+                        <div class="absolute right-0 top-0 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl -mr-8 -mt-8 transition-transform group-hover:scale-150"></div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Globale Winrate</p>
+                        <p id="globalWinrate" class="text-4xl sm:text-5xl font-black text-white drop-shadow-md">0%</p>
                     </div>
-                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-slate-600">
-                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Matches</p>
-                        <p id="globalMatches" class="text-2xl sm:text-4xl font-black text-white">0</p>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Gespielte Matches</p>
+                        <p id="globalMatches" class="text-3xl sm:text-4xl font-black text-white">0</p>
                     </div>
-                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-green-500">
-                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Wins</p>
-                        <p id="globalWins" class="text-2xl sm:text-4xl font-black text-green-400">0</p>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-green-500 uppercase tracking-widest mb-1">Siege (Wins)</p>
+                        <p id="globalWins" class="text-3xl sm:text-4xl font-black text-green-400 drop-shadow-sm">0</p>
                     </div>
-                    <div class="glass-card p-4 sm:p-6 text-center border-t-4 border-red-500">
-                        <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sm:mb-2">Losses</p>
-                        <p id="globalLosses" class="text-2xl sm:text-4xl font-black text-red-500">0</p>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Niederlagen</p>
+                        <p id="globalLosses" class="text-3xl sm:text-4xl font-black text-red-400 drop-shadow-sm">0</p>
                     </div>
-                    
-                    <div class="glass-card p-4 sm:p-6 col-span-2 flex items-center justify-between border-l-4 border-green-500/50">
-                        <span class="text-[10px] sm:text-xs font-black uppercase tracking-[0.1em] text-slate-400">Longest Win Streak</span>
-                        <span id="maxWinStreak" class="text-2xl sm:text-3xl font-black text-green-400">0</span>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Longest Win-Streak</p>
+                        <p id="maxWinStreak" class="text-3xl sm:text-4xl font-black text-green-400">0</p>
                     </div>
-                    <div class="glass-card p-4 sm:p-6 col-span-2 flex items-center justify-between border-l-4 border-red-500/50">
-                        <span class="text-[10px] sm:text-xs font-black uppercase tracking-[0.1em] text-slate-400">Longest Loss Streak</span>
-                        <span id="maxLossStreak" class="text-2xl sm:text-3xl font-black text-red-400">0</span>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Longest Loss-Streak</p>
+                        <p id="maxLossStreak" class="text-3xl sm:text-4xl font-black text-red-400">0</p>
                     </div>
                 </div>
 
-                <div class="glass-card p-6 sm:p-8 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[400px]">
-                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 sm:mb-8">Win / Loss Ratio</h3>
-                    <div class="w-full h-full max-w-[200px] sm:max-w-[260px] relative">
+                <!-- Win/Loss Chart -->
+                <div class="glass-card p-6 flex flex-col items-center justify-center relative min-h-[250px]">
+                    <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 absolute top-6 left-6">Ratio</h3>
+                    <div class="relative w-full max-w-[180px] sm:max-w-[200px] mx-auto mt-4">
                         <canvas id="winLossChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-1">
+                            <span class="text-3xl sm:text-4xl font-black text-white drop-shadow-md" id="chartCenterText">0%</span>
+                            <span class="text-[8px] font-bold uppercase tracking-widest text-slate-400">Wins</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- New Grid: 4 Columns including Top Maps & Top 10 lists -->
+            <!-- Top 10 Lists Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-4">
-                <div>
-                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> Top 10 Helden
-                    </h3>
-                    <div id="topHeroes" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                <div class="glass-card flex flex-col overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.02]">
+                        <span class="w-2 h-2 bg-purple-500 rounded-full shadow-[0_0_8px_rgba(168,85,247,0.8)]"></span>
+                        <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Top 10 Helden</h3>
+                    </div>
+                    <div id="topHeroes" class="flex flex-col"></div>
                 </div>
-                <div>
-                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Top 10 Maps
-                    </h3>
-                    <div id="topMaps" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                
+                <div class="glass-card flex flex-col overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.02]">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
+                        <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Top 10 Maps</h3>
+                    </div>
+                    <div id="topMaps" class="flex flex-col"></div>
                 </div>
-                <div>
-                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span> Top 10 Teams
-                    </h3>
-                    <div id="bestCombos" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                
+                <div class="glass-card flex flex-col overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.02]">
+                        <span class="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+                        <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Best Teams</h3>
+                    </div>
+                    <div id="bestCombos" class="flex flex-col"></div>
                 </div>
-                <div>
-                    <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-red-500 rounded-full"></span> Hard Matches (Top 10)
-                    </h3>
-                    <div id="worstCombos" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                
+                <div class="glass-card flex flex-col overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.02]">
+                        <span class="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+                        <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Hard Matches</h3>
+                    </div>
+                    <div id="worstCombos" class="flex flex-col"></div>
                 </div>
             </div>
         </div>
@@ -613,9 +628,12 @@
                     Match Speichern
                 </button>
             </div>
-            <div class="glass-card p-6 space-y-6 flex flex-col border border-slate-700">
-                <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
-                <div id="recentMatchesList" class="space-y-3 sm:space-y-4 overflow-y-auto max-h-[800px] pr-2 custom-scrollbar"></div>
+            <div class="glass-card flex flex-col border border-slate-700 pt-6">
+                <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
+                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
+                </div>
+                <!-- Clean seamless list container -->
+                <div id="recentMatchesList" class="flex flex-col"></div>
             </div>
         </div>
 
@@ -938,12 +956,13 @@
         }
 
         function refreshCurrentPage() {
-            const pDash = document.getElementById('page-dashboard'), pPlayers = document.getElementById('page-players'), pEntry = document.getElementById('page-entry'), pTickets = document.getElementById('page-tickets'), pAnime = document.getElementById('page-anime');
+            const pDash = document.getElementById('page-dashboard'), pPlayers = document.getElementById('page-players'), pEntry = document.getElementById('page-entry'), pTickets = document.getElementById('page-tickets'), pAnime = document.getElementById('page-anime'), pChange = document.getElementById('page-changelogs');
             if (pDash && !pDash.classList.contains('hidden')) window.updateDashboard();
             if (pPlayers && !pPlayers.classList.contains('hidden')) window.updatePlayerDashboards();
             if (pEntry && !pEntry.classList.contains('hidden')) window.updateRecentMatches();
             if (pTickets && !pTickets.classList.contains('hidden')) window.updateTicketsList();
             if (pAnime && !pAnime.classList.contains('hidden')) window.updateAnimeList();
+            // changelogs doesn't need data refresh
         }
 
         window.exportData = function() {
@@ -1038,7 +1057,7 @@
             if(activeBtn) { activeBtn.classList.add('active'); activeBtn.classList.replace('text-slate-400', 'text-white'); }
             
             const filterBar = document.getElementById('filter-bar');
-            if(id === 'tickets' || id === 'anime') {
+            if(id === 'tickets' || id === 'anime' || id === 'changelogs') {
                 const alert = document.getElementById('ticketAlert');
                 if(alert) alert.classList.add('hidden');
                 if(filterBar) filterBar.classList.add('hidden');
@@ -1401,6 +1420,10 @@
             const total = filtered.length, wins = filtered.filter(m => m.result === 'Win').length, leavers = filtered.filter(m => m.leaver).length, losses = total - wins;
             setSafeText('globalWinrate', total > 0 ? Math.round((wins / total) * 100) + "%" : ""); setSafeText('globalMatches', total); setSafeText('globalWins', wins); setSafeText('globalLosses', losses); setSafeText('globalLeavers', leavers); setSafeText('globalLeaverPerc', total > 0 ? Math.round((leavers / total) * 100) + "%" : ""); setSafeText('lastPlayedDate', filtered.length > 0 ? filtered[0].date : "-");
             updateStatsChart(wins, losses);
+            
+            // Draw Chart Center Text manually here to keep it perfectly responsive
+            document.getElementById('chartCenterText').innerText = total > 0 ? Math.round((wins / total) * 100) + "%" : "0%";
+            
             let curW = 0, curL = 0, maxW = 0, maxL = 0;
             [...filtered].reverse().forEach(m => { if (m.result === 'Win') { curW++; curL = 0; if (curW > maxW) maxW = curW; } else { curL++; curW = 0; if (curL > maxL) maxL = curL; } });
             setSafeText('maxWinStreak', maxW); setSafeText('maxLossStreak', maxL);
@@ -1419,10 +1442,10 @@
                 if (!m.players) return; 
                 for (let i = 0; i < m.players.length; i++) { 
                     const p = m.players[i];
-                    const hList = p.heroes ? p.heroes : (p.hero ? [p.hero] : []);
+                    const hList = p.heroes && p.heroes.length > 0 ? p.heroes : (p.hero && p.hero !== "Held wählen" ? [p.hero] : []);
                     for(let h=0; h<hList.length; h++) {
                         const hName = hList[h];
-                        if (hName && hName !== "Held wählen" && hName !== "") {
+                        if (hName && hName !== "") {
                             const hKey = hName + '|' + p.name;
                             if (!heroStats[hKey]) heroStats[hKey] = { wins: 0, total: 0, role: p.role, hero: hName, player: p.name };
                             heroStats[hKey].total++;
@@ -1439,33 +1462,69 @@
             });
             
             const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
-            const renderC = (name, s) => `<div class="glass-card p-2 sm:p-3 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[10px] sm:text-[11px] font-bold text-slate-300">${name}</p></div><p class="text-[8px] sm:text-[9px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const renderC = (name, s, index) => `
+                <div class="flex items-center justify-between p-3 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-black text-slate-500 w-4">${index + 1}.</span>
+                        <p class="text-[11px] font-bold text-slate-200">${name}</p>
+                    </div>
+                    <div class="text-right flex flex-col items-end">
+                        <p class="text-[11px] font-black ${Math.round((s.wins/s.total)*100) >= 50 ? 'text-green-400' : 'text-orange-400'}">${Math.round((s.wins/s.total)*100)}%</p>
+                        <p class="text-[9px] text-slate-500 italic mt-0.5">${s.total} Matches</p>
+                    </div>
+                </div>`;
             const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
-            if(bestEl) bestEl.innerHTML = sorted.slice(0, 10).map(([n,s]) => renderC(n,s)).join('');
-            if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 10).map(([n,s]) => renderC(n,s)).join('');
+            if(bestEl) bestEl.innerHTML = sorted.slice(0, 10).map((item, idx) => renderC(item[0], item[1], idx)).join('');
+            if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 10).map((item, idx) => renderC(item[0], item[1], idx)).join('');
             
             const sortedHeroes = []; 
             for(const h in heroStats) sortedHeroes.push([h, heroStats[h]]); 
             sortedHeroes.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
             
-            const renderH = (key, s) => `<div class="glass-card p-2 sm:p-3 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-orange-500 uppercase leading-none mb-1">${Math.round((s.wins/s.total)*100)}% WR</p><div class="flex items-center gap-1.5"><span class="${roles[s.role].color} text-[9px] sm:text-[10px]">${roles[s.role].icon}</span><p class="text-[10px] sm:text-[11px] font-bold text-slate-300 truncate max-w-[70px] sm:max-w-[90px]" title="${s.hero}">${s.hero}</p></div></div><div class="text-right"><p class="text-[8px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-widest">${s.player}</p><p class="text-[8px] sm:text-[9px] text-slate-500 italic mt-0.5">${s.total} Gms</p></div></div>`;
+            const renderH = (key, s, index) => `
+                <div class="flex items-center justify-between p-3 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-black text-slate-500 w-4">${index + 1}.</span>
+                        <div>
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="${roles[s.role].color} text-[10px]">${roles[s.role].icon}</span>
+                                <p class="text-[11px] font-bold text-slate-200 truncate max-w-[80px]" title="${s.hero}">${s.hero}</p>
+                            </div>
+                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-500">${s.player}</p>
+                        </div>
+                    </div>
+                    <div class="text-right flex flex-col items-end">
+                        <p class="text-[11px] font-black ${Math.round((s.wins/s.total)*100) >= 50 ? 'text-purple-400' : 'text-orange-400'}">${Math.round((s.wins/s.total)*100)}%</p>
+                        <p class="text-[9px] text-slate-500 italic mt-0.5">${s.total} Matches</p>
+                    </div>
+                </div>`;
             const topHeroesEl = document.getElementById('topHeroes');
-            if(topHeroesEl) topHeroesEl.innerHTML = sortedHeroes.slice(0, 10).map(([n,s]) => renderH(n,s)).join('');
+            if(topHeroesEl) topHeroesEl.innerHTML = sortedHeroes.slice(0, 10).map((item, idx) => renderH(item[0], item[1], idx)).join('');
             
             const sortedMaps = []; 
             for(const m in mapStats) sortedMaps.push([m, mapStats[m]]); 
             sortedMaps.sort((a,b) => b[1].total - a[1].total);
             
-            const renderM = (name, s) => `<div class="glass-card p-2 sm:p-3 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-blue-400 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[10px] sm:text-[11px] font-bold text-slate-300 truncate max-w-[100px]" title="${name}">${name}</p></div><p class="text-[8px] sm:text-[9px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const renderM = (name, s, index) => `
+                <div class="flex items-center justify-between p-3 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-black text-slate-500 w-4">${index + 1}.</span>
+                        <p class="text-[11px] font-bold text-slate-200 truncate max-w-[120px]" title="${name}">${name}</p>
+                    </div>
+                    <div class="text-right flex flex-col items-end">
+                        <p class="text-[11px] font-black ${Math.round((s.wins/s.total)*100) >= 50 ? 'text-blue-400' : 'text-orange-400'}">${Math.round((s.wins/s.total)*100)}%</p>
+                        <p class="text-[9px] text-slate-500 italic mt-0.5">${s.total} Matches</p>
+                    </div>
+                </div>`;
             const topMapsEl = document.getElementById('topMaps');
-            if(topMapsEl) topMapsEl.innerHTML = sortedMaps.slice(0, 10).map(([n,s]) => renderM(n,s)).join('');
+            if(topMapsEl) topMapsEl.innerHTML = sortedMaps.slice(0, 10).map((item, idx) => renderM(item[0], item[1], idx)).join('');
         }
 
         function updateStatsChart(wins, losses) {
             const ctx = document.getElementById('winLossChart'); if(!ctx) return;
             if(statsChart) statsChart.destroy();
             const hasData = wins > 0 || losses > 0;
-            statsChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: hasData ? [wins, losses] : [1], backgroundColor: hasData ? ['#22c55e', '#ef4444'] : ['#334155'], borderColor: 'rgba(255,255,255,0.05)', borderWidth: 4, cutout: '72%', borderRadius: 8 }] }, options: { plugins: { legend: { display: false } }, animation: { duration: 1200 } } });
+            statsChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: hasData ? [wins, losses] : [1], backgroundColor: hasData ? ['#22c55e', '#ef4444'] : ['#334155'], borderColor: 'transparent', borderWidth: 0, cutout: '78%', borderRadius: 10 }] }, options: { plugins: { legend: { display: false } }, animation: { duration: 1200 } } });
         }
 
         window.updatePlayerDashboards = function() {
@@ -1561,39 +1620,38 @@
                  return;
             }
 
-            list.innerHTML = filteredMatches.slice(0, 15).map(m => `
-                <div class="glass-card p-4 sm:p-5 border-slate-700 relative group animate-in flex flex-col gap-3">
-                    <button onclick="window.deleteMatch(${m.id})" class="absolute right-4 top-4 p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10">🗑️</button>
+            list.innerHTML = `<div class="glass-card flex flex-col border border-slate-700">` + filteredMatches.slice(0, 15).map(m => `
+                <div class="p-4 sm:p-5 border-b border-slate-700/50 hover:bg-white/[0.02] transition-colors relative group flex flex-col md:flex-row md:items-center justify-between gap-4 last:border-0">
+                    <button onclick="window.deleteMatch(${m.id})" class="absolute right-4 top-4 md:top-1/2 md:-translate-y-1/2 p-1.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10">🗑️</button>
                     
-                    <div class="flex justify-between items-center pr-8">
+                    <div class="flex flex-col gap-1.5">
                         <div class="flex items-center gap-3">
-                            <div class="text-[13px] sm:text-[14px] font-black uppercase italic ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result === 'Win' ? 'Victory' : 'Defeat'}</div>
-                            <div class="h-4 w-[1px] bg-slate-700"></div>
-                            <div class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest">S${m.season} · ${m.type} ${m.rank !== '-' ? '· ' + m.rank : ''}</div>
+                            <div class="text-[12px] sm:text-[13px] font-black uppercase italic ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result === 'Win' ? 'Victory' : 'Defeat'}</div>
+                            <div class="h-3 w-[2px] bg-slate-700"></div>
+                            <div class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest">S${m.season} · ${m.type}${m.rank && m.rank !== '-' ? ' · ' + m.rank : ''}</div>
                         </div>
-                        ${m.score ? `<div class="text-[9px] sm:text-[10px] font-black text-orange-400 bg-orange-500/10 px-2 py-1 rounded-lg border border-orange-500/20 shadow-sm">${m.score} Pkt</div>` : ''}
+                        <div class="text-[8px] sm:text-[9px] text-slate-500 font-bold uppercase tracking-widest flex flex-wrap items-center gap-2.5">
+                            <span class="flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ${m.date} <span class="opacity-50 ml-1">${m.time || ''}</span></span>
+                            <span class="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded text-slate-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${m.map && m.map !== 'Wähle Karte' ? m.map : 'Unbekannt'}</span>
+                            ${m.score ? `<span class="flex items-center gap-1.5 text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> ${m.score} Pkt</span>` : ''}
+                        </div>
                     </div>
                     
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap md:justify-end gap-1.5 w-full md:w-auto md:pr-12">
                         ${(m.players || []).map(p => {
                             let heroStr = '';
                             if(p.heroes && p.heroes.length > 0) heroStr = p.heroes.join(', ');
                             else if(p.hero && p.hero !== 'Held wählen') heroStr = p.hero;
                             
                             return `
-                            <div class="flex items-center gap-1.5 bg-[#0f172a] border border-slate-700 px-2.5 py-1.5 rounded-lg">
-                                <span class="text-[10px] ${roles[p.role].color}">${roles[p.role].icon}</span>
-                                <span class="text-[9px] sm:text-[10px] font-black text-slate-200 uppercase tracking-wide">${p.name}</span>
-                                ${heroStr ? `<span class="text-[8px] sm:text-[9px] text-slate-500 font-bold uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded ml-1">${heroStr}</span>` : ''}
+                            <div class="flex items-center gap-1.5 bg-[#0f172a] border border-slate-700/80 px-2 py-1 rounded-lg">
+                                <span class="text-[9px] ${roles[p.role].color}">${roles[p.role].icon}</span>
+                                <span class="text-[9px] font-black text-slate-200 uppercase tracking-wide">${p.name}</span>
+                                ${heroStr ? `<span class="text-[8px] text-slate-500 font-bold uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded ml-0.5">${heroStr}</span>` : ''}
                             </div>`;
                         }).join('')}
                     </div>
-                    
-                    <div class="flex items-center justify-between text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest pt-2 border-t border-slate-700/50">
-                        <span class="flex items-center gap-1.5">📅 ${m.date} <span class="opacity-50">${m.time || ''}</span></span>
-                        <span class="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-md text-slate-400">🗺️ ${m.map && m.map !== 'Wähle Karte' ? m.map : 'Unbekannt'}</span>
-                    </div>
-                </div>`).join('');
+                </div>`).join('') + `</div>`;
         }
 
         window.deleteMatch = function(id) { 
@@ -1606,6 +1664,7 @@
         // --- CHANGELOG LOGIC ---
         const changelogs = [
             // KI: Ab hier neue Versionen eintragen
+            { version: "1.33.00", date: "30.03.2026", changes: ["Komplettes Dashboard Redesign", "10er Listen Layout verbessert & Scrollbalken entfernt", "Match Historie als zentrierte Guss-Tabelle", "Prozentzahl direkt ins Kuchendiagramm verlagert", "Ticket/Changelog Overlay Filter Fix"] },
             { version: "1.32.00", date: "30.03.2026", changes: ["Neuer 'Changelogs' Tab hinzugefügt", "Automatische Pflege der Patch-Notes durch KI implementiert"] },
             { version: "1.31.00", date: "30.03.2026", changes: ["Verbessertes Match History UI", "Bessere Skalierung und Konturen bei Team-Setups", "Zentrierung der Sieges/Niederlage Anzeige"] },
             { version: "1.30.00", date: "30.03.2026", changes: ["Anime Punktevergabe auf Dropdowns umgestellt", "Auto-Reset der Anime-Formularelemente gefixt"] },
@@ -1656,7 +1715,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.32.00
+        v.1.33.00
     </div>
 </body>
 </html>
