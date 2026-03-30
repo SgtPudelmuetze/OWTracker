@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.23.00 - Fix History Filtering & Highlight Anime Legend -->
+<!-- Version: 1.24.00 - Exact Hero Name Matching (Stadion DPS Fix) -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -310,8 +310,8 @@
                     </div>
 
                     <!-- Unten: Fazit & Ergebnis -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                        <div class="md:col-span-2 space-y-2.5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-2">
+                        <div class="md:col-span-2 space-y-2">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
                             <textarea id="animeComment" rows="2" placeholder="Was hat dir gefallen? Was nicht?" class="w-full h-[calc(100%-24px)] min-h-[60px] bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
                         </div>
@@ -563,15 +563,15 @@
         };
 
         const heroesByRole = {
-            tank: ["D.Va", "Domina", "Doomfist", "Hazard", "Junker Queen", "Orisa", "Ramattra", "Reinhardt", "Roadhog", "Sigma", "Winston", "Wrecking Ball", "Zarya"].sort(),
-            dps: ["Anran", "Ashe", "Bastion", "Cassidy", "Echo", "Emre", "Freya", "Genji", "Hanzo", "Junkrat", "Mei", "Pharah", "Reaper", "Sojourn", "Soldier: 76", "Sombra", "Symmetra", "Torbjörn", "Tracer", "Vendetta", "Venture", "Widowmaker"].sort(),
-            support: ["Ana", "Baptiste", "Brigitte", "Cat", "Illari", "Juno", "Kiriko", "Lifeweaver", "Lúcio", "Mercy", "Mizuki", "Moira", "Wuyang", "Zenyatta"].sort()
+            tank: ["D.Va", "Domina", "Doomfist", "Harzard", "Junker Queen", "Orisa", "Ramattra", "Reinhardt", "Roadhog", "Sigma", "Winston", "Wrecking Ball", "Zarya"].sort(),
+            dps: ["Anran", "Ashe", "Bastion", "Cassidy", "Echo", "Emre", "Freya", "Genji", "Hanzo", "Junkrat", "Mei", "Pharah", "Reaper", "Sojourn", "Soldier:76", "Sombra", "Symmetra", "Torbjörn", "Tracer", "Vendetta", "Venture", "Widowmaker"].sort(),
+            support: ["Ana", "Baptiste", "Brigitte", "Cat", "Illari", "Juno", "Kiriko", "Lifeweaver", "Lucio", "Mercy", "Mizuki", "Moira", "Wuyang", "Zenyatta"].sort()
         };
 
         const stadiumHeroes = {
-            tank: ["D.Va", "Doomfist", "Hazard", "Junker Queen", "Orisa", "Reinhardt", "Sigma", "Winston", "Zarya"].sort(),
-            dps: ["Ashe", "Cassidy", "Freya", "Genji", "Junkrat", "Mei", "Pharah", "Reaper", "Soldier: 76", "Torbjörn", "Tracer", "Vendetta"].sort(),
-            support: ["Ana", "Brigitte", "Juno", "Kiriko", "Lúcio", "Mercy", "Moira", "Wuyang", "Zenyatta"].sort()
+            tank: ["D.Va", "Doomfist", "Harzard", "Junker Queen", "Orisa", "Reinhardt", "Sigma", "Winston", "Zarya"].sort(),
+            dps: ["Ashe", "Cassidy", "Freya", "Genji", "Junkrat", "Mei", "Pharah", "Reaper", "Soldier:76", "Torbjörn", "Tracer", "Vendetta"].sort(),
+            support: ["Ana", "Brigitte", "Juno", "Kiriko", "Lucio", "Mercy", "Moira", "Wuyang", "Zenyatta"].sort()
         };
 
         const mapsByType = {
@@ -648,9 +648,10 @@
             for(let i = 0; i < animeGenresList.length; i++) {
                 const g = animeGenresList[i];
                 const isActive = selectedAnimeGenres.indexOf(g) > -1;
-                const baseClass = "px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all cursor-pointer select-none";
+                const baseClass = "px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all cursor-pointer select-none flex items-center gap-1.5";
                 const activeClass = isActive ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/30" : "border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500 bg-[#0f172a]";
-                html += `<div onclick="window.toggleAnimeGenre('${g}')" class="${baseClass} ${activeClass}">${g}</div>`;
+                const checkIcon = isActive ? `<svg class="w-2.5 h-2.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/></svg>` : `<div class="w-2.5 h-2.5 border border-slate-500 rounded-sm"></div>`;
+                html += `<div onclick="window.toggleAnimeGenre('${g}')" class="${baseClass} ${activeClass}">${checkIcon}${g}</div>`;
             }
             container.innerHTML = html;
         }
@@ -917,7 +918,6 @@
             const selects = document.querySelectorAll('#matchPlayersList select');
             for(let i=0; i<selects.length; i++) if(selects[i].onchange && selects[i].onchange.toString().includes('updateHeroSelect')) window.updateHeroSelect(selects[i]);
             
-            // Also update the recent matches list to reflect current filter
             window.updateRecentMatches();
         }
 
@@ -1350,7 +1350,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.23.00
+        v.1.24.00
     </div>
 </body>
 </html>
