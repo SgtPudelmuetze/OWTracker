@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.10 - Import & Export Features -->
+<!-- Version: 1.11 - Season-Based Database Storage -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -519,14 +519,29 @@
             if (!db) return;
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), (snapshot) => {
                 setCloudStatus('Cloud Sync Active', 'success');
-                matches = snapshot.docs.map(d => d.data());
-                matches.sort((a, b) => (b.id || 0) - (a.id || 0));
+                
+                // Wir sammeln alte einzelne Matches und neue Season-Matches in einem Array
+                let loadedMatches = [];
+                snapshot.docs.forEach(d => {
+                    const data = d.data();
+                    if (data.matches && Array.isArray(data.matches)) {
+                        loadedMatches = loadedMatches.concat(data.matches);
+                    } else if (data.id) {
+                        // Legacy support für einzelne Matches, die noch in der DB liegen
+                        loadedMatches.push(data);
+                    }
+                });
+                
+                matches = loadedMatches.sort((a, b) => (b.id || 0) - (a.id || 0));
+                localStorage.setItem('ow_stats_v2', JSON.stringify(matches));
                 refreshCurrentPage();
             });
+            
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), (docSnap) => {
                 if (docSnap.exists()) playerRanks = docSnap.data();
                 if (!document.getElementById('page-players').classList.contains('hidden')) window.updatePlayerDashboards();
             });
+            
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), (snapshot) => {
                 tickets = snapshot.docs.map(d => d.data()).sort((a, b) => b.id - a.id);
                 if (!document.getElementById('page-tickets').classList.contains('hidden')) window.updateTicketsList();
@@ -577,22 +592,29 @@
                         matches = uniqueMatches.sort((a, b) => (b.id || 0) - (a.id || 0));
                         localStorage.setItem('ow_stats_v2', JSON.stringify(matches));
                         
-                        data.matches.forEach(m => {
-                            if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), m.id.toString()), m);
+                        // Sortieren nach Season für das neue Format
+                        const matchesBySeason = {};
+                        matches.forEach(m => {
+                            if(!matchesBySeason[m.season]) matchesBySeason[m.season] = [];
+                            matchesBySeason[m.season].push(m);
+                        });
+                        
+                        Object.keys(matchesBySeason).forEach(season => {
+                            if (currentUser && db) {
+                                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${season}`), { matches: matchesBySeason[season] });
+                            }
                         });
                         importCount++;
                     }
                     if(data.playerRanks) {
                         playerRanks = { ...playerRanks, ...data.playerRanks };
                         localStorage.setItem('ow_player_ranks', JSON.stringify(playerRanks));
-                        
                         if (currentUser && db) setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), playerRanks, { merge: true });
                         importCount++;
                     }
                     if(data.tickets && Array.isArray(data.tickets)) {
                         const mergedTickets = [...data.tickets, ...tickets];
                         tickets = Array.from(new Map(mergedTickets.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
-                        
                         data.tickets.forEach(t => {
                             if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), t.id.toString()), t);
                         });
@@ -600,7 +622,7 @@
                     }
                     
                     if (importCount > 0) {
-                        showBanner("Import erfolgreich! Daten geladen.", "success");
+                        showBanner("Import erfolgreich! Daten strukturiert geladen.", "success");
                         refreshCurrentPage();
                     } else {
                         showBanner("Keine passenden Daten gefunden.", "error");
@@ -801,12 +823,18 @@
                 date: new Date().toLocaleDateString('de-DE'), 
                 time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) 
             };
+            
             if (currentUser && db) {
-                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), match.id.toString()), match).then(() => {
+                // Lokales Update zur schnellen Anzeige
+                const newMatchesForSeason = matches.filter(m => m.season === match.season);
+                newMatchesForSeason.push(match);
+                newMatchesForSeason.sort((a, b) => b.id - a.id);
+
+                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${match.season}`), { matches: newMatchesForSeason }).then(() => {
                     showBanner("Match gespeichert!", "success");
                     if(matchScoreEl) matchScoreEl.value = ''; 
                     if(matchLeaverEl) matchLeaverEl.checked = false;
-                });
+                }).catch(e => showBanner("Cloud-Fehler", "error"));
             }
         }
 
@@ -972,7 +1000,26 @@
                 </div>`).join('');
         }
 
-        window.deleteMatch = function(id) { if (confirm("Match löschen?") && currentUser) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), id.toString())); }
+        window.deleteMatch = function(id) { 
+            if (!confirm("Match löschen?") || !currentUser) return; 
+            
+            const matchToDelete = matches.find(m => m.id === id);
+            if (!matchToDelete) return;
+            const targetSeason = matchToDelete.season;
+            
+            // Remove locally
+            matches = matches.filter(m => m.id !== id);
+            const seasonMatches = matches.filter(m => m.season === targetSeason);
+            
+            // Update the season document
+            setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${targetSeason}`), { matches: seasonMatches })
+            .then(() => {
+                showBanner("Gelöscht!", "success");
+                // Optional: delete old single document if it exists, to clean up
+                deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), id.toString())).catch(()=>{});
+            }); 
+        }
+        
         function showBanner(text, type) { const banner = document.createElement('div'); banner.className = `fixed bottom-12 left-1/2 -translate-x-1/2 px-10 py-5 rounded-[2.5rem] text-[11px] font-black z-[100] ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white border border-white/20 animate-in tracking-widest uppercase italic shadow-2xl`; banner.innerText = text; document.body.appendChild(banner); setTimeout(() => banner.remove(), 3500); }
         onAuthStateChanged(auth, (u) => { currentUser = u; if (u) setupCloudListeners(); });
         signInAnonymously(auth).catch(e => setCloudStatus('Auth Error', 'error'));
