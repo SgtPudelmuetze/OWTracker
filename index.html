@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.21.00 - Compact Anime Form, Collapsed Legend & Dynamic Scaling -->
+<!-- Version: 1.23.00 - Fix History Filtering & Highlight Anime Legend -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,9 +84,13 @@
             background-color: rgba(59, 130, 246, 0.05);
         }
 
+        /* Scrollbar Fixes */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
         .animate-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn {
@@ -156,7 +160,7 @@
             </div>
         </div>
 
-        <div class="flex gap-2 sm:gap-6 overflow-x-auto custom-scrollbar w-full md:w-auto pb-2 md:pb-0">
+        <div class="flex gap-2 sm:gap-6 overflow-x-auto hide-scroll w-full md:w-auto pb-1">
             <button onclick="window.showPage('dashboard')" id="nav-dashboard" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Dashboard</button>
             <button onclick="window.showPage('players')" id="nav-players" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Spieler</button>
             <button onclick="window.showPage('entry')" id="nav-entry" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Eintragen</button>
@@ -167,12 +171,12 @@
         </div>
     </nav>
 
-    <div id="filter-bar" class="max-w-[1500px] mx-auto px-4 sm:px-8 pt-6 flex flex-col md:flex-row flex-wrap justify-between items-start md:items-end border-b border-white/10 gap-4 pb-4 md:pb-0">
-        <div class="flex gap-4 sm:gap-10 overflow-x-auto w-full md:w-auto">
+    <div id="filter-bar" class="max-w-[1500px] mx-auto px-4 sm:px-8 pt-6 flex flex-col md:flex-row flex-wrap justify-between items-start md:items-end border-b border-white/10 gap-4 pb-2 md:pb-0">
+        <div class="flex gap-4 sm:gap-10 overflow-x-auto hide-scroll w-full md:w-auto pb-1">
             <button onclick="window.setSeason(21)" id="season-21" class="season-tab pb-2 md:pb-4 text-xs font-black uppercase tracking-[0.2em] active shrink-0">Season 21</button>
             <button onclick="window.setSeason(22)" id="season-22" class="season-tab pb-2 md:pb-4 text-xs font-black uppercase tracking-[0.2em] shrink-0">Season 22</button>
         </div>
-        <div class="flex gap-1 overflow-x-auto w-full md:w-auto">
+        <div class="flex gap-1 overflow-x-auto hide-scroll w-full md:w-auto pb-1">
             <button onclick="window.setViewMode('Alle')" id="viewModeAlle" class="dash-tab active shrink-0">Alle Modi</button>
             <button onclick="window.setViewMode('Rangliste')" id="viewModeRanked" class="dash-tab shrink-0">Rangliste</button>
             <button onclick="window.setViewMode('Stadion')" id="viewModeStadium" class="dash-tab shrink-0">Stadion</button>
@@ -271,18 +275,18 @@
                 <div class="space-y-6 border-t border-slate-700 pt-6 sm:pt-8">
                     <!-- Top Reihe: Titel, Bewerter, Genres -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="space-y-2">
+                        <div class="space-y-2 md:col-span-2">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Titel des Animes</label>
                             <input type="text" id="animeTitle" placeholder="z.B. Jujutsu Kaisen..." class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white focus:border-yellow-500 transition-colors">
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-2 md:col-span-1">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Bewerter</label>
                             <select id="animeReviewer" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white"></select>
                         </div>
                         <div class="space-y-2 md:col-span-3">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Genres (Mehrfachauswahl)</label>
                             <div id="animeGenreContainer" class="flex flex-wrap gap-2 bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl max-h-[140px] overflow-y-auto custom-scrollbar shadow-inner">
-                                <!-- JS Injected Buttons -->
+                                <!-- JS Injected Buttons (Checkboxes) -->
                             </div>
                         </div>
                     </div>
@@ -309,10 +313,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                         <div class="md:col-span-2 space-y-2.5">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
-                            <textarea id="animeComment" rows="2" placeholder="Was hat dir gefallen? Was nicht?" class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
+                            <textarea id="animeComment" rows="2" placeholder="Was hat dir gefallen? Was nicht?" class="w-full h-[calc(100%-24px)] min-h-[60px] bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
                         </div>
                         
-                        <div class="glass-card p-4 flex items-center justify-between border-slate-700 bg-black/20 h-full">
+                        <div class="glass-card p-4 flex items-center justify-between border-slate-700 bg-black/20 h-[80px] self-end">
                             <div>
                                 <p class="text-[9px] sm:text-[10px] text-slate-500 uppercase font-black tracking-[0.2em]">Kalkulierter Rang</p>
                                 <p class="text-xs text-slate-400 font-bold mt-1"><span id="animeTotalScore" class="text-white text-lg font-black">50</span>/100 Pkt.</p>
@@ -322,30 +326,33 @@
                     </div>
                 </div>
 
-                <button onclick="window.saveAnime()" class="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-[#0f172a] rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-95 text-xs sm:text-sm">
+                <button onclick="window.saveAnime()" class="w-full py-4 sm:py-5 bg-yellow-500 hover:bg-yellow-400 text-[#0f172a] rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-95 text-xs sm:text-sm">
                     Zum Archiv Hinzufügen
                 </button>
             </div>
 
-            <!-- Anime Legende Einklappbar -->
-            <div class="glass-card p-6 border-slate-700 flex flex-col gap-4">
-                <div class="flex items-center justify-between border-b border-slate-700 pb-3 cursor-pointer group" onclick="document.getElementById('animeLegendContent').classList.toggle('hidden')">
-                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400 group-hover:text-slate-300 transition-colors">📖 Legende: Ränge & Genres</h2>
-                    <span class="text-slate-500 text-[9px] uppercase font-bold tracking-widest bg-white/5 px-2 py-1 rounded">Auf/Zuklappen</span>
+            <!-- Anime Legende (Auffälliger & Einklappbar) -->
+            <div class="glass-card border-slate-700 overflow-hidden">
+                <div class="flex items-center justify-between cursor-pointer group bg-yellow-500/10 border-b border-yellow-500/30 p-4 sm:p-6 hover:bg-yellow-500/20 transition-all" onclick="document.getElementById('animeLegendContent').classList.toggle('hidden')">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl sm:text-2xl drop-shadow-md">📖</span>
+                        <h2 class="text-xs sm:text-sm font-black uppercase tracking-widest text-yellow-500">Legende: Ränge & Genres</h2>
+                    </div>
+                    <span class="text-yellow-900 bg-yellow-500 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[9px] sm:text-[10px] uppercase font-black tracking-widest shadow-lg shadow-yellow-500/20 group-hover:scale-105 transition-transform">Ein / Ausblenden</span>
                 </div>
                 
-                <div id="animeLegendContent" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                <div id="animeLegendContent" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 p-4 sm:p-6 bg-black/10">
                     <div class="md:col-span-1">
                         <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">IHK Punkte-Schlüssel</h3>
                         <div class="grid grid-cols-2 gap-1.5 text-[9px] font-bold text-center">
-                            <div class="bg-[#0f172a] rounded p-1 border border-yellow-500/30 text-yellow-500">S+ 98+</div>
-                            <div class="bg-[#0f172a] rounded p-1 border border-orange-500/30 text-orange-500">S 90+</div>
-                            <div class="bg-[#0f172a] rounded p-1 border border-green-500/30 text-green-500">A 80+</div>
-                            <div class="bg-[#0f172a] rounded p-1 border border-blue-500/30 text-blue-400">B 65+</div>
-                            <div class="bg-[#0f172a] rounded p-1 border border-indigo-500/30 text-indigo-400">C 50+</div>
-                            <div class="bg-[#0f172a] rounded p-1 border border-purple-500/30 text-purple-400">D 35+</div>
-                            <div class="bg-[#0f172a] rounded p-1 border border-pink-500/30 text-pink-400">E 20+</div>
-                            <div class="bg-[#0f172a] rounded p-1 border border-red-500/30 text-red-400">F &lt;20</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-yellow-500/30 text-yellow-500">S+ 98+</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-orange-500/30 text-orange-500">S 90+</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-green-500/30 text-green-500">A 80+</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-blue-500/30 text-blue-400">B 65+</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-indigo-500/30 text-indigo-400">C 50+</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-purple-500/30 text-purple-400">D 35+</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-pink-500/30 text-pink-400">E 20+</div>
+                            <div class="bg-[#0f172a] rounded p-1.5 border border-red-500/30 text-red-400">F &lt;20</div>
                         </div>
                     </div>
                     <div class="md:col-span-2">
@@ -353,27 +360,29 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-[9px] font-medium text-slate-300">
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Shōnen</strong> Aktion/Jungs</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Shōjo</strong> Romantik/Mädchen</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Seinen</strong> Reifer/Dark</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Josei</strong> Reifer/Frauen</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Action</strong> Kämpfe</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Abenteuer</strong> Reise</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Comedy</strong> Humor</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Seinen</strong> Reifer/Erwachsene</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Josei</strong> Frauen/Drama</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Action</strong> Kämpfe/Tempo</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Abenteuer</strong> Reise/Entdeckung</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Comedy</strong> Humor/Gags</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Drama</strong> Ernst/Konflikt</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Ecchi</strong> Leichte Erotik</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Fantasy</strong> Magie/Welten</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Harem</strong> Viele Verehrer</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Harem</strong> Viele Verehrer/innen</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Historisch</strong> Vergangenheit</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Horror</strong> Grusel</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Horror</strong> Grusel/Angst</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Isekai</strong> Andere Welt</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Mecha</strong> Riesenroboter</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Musik</strong> Idols/Bands</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Mystery</strong> Geheimnisse</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Psycho</strong> Mindgames</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Romance</strong> Liebe</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Psychological</strong> Mindgames/Psyche</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Romance</strong> Liebe/Paare</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Sci-Fi</strong> Zukunft/Tech</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Slice/Life</strong> Alltag</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Slice of Life</strong> Alltag/Realistisch</div>
                             <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Sports</strong> Wettkampf</div>
-                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Thriller</strong> Spannung</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Thriller</strong> Spannung/Gefahr</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">Supernatural</strong> Übernatürlich</div>
+                            <div class="bg-[#0f172a] px-2 py-1.5 rounded-lg border border-white/5"><strong class="text-white uppercase mr-1">School</strong> Schul-Setting</div>
                         </div>
                     </div>
                 </div>
@@ -381,7 +390,7 @@
             
             <!-- Compact List -->
             <div class="glass-card p-6 sm:p-8 flex flex-col border border-slate-700">
-                <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-3 mb-4 sm:mb-6 border-b border-slate-700" id="animeTabsContainer">
+                <div class="flex gap-2 overflow-x-auto hide-scroll pb-3 mb-4 sm:mb-6 border-b border-slate-700" id="animeTabsContainer">
                     <!-- JS injected Subtabs -->
                 </div>
 
@@ -585,7 +594,8 @@
             "Shōnen", "Shōjo", "Seinen", "Josei", 
             "Action", "Abenteuer", "Comedy", "Drama", "Ecchi", "Fantasy", "Harem", 
             "Historisch", "Horror", "Isekai", "Mecha", "Musik", "Mystery", 
-            "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Thriller"
+            "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Thriller",
+            "Supernatural", "School"
         ];
         let selectedAnimeGenres = [];
 
@@ -673,7 +683,7 @@
                 trigger.innerHTML = `<span class="truncate">${selectedOpt ? selectedOpt.text : ''}</span><span class="text-slate-500 text-[10px]">▼</span>`;
                 
                 const dropdown = document.createElement('div');
-                dropdown.className = 'absolute left-0 top-[calc(100%+8px)] w-full min-w-[12rem] bg-[#1e293b] border border-slate-700 rounded-2xl shadow-2xl opacity-0 invisible transition-all z-[100] max-h-64 overflow-y-auto custom-scrollbar';
+                dropdown.className = 'absolute left-0 top-[calc(100%+4px)] min-w-full w-max bg-[#1e293b] border border-slate-700 rounded-xl shadow-2xl opacity-0 invisible transition-all z-[100] max-h-60 overflow-y-auto custom-scrollbar';
                 if (select.classList.contains('text-right')) { dropdown.classList.replace('left-0', 'right-0'); }
                 
                 container.addEventListener('blur', () => { 
@@ -700,7 +710,7 @@
                     const child = children[i];
                     if (child.tagName === 'OPTGROUP') {
                         const groupLabel = document.createElement('div');
-                        groupLabel.className = 'px-5 py-2 text-[9px] font-black text-slate-500 uppercase bg-[#0f172a] sticky top-0 border-y border-slate-700';
+                        groupLabel.className = 'px-4 py-2 text-[9px] font-black text-slate-500 uppercase bg-[#0f172a] sticky top-0 border-y border-slate-700';
                         groupLabel.innerText = child.label; dropdown.appendChild(groupLabel);
                         const options = child.querySelectorAll('option');
                         for(let j = 0; j < options.length; j++) {
@@ -717,7 +727,7 @@
         
         function addOption(opt, dropdown, select, trigger) {
             const item = document.createElement('div');
-            item.className = 'px-5 py-3 text-xs text-slate-300 hover:bg-white/10 cursor-pointer transition-colors border-b border-slate-700 last:border-0';
+            item.className = 'px-4 py-2.5 text-[10px] sm:text-xs text-slate-300 hover:bg-white/10 cursor-pointer transition-colors border-b border-slate-700 last:border-0 whitespace-nowrap';
             if (opt.selected) item.classList.add('text-orange-400', 'font-bold');
             item.innerHTML = opt.text;
             item.addEventListener('mousedown', (e) => e.preventDefault());
@@ -906,6 +916,9 @@
             window.updateRankOptions(); window.updateMapOptions();
             const selects = document.querySelectorAll('#matchPlayersList select');
             for(let i=0; i<selects.length; i++) if(selects[i].onchange && selects[i].onchange.toString().includes('updateHeroSelect')) window.updateHeroSelect(selects[i]);
+            
+            // Also update the recent matches list to reflect current filter
+            window.updateRecentMatches();
         }
 
         window.updateRankOptions = function(skipInit = false) {
@@ -1191,6 +1204,13 @@
             listBody.innerHTML = html;
         }
 
+        window.toggleDetails = function(pName) {
+            const el = document.getElementById(`details-${pName}`), btn = document.getElementById(`btn-${pName}`);
+            if(!el || !btn) return;
+            if(el.classList.contains('open')) { el.classList.remove('open'); btn.innerText = "Details Anzeigen"; openPlayerDetails.delete(pName); }
+            else { el.classList.add('open'); btn.innerText = "Details Ausblenden"; openPlayerDetails.add(pName); }
+        }
+
         window.updateDashboard = function() {
             const filtered = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
             const total = filtered.length, wins = filtered.filter(m => m.result === 'Win').length, leavers = filtered.filter(m => m.leaver).length, losses = total - wins;
@@ -1202,7 +1222,7 @@
             const combos = {};
             filtered.forEach(m => { if (!m.players) return; for (let i = 0; i < m.players.length; i++) for (let j = i + 1; j < m.players.length; j++) { const key = [m.players[i].name, m.players[j].name].sort().join(' · '); if (!combos[key]) combos[key] = { wins: 0, total: 0 }; combos[key].total++; if (m.result === 'Win') combos[key].wins++; } });
             const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total));
-            const renderC = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[11px] sm:text-xs font-bold text-slate-300">${name}</p></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const renderC = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[11px] sm:text-xs font-bold text-slate-300">${name}</p></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
             const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
             if(bestEl) bestEl.innerHTML = sorted.slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
             if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
@@ -1215,21 +1235,6 @@
             statsChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: hasData ? [wins, losses] : [1], backgroundColor: hasData ? ['#22c55e', '#ef4444'] : ['#334155'], borderColor: 'rgba(255,255,255,0.05)', borderWidth: 4, cutout: '72%', borderRadius: 8 }] }, options: { plugins: { legend: { display: false } }, animation: { duration: 1200 } } });
         }
 
-        window.toggleDetails = function(pName) {
-            const el = document.getElementById(`details-${pName}`);
-            const btn = document.getElementById(`btn-${pName}`);
-            if(!el || !btn) return;
-            if(el.classList.contains('open')) { 
-                el.classList.remove('open'); 
-                btn.innerText = "Details Anzeigen"; 
-                openPlayerDetails.delete(pName); 
-            } else { 
-                el.classList.add('open'); 
-                btn.innerText = "Details Ausblenden"; 
-                openPlayerDetails.add(pName); 
-            }
-        }
-
         window.updatePlayerDashboards = function() {
             const grid = document.getElementById('playersGrid'); if(!grid) return; grid.innerHTML = "";
             const seasonMatches = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
@@ -1240,7 +1245,7 @@
                 
                 const createSelects = (cat) => ['tank', 'dps', 'support'].map(r => {
                     const val = ranks[`${r}_${cat}`] || '-'; const list = cat === 'ranked' ? ranksRanked : ranksStadium; const pref = cat === 'ranked' ? 'icon' : 'emoji';
-                    return `<div class="flex items-center justify-between mb-1.5 sm:mb-2 bg-[#0f172a] border border-slate-700 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5"><span class="text-[9px] sm:text-[10px] font-black flex items-center gap-1 sm:gap-1.5 text-slate-400 shrink-0 w-14 sm:w-16"><span class="${roles[r].color}">${roles[r].icon}</span> ${roles[r].name}</span><select onchange="window.savePlayerRank('${pName}', '${cat}', '${r}', this.value)" class="custom-select flex-1 bg-transparent text-[10px] sm:text-[11px] font-black text-orange-500 text-right"><option value="-">-</option>${list.map(rr => { let os = ''; for(let i=5; i>=1; i--) { const v = `${rr[pref]} ${rr.name} ${i}`; os += `<option value="${v}" ${val === v ? 'selected' : ''}>${v}</option>`; } return os; }).join('')}</select></div>`;
+                    return `<div class="flex items-center justify-between mb-1.5 sm:mb-2 bg-[#0f172a] border border-slate-700 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2"><span class="text-[10px] sm:text-xs font-black flex items-center gap-1.5 text-slate-400 shrink-0 w-16 sm:w-20"><span class="${roles[r].color}">${roles[r].icon}</span> ${roles[r].name}</span><select onchange="window.savePlayerRank('${pName}', '${cat}', '${r}', this.value)" class="custom-select flex-1 bg-transparent text-[10px] sm:text-xs font-black text-orange-500 text-right"><option value="-">-</option>${list.map(rr => { let os = ''; for(let i=5; i>=1; i--) { const v = `${rr[pref]} ${rr.name} ${i}`; os += `<option value="${v}" ${val === v ? 'selected' : ''}>${v}</option>`; } return os; }).join('')}</select></div>`;
                 }).join('');
                 
                 const div = document.createElement('div'); 
@@ -1268,9 +1273,15 @@
                                 <div class="text-[8px] sm:text-[9px] text-slate-500 uppercase font-black">${total > 0 ? total + ' Gms' : ''}</div>
                             </div>
                         </div>
-                        <div class="border border-slate-700 rounded-xl sm:rounded-2xl p-2 sm:p-3 grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6 bg-black/20">
-                            <div><div class="text-[8px] sm:text-[9px] text-slate-600 mb-1 sm:mb-2 font-black px-1">Ranked</div>${createSelects('ranked')}</div>
-                            <div><div class="text-[8px] sm:text-[9px] text-slate-600 mb-1 sm:mb-2 font-black px-1">Stadium</div>${createSelects('stadium')}</div>
+                        <div class="space-y-4 mb-6">
+                            <div class="border border-slate-700 rounded-xl p-3 sm:p-4 bg-black/20">
+                                <div class="text-[9px] sm:text-[10px] text-slate-500 mb-2 font-black uppercase tracking-widest flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Ranked</div>
+                                ${createSelects('ranked')}
+                            </div>
+                            <div class="border border-slate-700 rounded-xl p-3 sm:p-4 bg-black/20">
+                                <div class="text-[9px] sm:text-[10px] text-slate-500 mb-2 font-black uppercase tracking-widest flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-500"></span> Stadium</div>
+                                ${createSelects('stadium')}
+                            </div>
                         </div>
                         <button onclick="window.toggleDetails('${pName}')" id="btn-${pName}" class="w-full py-2 sm:py-3 bg-white/5 hover:bg-white/10 text-slate-400 text-[9px] sm:text-[10px] font-black uppercase rounded-lg sm:rounded-xl border border-slate-700">${isOpen ? 'Details Ausblenden' : 'Details Anzeigen'}</button>
                         <div id="details-${pName}" class="player-details space-y-4 sm:space-y-6 pt-4 sm:pt-6 ${isOpen ? 'open' : ''}">
@@ -1295,7 +1306,15 @@
 
         window.updateRecentMatches = function() {
             const list = document.getElementById('recentMatchesList'); if(!list) return;
-            list.innerHTML = matches.slice(0, 15).map(m => `
+            
+            const filteredMatches = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
+            
+            if (filteredMatches.length === 0) {
+                 list.innerHTML = '<div class="text-slate-500 text-xs font-bold uppercase tracking-widest text-center py-8">Keine Matches gefunden</div>';
+                 return;
+            }
+
+            list.innerHTML = filteredMatches.slice(0, 15).map(m => `
                 <div class="glass-card p-4 sm:p-6 space-y-3 sm:space-y-4 border-slate-700 relative group animate-in">
                     <button onclick="window.deleteMatch(${m.id})" class="absolute right-4 sm:right-5 top-4 sm:top-5 opacity-0 group-hover:opacity-100 text-red-500 transition-opacity">🗑️</button>
                     <div class="flex justify-between items-start">
@@ -1331,7 +1350,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.21.00
+        v.1.23.00
     </div>
 </body>
 </html>
