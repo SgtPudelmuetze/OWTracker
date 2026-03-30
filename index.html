@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.13.00 - Added Anime Tracking System -->
+<!-- Version: 1.17.00 - LeagueOfLosers Rebrand & Anime List DB Restructure -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OW2 & Anime Dashboard</title>
+    <title>LeagueOfLosers Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -135,6 +135,19 @@
         .rank-D { color: #c084fc; border-color: rgba(192, 132, 252, 0.3); background-color: rgba(192, 132, 252, 0.1); }
         .rank-E { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background-color: rgba(244, 114, 182, 0.1); }
         .rank-F { color: #f87171; border-color: rgba(248, 113, 113, 0.3); background-color: rgba(248, 113, 113, 0.1); }
+
+        /* Custom Number Input for Anime */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
+        }
+        input[type="number"] { -moz-appearance: textfield; }
+        
+        /* Subtabs Anime */
+        .anime-tab {
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -145,7 +158,7 @@
                 <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-105 transition-transform">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"></path></svg>
                 </div>
-                <h1 class="text-xl font-black tracking-tight uppercase italic text-white group-hover:text-orange-400 transition-colors">Team Stats</h1>
+                <h1 class="text-xl font-black tracking-tight uppercase italic text-white group-hover:text-orange-400 transition-colors">LeagueOfLosers</h1>
             </div>
             
             <div class="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full" id="cloudStatusContainer">
@@ -254,48 +267,142 @@
         </div>
 
         <!-- ANIMES -->
-        <div id="page-anime" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-8 animate-in">
-            <div class="md:col-span-2 glass-card p-10 space-y-8 h-fit">
+        <div id="page-anime" class="page hidden flex flex-col gap-8 animate-in">
+            <div class="glass-card p-10 space-y-8">
                 <div class="flex items-center gap-5">
                     <div class="w-14 h-14 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20 shadow-lg shadow-yellow-500/5">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-black italic uppercase tracking-tighter text-yellow-500">Anime Watchlist</h2>
-                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Bewertungen & Archiv</p>
+                        <h2 class="text-2xl font-black italic uppercase tracking-tighter text-yellow-500">Anime Fragebogen</h2>
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Detaillierte Rank Kalkulation (Max 100 Pkt)</p>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2.5">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Titel des Animes</label>
-                        <input type="text" id="animeTitle" placeholder="z.B. Jujutsu Kaisen, Solo Leveling..." class="w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white focus:border-yellow-500 transition-colors">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-slate-700 pt-8">
+                    <!-- Linke Spalte: Kategorien -->
+                    <div class="space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2.5 col-span-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Titel des Animes</label>
+                                <input type="text" id="animeTitle" placeholder="z.B. Jujutsu Kaisen..." class="w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5 col-span-2 md:col-span-1">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kategorie / Genre</label>
+                                <select id="animeGenre" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
+                                    <option value="Shonen">Shonen (Action/Fighting)</option>
+                                    <option value="Isekai">Isekai (Andere Welt)</option>
+                                    <option value="Seinen">Seinen (Erwachsen/Dark)</option>
+                                    <option value="Slice of Life">Slice of Life (Alltag)</option>
+                                    <option value="Romance">Romance (Liebe)</option>
+                                    <option value="Comedy">Comedy (Humor)</option>
+                                    <option value="Fantasy">Fantasy / Magic</option>
+                                    <option value="Sci-Fi / Mecha">Sci-Fi / Mecha</option>
+                                    <option value="Mystery / Thriller">Mystery / Thriller</option>
+                                    <option value="Sports">Sports</option>
+                                    <option value="Sonstiges">Sonstiges</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2.5 col-span-2 md:col-span-1">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Bewerter</label>
+                                <select id="animeReviewer" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
+                                    <!-- Optionen werden durch JS geladen -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Story & Plot <span>(1-10)</span></label>
+                                <input type="number" id="animeStory" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Animation & Art <span>(1-10)</span></label>
+                                <input type="number" id="animeAnim" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Cast & Charaktere <span>(1-10)</span></label>
+                                <input type="number" id="animeCast" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Charakter-Entw. <span>(1-10)</span></label>
+                                <input type="number" id="animeDev" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Worldbuilding <span>(1-10)</span></label>
+                                <input type="number" id="animeWorld" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Pacing (Tempo) <span>(1-10)</span></label>
+                                <input type="number" id="animePacing" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Soundtrack (OST) <span>(1-10)</span></label>
+                                <input type="number" id="animeSound" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Voice Acting <span>(1-10)</span></label>
+                                <input type="number" id="animeVoice" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5 col-span-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Emotionen & Impact <span>(1-10)</span></label>
+                                <input type="number" id="animeImpact" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-white focus:border-yellow-500 transition-colors">
+                            </div>
+                            <div class="space-y-2.5 col-span-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">Persönliches Enjoyment <span>(1-10)</span></label>
+                                <input type="number" id="animeEnjoy" min="1" max="10" value="5" oninput="window.calcAnimeRank()" class="w-full bg-gradient-to-r from-[#0f172a] to-[#1e293b] border border-yellow-500/30 p-3.5 rounded-xl outline-none text-sm font-bold text-center text-yellow-500 focus:border-yellow-500 transition-colors shadow-inner">
+                            </div>
+                        </div>
                     </div>
-                    <div class="space-y-2.5">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Deine Bewertung</label>
-                        <select id="animeRating" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
-                            <option value="S+">S+ (Meisterwerk - 10/10)</option>
-                            <option value="S">S (Überragend - 9/10)</option>
-                            <option value="A">A (Sehr Gut - 8/10)</option>
-                            <option value="B">B (Gut - 7/10)</option>
-                            <option value="C">C (Durchschnitt - 6/10)</option>
-                            <option value="D">D (Mäßig - 5/10)</option>
-                            <option value="E">E (Schlecht - 3-4/10)</option>
-                            <option value="F">F (Zeitverschwendung - 0-2/10)</option>
-                        </select>
+
+                    <!-- Rechte Spalte: Fazit & Ergebnis -->
+                    <div class="space-y-5 flex flex-col">
+                        <div class="flex-1 space-y-2.5 flex flex-col">
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
+                            <textarea id="animeComment" placeholder="Was hat dir gefallen? Was nicht?" class="w-full flex-1 bg-[#1e293b] border border-white/10 p-5 rounded-xl outline-none text-sm font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
+                        </div>
+                        
+                        <div class="glass-card p-5 flex items-center justify-between border-slate-700 bg-black/20 mt-auto">
+                            <div>
+                                <p class="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em]">Kalkulierter Rang</p>
+                                <p class="text-xs text-slate-400 font-bold mt-1"><span id="animeTotalScore" class="text-white text-lg font-black">50</span>/100 Punkte</p>
+                            </div>
+                            <span id="animeCalcRank" class="text-3xl font-black px-5 py-2 rounded-xl border rank-C shadow-lg">C</span>
+                        </div>
                     </div>
                 </div>
-                <div class="space-y-2.5">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
-                    <textarea id="animeComment" rows="3" placeholder="Was hat dir gefallen? Was nicht?" class="w-full bg-[#1e293b] border border-white/10 p-5 rounded-xl outline-none text-sm font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
-                </div>
-                <button onclick="window.saveAnime()" class="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-[#0f172a] rounded-xl font-black uppercase tracking-[0.2em] shadow-lg shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-95">
-                    Anime Speichern
+
+                <button onclick="window.saveAnime()" class="w-full py-5 bg-yellow-500 hover:bg-yellow-400 text-[#0f172a] rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-95">
+                    Zum Archiv Hinzufügen
                 </button>
             </div>
-            <div class="glass-card p-6 space-y-6 flex flex-col border border-slate-700">
-                <h2 class="text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Deine Liste</h2>
-                <div id="animesList" class="space-y-4 overflow-y-auto max-h-[600px] custom-scrollbar pr-2"></div>
+            
+            <!-- Compact List -->
+            <div class="glass-card p-8 flex flex-col border border-slate-700">
+                <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-3 mb-6 border-b border-slate-700" id="animeTabsContainer">
+                    <!-- JS injected Subtabs -->
+                </div>
+
+                <div class="flex items-center justify-between pb-4 mb-4">
+                    <h2 class="text-xs font-black uppercase tracking-[0.2em] italic text-slate-400" id="animeListTitle">Archiv</h2>
+                    <span class="text-[10px] font-bold text-slate-600 bg-white/5 px-3 py-1 rounded-full"><span id="animeCount">0</span> Titel</span>
+                </div>
+                
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="border-b border-slate-700 text-[10px] text-slate-500 uppercase tracking-widest">
+                                <th class="py-3 px-4 font-black">Titel & Details</th>
+                                <th class="py-3 px-4 text-center font-black w-24">Score</th>
+                                <th class="py-3 px-4 text-center font-black w-24">Rang</th>
+                                <th class="py-3 px-4 text-right font-black w-16" id="animeTableActionHead">Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="animesListBody">
+                            <!-- JS injected rows -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -435,6 +542,7 @@
         let matches = [], playerRanks = {}, tickets = [], animes = [];
         let openPlayerDetails = new Set(); 
         let currentSeason = 21, currentViewMode = 'Alle', currentMatchType = 'Rangliste', currentResult = 'Win';
+        let currentAnimeTab = 'Gesamt';
         
         const knownPlayers = ["Pudelmuetze", "Nora", "Philipp", "Simon", "Noobie", "Christoph"];
         const roles = {
@@ -473,6 +581,46 @@
 
         function setSafeText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
 
+        // Setup Anime Form
+        function initAnimeReviewer() {
+            const revSelect = document.getElementById('animeReviewer');
+            if(!revSelect) return;
+            revSelect.innerHTML = '';
+            for(let i=0; i<knownPlayers.length; i++) {
+                const o = document.createElement('option');
+                o.value = knownPlayers[i];
+                o.textContent = knownPlayers[i];
+                revSelect.appendChild(o);
+            }
+        }
+        
+        function initAnimeTabs() {
+            const container = document.getElementById('animeTabsContainer');
+            if(!container) return;
+            let html = `<button onclick="window.setAnimeTab('Gesamt')" id="tab-anime-Gesamt" class="anime-tab active px-4 py-2 text-xs font-black uppercase tracking-widest text-yellow-500 border-b-2 border-yellow-500 hover:text-yellow-400">Gesamt-Ranking</button>`;
+            for(let i=0; i<knownPlayers.length; i++) {
+                const p = knownPlayers[i];
+                html += `<button onclick="window.setAnimeTab('${p}')" id="tab-anime-${p}" class="anime-tab px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-500 border-b-2 border-transparent hover:text-slate-300">${p}</button>`;
+            }
+            container.innerHTML = html;
+        }
+
+        window.setAnimeTab = function(tabName) {
+            currentAnimeTab = tabName;
+            const tabs = document.querySelectorAll('.anime-tab');
+            for(let i=0; i<tabs.length; i++) {
+                tabs[i].classList.remove('active', 'text-yellow-500', 'border-yellow-500');
+                tabs[i].classList.add('text-slate-500', 'border-transparent');
+            }
+            const activeTab = document.getElementById('tab-anime-' + tabName);
+            if(activeTab) {
+                activeTab.classList.remove('text-slate-500', 'border-transparent');
+                activeTab.classList.add('active', 'text-yellow-500', 'border-yellow-500');
+            }
+            window.updateAnimeList();
+        }
+
+        // Helper: Custom Select
         function initCustomSelects() {
             const selects = document.querySelectorAll('select.custom-select');
             for(let s = 0; s < selects.length; s++) {
@@ -582,8 +730,16 @@
                 tickets = snapshot.docs.map(d => d.data()).sort((a, b) => b.id - a.id);
                 if (!document.getElementById('page-tickets').classList.contains('hidden')) window.updateTicketsList();
             });
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), (snapshot) => {
-                animes = snapshot.docs.map(d => d.data()).sort((a, b) => b.id - a.id);
+            // Neu: Anime Datenstrukturen aus anime_lists
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), (snapshot) => {
+                let loadedAnimes = [];
+                snapshot.docs.forEach(d => {
+                    const data = d.data();
+                    if (data.animes && Array.isArray(data.animes)) {
+                        loadedAnimes = loadedAnimes.concat(data.animes);
+                    }
+                });
+                animes = loadedAnimes.sort((a, b) => (b.id || 0) - (a.id || 0));
                 if (!document.getElementById('page-anime').classList.contains('hidden')) window.updateAnimeList();
             });
         }
@@ -612,9 +768,18 @@
             reader.onload = (e) => {
                 try {
                     const data = JSON.parse(e.target.result); let importCount = 0;
+                    
+                    const mergeLists = (oldList, newList) => {
+                        const map = {};
+                        for(let i=0; i<oldList.length; i++) map[oldList[i].id] = oldList[i];
+                        for(let i=0; i<newList.length; i++) map[newList[i].id] = newList[i];
+                        const result = [];
+                        for(const key in map) result.push(map[key]);
+                        return result.sort((a,b) => (b.id || 0) - (a.id || 0));
+                    };
+
                     if(data.matches && Array.isArray(data.matches)) {
-                        const mergedMatches = [...data.matches, ...matches];
-                        matches = Array.from(new Map(mergedMatches.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
+                        matches = mergeLists(matches, data.matches);
                         localStorage.setItem('ow_stats_v2', JSON.stringify(matches));
                         const mSeason = {}; matches.forEach(m => { if(!mSeason[m.season]) mSeason[m.season] = []; mSeason[m.season].push(m); });
                         Object.keys(mSeason).forEach(s => { if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${s}`), { matches: mSeason[s] }); });
@@ -626,13 +791,21 @@
                         importCount++;
                     }
                     if(data.tickets && Array.isArray(data.tickets)) {
-                        const mergedTickets = [...data.tickets, ...tickets]; tickets = Array.from(new Map(mergedTickets.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
+                        tickets = mergeLists(tickets, data.tickets);
                         data.tickets.forEach(t => { if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), t.id.toString()), t); });
                         importCount++;
                     }
                     if(data.animes && Array.isArray(data.animes)) {
-                        const mergedAnimes = [...data.animes, ...animes]; animes = Array.from(new Map(mergedAnimes.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
-                        data.animes.forEach(a => { if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), a.id.toString()), a); });
+                        animes = mergeLists(animes, data.animes);
+                        const aByRev = {};
+                        animes.forEach(a => {
+                            const rev = a.reviewer || 'Unbekannt';
+                            if(!aByRev[rev]) aByRev[rev] = [];
+                            aByRev[rev].push(a);
+                        });
+                        Object.keys(aByRev).forEach(rev => {
+                            if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), rev), { animes: aByRev[rev] });
+                        });
                         importCount++;
                     }
                     if (importCount > 0) { showBanner("Import erfolgreich! Daten strukturiert geladen.", "success"); refreshCurrentPage(); } else showBanner("Keine passenden Daten gefunden.", "error");
@@ -679,6 +852,8 @@
             } else {
                 if(filterBar) filterBar.classList.remove('hidden');
             }
+            
+            if(id === 'anime') window.calcAnimeRank(); // Initialberechnung 
             refreshCurrentPage();
         }
 
@@ -783,38 +958,177 @@
         }
 
         /* ANIME LOGIC */
+        function getAnimeRankFromScore(total) {
+            if(total >= 95) return 'S+';
+            if(total >= 85) return 'S';
+            if(total >= 75) return 'A';
+            if(total >= 60) return 'B';
+            if(total >= 45) return 'C';
+            if(total >= 30) return 'D';
+            if(total >= 15) return 'E';
+            return 'F';
+        }
+
+        window.calcAnimeRank = function() {
+            const getVal = (id) => {
+                const el = document.getElementById(id);
+                let val = parseInt(el ? el.value : 0) || 0;
+                if(val < 1) val = 1; if(val > 10) val = 10;
+                if(el) el.value = val; 
+                return val;
+            };
+            
+            const cats = ['animeStory', 'animeAnim', 'animeCast', 'animeDev', 'animeWorld', 'animePacing', 'animeSound', 'animeVoice', 'animeImpact', 'animeEnjoy'];
+            let total = 0;
+            for(let i=0; i<cats.length; i++) total += getVal(cats[i]);
+            
+            setSafeText('animeTotalScore', total);
+            const rank = getAnimeRankFromScore(total);
+            
+            const rankEl = document.getElementById('animeCalcRank');
+            if(rankEl) {
+                rankEl.innerText = rank;
+                const formatRating = (val) => val === 'S+' ? 'S-plus' : val;
+                rankEl.className = `text-3xl font-black px-5 py-2 rounded-xl border shadow-lg rank-${formatRating(rank)}`;
+            }
+            return { total, rank };
+        };
+
         window.saveAnime = function() {
             const title = document.getElementById('animeTitle').value.trim();
-            const rating = document.getElementById('animeRating').value;
+            const genre = document.getElementById('animeGenre').value;
+            const reviewer = document.getElementById('animeReviewer').value;
             const comment = document.getElementById('animeComment').value.trim();
             if(!title) { showBanner("Bitte einen Titel eingeben!", "error"); return; }
 
-            const anime = { id: Date.now(), title, rating, comment, date: new Date().toLocaleDateString('de-DE') };
+            const { total, rank } = window.calcAnimeRank();
+
+            const anime = { id: Date.now(), title, genre, reviewer, rating: rank, score: total, comment, date: new Date().toLocaleDateString('de-DE') };
+            
             if(currentUser && db) {
-                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), anime.id.toString()), anime).then(() => {
-                    showBanner("Anime bewertet!", "success");
+                const reviewerAnimes = animes.filter(a => a.reviewer === reviewer);
+                reviewerAnimes.push(anime);
+                reviewerAnimes.sort((a, b) => b.id - a.id);
+                
+                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), reviewer), { animes: reviewerAnimes }).then(() => {
+                    showBanner("Anime im Archiv gespeichert!", "success");
                     document.getElementById('animeTitle').value = '';
                     document.getElementById('animeComment').value = '';
+                    const cats = ['animeStory', 'animeAnim', 'animeCast', 'animeDev', 'animeWorld', 'animePacing', 'animeSound', 'animeVoice', 'animeImpact', 'animeEnjoy'];
+                    for(let i=0; i<cats.length; i++) {
+                        const el = document.getElementById(cats[i]);
+                        if(el) el.value = 5;
+                    }
+                    window.calcAnimeRank();
                 });
             }
         }
-        window.deleteAnime = function(id) { if(confirm("Anime löschen?") && currentUser && db) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), id.toString())); }
+        
+        window.deleteAnime = function(id) { 
+            if(confirm("Anime unwiderruflich löschen?") && currentUser && db) {
+                const animeToDelete = animes.find(a => a.id === id);
+                if(!animeToDelete) return;
+                const reviewer = animeToDelete.reviewer;
+                const newAnimes = animes.filter(a => a.reviewer === reviewer && a.id !== id);
+                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), reviewer), { animes: newAnimes });
+            }
+        }
+        
         window.updateAnimeList = function() {
-            const list = document.getElementById('animesList'); if(!list) return;
+            const listBody = document.getElementById('animesListBody'); 
+            const listTitle = document.getElementById('animeListTitle');
+            const actionHead = document.getElementById('animeTableActionHead');
+            if(!listBody) return;
             const formatRating = (val) => val === 'S+' ? 'S-plus' : val; 
-            list.innerHTML = animes.map(a => `
-                <div class="glass-card p-5 border-slate-700 flex flex-col relative group transition-all hover:border-slate-500">
-                    <button onclick="window.deleteAnime(${a.id})" class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 text-red-500 transition-opacity">🗑️</button>
-                    <div class="flex items-center justify-between mb-3 pr-6">
-                        <h3 class="text-lg font-black text-white italic truncate pr-2">${a.title}</h3>
-                        <span class="text-sm font-black px-3 py-1 rounded-xl border rank-${formatRating(a.rating)}">${a.rating}</span>
-                    </div>
-                    ${a.comment ? `<p class="text-xs text-slate-400 font-medium mb-3 italic break-words line-clamp-3">"${a.comment}"</p>` : ''}
-                    <div class="mt-auto pt-3 border-t border-slate-700 flex justify-between items-center text-[9px] text-slate-500 font-black uppercase tracking-widest">
-                        <span>Hinzugefügt am</span><span>${a.date}</span>
-                    </div>
-                </div>
-            `).join('');
+            
+            let html = '';
+            
+            if (currentAnimeTab === 'Gesamt') {
+                if(listTitle) listTitle.innerText = "Globale Tier-List";
+                if(actionHead) actionHead.innerText = "Infos";
+                
+                const agg = {};
+                for(let i=0; i<animes.length; i++) {
+                    const a = animes[i];
+                    const t = a.title.toLowerCase().trim();
+                    if(!agg[t]) agg[t] = { title: a.title, scoreSum: 0, count: 0, genres: {}, raters: {} };
+                    agg[t].scoreSum += a.score;
+                    agg[t].count++;
+                    if(a.genre) agg[t].genres[a.genre] = true;
+                    if(a.reviewer) agg[t].raters[a.reviewer] = true;
+                }
+                
+                const aggregatedList = [];
+                for(const key in agg) {
+                    const g = agg[key];
+                    const avgScore = Math.round(g.scoreSum / g.count);
+                    const rank = getAnimeRankFromScore(avgScore);
+                    
+                    const genreArray = []; for(const gen in g.genres) genreArray.push(gen);
+                    const raterArray = []; for(const r in g.raters) raterArray.push(r);
+                    
+                    aggregatedList.push({
+                        title: g.title, score: avgScore, rank: rank,
+                        genres: genreArray.join(', '),
+                        raters: raterArray.join(', '),
+                        count: g.count
+                    });
+                }
+                aggregatedList.sort((a, b) => b.score - a.score);
+                
+                setSafeText('animeCount', aggregatedList.length);
+                
+                html = aggregatedList.map((a, i) => `
+                    <tr class="border-b border-slate-700 hover:bg-white/[0.02] transition-colors">
+                        <td class="py-4 px-4 min-w-[200px]">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-black text-white italic tracking-tight"><span class="text-slate-500 mr-1">#${i+1}</span> ${a.title}</span>
+                                <span class="text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-0.5 rounded-full uppercase tracking-widest">${a.genres || 'Unbekannt'}</span>
+                            </div>
+                            <div class="text-[9px] text-slate-500 mt-2 font-bold uppercase tracking-widest">Gesehen von: ${a.raters}</div>
+                        </td>
+                        <td class="py-4 px-4 text-center align-middle">
+                            <span class="text-xs font-black text-slate-300 bg-black/20 px-2 py-1 rounded-md border border-slate-700">${a.score}/100 Ø</span>
+                        </td>
+                        <td class="py-4 px-4 text-center align-middle">
+                            <span class="text-xs font-black px-3 py-1.5 rounded-xl border rank-${formatRating(a.rank)}">${a.rank}</span>
+                        </td>
+                        <td class="py-4 px-4 text-right align-middle">
+                            <span class="text-[9px] font-black text-slate-500 bg-black/20 px-2 py-1 rounded-lg">${a.count} Votes</span>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } else {
+                if(listTitle) listTitle.innerText = `Archiv: ${currentAnimeTab}`;
+                if(actionHead) actionHead.innerText = "Aktion";
+                
+                const filtered = animes.filter(a => a.reviewer === currentAnimeTab);
+                setSafeText('animeCount', filtered.length);
+                
+                html = filtered.map(a => `
+                    <tr class="border-b border-slate-700 hover:bg-white/[0.02] transition-colors group">
+                        <td class="py-4 px-4 min-w-[200px]">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-black text-white italic tracking-tight">${a.title}</span>
+                                <span class="text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-0.5 rounded-full uppercase tracking-widest">${a.genre || 'Unbekannt'}</span>
+                            </div>
+                            ${a.comment ? `<div class="text-[10px] text-slate-400 mt-1.5 italic line-clamp-2 max-w-md">"${a.comment}"</div>` : ''}
+                            <div class="text-[9px] text-slate-600 mt-2 font-bold uppercase tracking-widest">${a.date}</div>
+                        </td>
+                        <td class="py-4 px-4 text-center align-middle">
+                            <span class="text-xs font-black text-slate-300 bg-black/20 px-2 py-1 rounded-md border border-slate-700">${a.score !== undefined ? a.score : '-'}/100</span>
+                        </td>
+                        <td class="py-4 px-4 text-center align-middle">
+                            <span class="text-xs font-black px-3 py-1.5 rounded-xl border rank-${formatRating(a.rating)}">${a.rating}</span>
+                        </td>
+                        <td class="py-4 px-4 text-right align-middle">
+                            <button onclick="window.deleteAnime(${a.id})" class="opacity-0 group-hover:opacity-100 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-all">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            listBody.innerHTML = html;
         }
 
         window.toggleDetails = function(pName) {
@@ -834,7 +1148,7 @@
             setSafeText('maxWinStreak', maxW); setSafeText('maxLossStreak', maxL);
             const combos = {};
             filtered.forEach(m => { if (!m.players) return; for (let i = 0; i < m.players.length; i++) for (let j = i + 1; j < m.players.length; j++) { const key = [m.players[i].name, m.players[j].name].sort().join(' · '); if (!combos[key]) combos[key] = { wins: 0, total: 0 }; combos[key].total++; if (m.result === 'Win') combos[key].wins++; } });
-            const sorted = Object.entries(combos).sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total));
+            const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total));
             const renderC = (name, s) => `<div class="glass-card p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-xs font-bold text-slate-300">${name}</p></div><p class="text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
             const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
             if(bestEl) bestEl.innerHTML = sorted.slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
@@ -861,7 +1175,7 @@
                 }).join('');
                 let roleStats = { tank: {w:0, t:0}, dps: {w:0, t:0}, support: {w:0, t:0} }, heroStats = {};
                 pMatches.forEach(m => { let p = m.players.find(x => x.name === pName); if(p && roleStats[p.role]) { roleStats[p.role].t++; if(m.result === 'Win') roleStats[p.role].w++; if(p.hero && p.hero !== "Held wählen" && p.hero !== "") { if(!heroStats[p.hero]) heroStats[p.hero] = {w:0, t:0}; heroStats[p.hero].t++; if(m.result === 'Win') heroStats[p.hero].w++; } } });
-                const validH = Object.entries(heroStats).sort((a,b) => (b[1].w/b[1].t) - (a[1].w/a[1].t));
+                const validH = []; for(const h in heroStats) validH.push([h, heroStats[h]]); validH.sort((a,b) => (b[1].w/b[1].t) - (a[1].w/a[1].t));
                 const topHero = validH[0], flopHero = [...validH].reverse()[0], isOpen = openPlayerDetails.has(pName);
                 const winRateString = total > 0 ? Math.round((wins/total)*100) + '%' : '';
                 const div = document.createElement('div'); div.className = "glass-card p-6 border-slate-700";
@@ -924,11 +1238,18 @@
         function showBanner(text, type) { const banner = document.createElement('div'); banner.className = `fixed bottom-12 left-1/2 -translate-x-1/2 px-10 py-5 rounded-[2.5rem] text-[11px] font-black z-[100] ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white border border-white/20 animate-in tracking-widest uppercase italic shadow-2xl`; banner.innerText = text; document.body.appendChild(banner); setTimeout(() => banner.remove(), 3500); }
         onAuthStateChanged(auth, (u) => { currentUser = u; if (u) setupCloudListeners(); });
         signInAnonymously(auth).catch(e => setCloudStatus('Auth Error', 'error'));
-        window.showPage('dashboard'); window.updateRankOptions(true); window.updateMapOptions(true); window.addPlayerToMatch();
+        
+        // Init logic
+        initAnimeReviewer();
+        initAnimeTabs();
+        window.showPage('dashboard'); 
+        window.updateRankOptions(true); 
+        window.updateMapOptions(true); 
+        window.addPlayerToMatch();
     </script>
 
     <div class="fixed bottom-4 right-6 text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-3 py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.13.00
+        v.1.17.00
     </div>
 </body>
 </html>
