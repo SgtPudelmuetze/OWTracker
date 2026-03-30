@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.28.00 - Fix Anime Scoring, Tooltips added, Full Words, Alpha-Sort Genres & Table Scaling -->
+<!-- Version: 1.30.00 - Anime Rating Dropdowns & Reset Fix -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -238,31 +238,31 @@
                 </div>
             </div>
 
-            <!-- New Grid: 4 Columns including Top Maps -->
+            <!-- New Grid: 4 Columns including Top Maps & Top 10 lists -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-4">
                 <div>
                     <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> Top Helden
+                        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> Top 10 Helden
                     </h3>
-                    <div id="topHeroes" class="space-y-3 sm:space-y-4"></div>
+                    <div id="topHeroes" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
                 </div>
                 <div>
                     <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Top Maps
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Top 10 Maps
                     </h3>
-                    <div id="topMaps" class="space-y-3 sm:space-y-4"></div>
+                    <div id="topMaps" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
                 </div>
                 <div>
                     <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span> Best Teams
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span> Top 10 Teams
                     </h3>
-                    <div id="bestCombos" class="space-y-3 sm:space-y-4"></div>
+                    <div id="bestCombos" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
                 </div>
                 <div>
                     <h3 class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 tracking-[0.3em] mb-4 flex items-center gap-3">
-                        <span class="w-2 h-2 bg-red-500 rounded-full"></span> Hard Matches
+                        <span class="w-2 h-2 bg-red-500 rounded-full"></span> Hard Matches (Top 10)
                     </h3>
-                    <div id="worstCombos" class="space-y-3 sm:space-y-4"></div>
+                    <div id="worstCombos" class="space-y-2 sm:space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
                 </div>
             </div>
         </div>
@@ -313,70 +313,70 @@
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Story & Plot</span>
                                     <div title="Wie fesselnd, logisch und tiefgründig die Handlung ist." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animeStory" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeStory" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Animation</span>
                                     <div title="Qualität der Zeichnungen, flüssige Bewegungen und Effekte." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animeAnim" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeAnim" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Charaktere</span>
                                     <div title="Wie sympathisch, interessant und relevant der Cast ist." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animeCast" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeCast" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 truncate">Charakterentwicklung</span>
                                     <div title="Wachstum und Reifung der Figuren im Verlauf der Serie." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic shrink-0">i</div>
                                 </div>
-                                <input type="number" id="animeDev" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeDev" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Worldbuilding</span>
                                     <div title="Wie detailliert und faszinierend die Anime-Welt gestaltet ist." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animeWorld" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeWorld" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Erzähltempo</span>
                                     <div title="Das Pacing der Serie – weder zu gehetzt noch zu gestreckt." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animePacing" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animePacing" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Soundtrack</span>
                                     <div title="Qualität von Hintergrundmusik, Openings und Endings." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animeSound" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeSound" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Synchronisation</span>
                                     <div title="Leistung der Synchronsprecher (Seiyū) und emotionale Tiefe." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animeVoice" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeVoice" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 truncate">Emotionale Wirkung</span>
                                     <div title="Wie stark dich der Anime emotional berührt und mitreißt." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic shrink-0">i</div>
                                 </div>
-                                <input type="number" id="animeImpact" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-white focus:outline-none">
+                                <select id="animeImpact" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                             <div class="flex items-center justify-between bg-gradient-to-r from-[#0f172a] to-[#1e293b] border border-yellow-500/30 p-2.5 rounded-lg">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-black text-yellow-500 uppercase tracking-widest ml-1">Spaßfaktor</span>
                                     <div title="Dein persönliches Enjoyment, unabhängig von objektiven Kriterien." class="cursor-help w-3 h-3 flex items-center justify-center bg-yellow-500/20 hover:bg-yellow-500/40 text-yellow-500 text-[8px] rounded-full transition-colors font-serif italic">i</div>
                                 </div>
-                                <input type="number" id="animeEnjoy" min="1" max="10" value="5" oninput="window.calcAnimeRank()" onblur="window.enforceBounds(this)" class="w-10 bg-transparent text-sm font-bold text-right text-yellow-500 focus:outline-none">
+                                <select id="animeEnjoy" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-yellow-500"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
                             </div>
                         </div>
                     </div>
@@ -1181,13 +1181,6 @@
             return { total, rank };
         };
 
-        window.enforceBounds = function(el) {
-            let val = parseInt(el.value);
-            if (isNaN(val) || val < 1) el.value = 1;
-            if (val > 10) el.value = 10;
-            window.calcAnimeRank();
-        };
-
         window.saveAnime = function() {
             const title = document.getElementById('animeTitle').value.trim();
             const reviewer = document.getElementById('animeReviewer').value;
@@ -1223,7 +1216,25 @@
                     const cats = ['animeStory', 'animeAnim', 'animeCast', 'animeDev', 'animeWorld', 'animePacing', 'animeSound', 'animeVoice', 'animeImpact', 'animeEnjoy'];
                     for(let i=0; i<cats.length; i++) {
                         const el = document.getElementById(cats[i]);
-                        if(el) el.value = 5;
+                        if(el) {
+                            el.value = '5';
+                            // Reset Custom Select UI programmatically
+                            const container = el.nextElementSibling;
+                            if(container && container.classList.contains('custom-select-container')) {
+                                const span = container.querySelector('.truncate');
+                                if(span) span.innerText = '5';
+                                const opts = container.querySelectorAll('.cursor-pointer');
+                                for(let j=0; j<opts.length; j++) {
+                                    if(opts[j].innerText === '5') {
+                                        opts[j].classList.add('text-orange-400', 'font-bold');
+                                        if(opts[j].querySelector('span.text-orange-500')) opts[j].querySelector('span.text-orange-500').style.display = 'inline';
+                                    } else {
+                                        opts[j].classList.remove('text-orange-400', 'font-bold');
+                                        if(opts[j].querySelector('span.text-orange-500')) opts[j].querySelector('span.text-orange-500').style.display = 'none';
+                                    }
+                                }
+                            }
+                        }
                     }
                     window.calcAnimeRank();
                 });
@@ -1391,9 +1402,10 @@
                     for(let h=0; h<hList.length; h++) {
                         const hName = hList[h];
                         if (hName && hName !== "Held wählen" && hName !== "") {
-                            if (!heroStats[hName]) heroStats[hName] = { wins: 0, total: 0, role: p.role };
-                            heroStats[hName].total++;
-                            if (m.result === 'Win') heroStats[hName].wins++;
+                            const hKey = hName + '|' + p.name;
+                            if (!heroStats[hKey]) heroStats[hKey] = { wins: 0, total: 0, role: p.role, hero: hName, player: p.name };
+                            heroStats[hKey].total++;
+                            if (m.result === 'Win') heroStats[hKey].wins++;
                         }
                     }
                     for (let j = i + 1; j < m.players.length; j++) { 
@@ -1406,26 +1418,26 @@
             });
             
             const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
-            const renderC = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[11px] sm:text-xs font-bold text-slate-300">${name}</p></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const renderC = (name, s) => `<div class="glass-card p-2 sm:p-3 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[10px] sm:text-[11px] font-bold text-slate-300">${name}</p></div><p class="text-[8px] sm:text-[9px] text-slate-500 italic">${s.total} Gms</p></div>`;
             const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
-            if(bestEl) bestEl.innerHTML = sorted.slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
-            if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
+            if(bestEl) bestEl.innerHTML = sorted.slice(0, 10).map(([n,s]) => renderC(n,s)).join('');
+            if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 10).map(([n,s]) => renderC(n,s)).join('');
             
             const sortedHeroes = []; 
             for(const h in heroStats) sortedHeroes.push([h, heroStats[h]]); 
             sortedHeroes.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
             
-            const renderH = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><div class="flex items-center gap-1.5"><span class="${roles[s.role].color} text-[10px]">${roles[s.role].icon}</span><p class="text-[11px] sm:text-xs font-bold text-slate-300">${name}</p></div></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const renderH = (key, s) => `<div class="glass-card p-2 sm:p-3 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-orange-500 uppercase leading-none mb-1">${Math.round((s.wins/s.total)*100)}% WR</p><div class="flex items-center gap-1.5"><span class="${roles[s.role].color} text-[9px] sm:text-[10px]">${roles[s.role].icon}</span><p class="text-[10px] sm:text-[11px] font-bold text-slate-300 truncate max-w-[70px] sm:max-w-[90px]" title="${s.hero}">${s.hero}</p></div></div><div class="text-right"><p class="text-[8px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-widest">${s.player}</p><p class="text-[8px] sm:text-[9px] text-slate-500 italic mt-0.5">${s.total} Gms</p></div></div>`;
             const topHeroesEl = document.getElementById('topHeroes');
-            if(topHeroesEl) topHeroesEl.innerHTML = sortedHeroes.slice(0, 3).map(([n,s]) => renderH(n,s)).join('');
+            if(topHeroesEl) topHeroesEl.innerHTML = sortedHeroes.slice(0, 10).map(([n,s]) => renderH(n,s)).join('');
             
             const sortedMaps = []; 
             for(const m in mapStats) sortedMaps.push([m, mapStats[m]]); 
             sortedMaps.sort((a,b) => b[1].total - a[1].total);
             
-            const renderM = (name, s) => `<div class="glass-card p-3 sm:p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-blue-400 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[11px] sm:text-xs font-bold text-slate-300 truncate max-w-[100px]" title="${name}">${name}</p></div><p class="text-[9px] sm:text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
+            const renderM = (name, s) => `<div class="glass-card p-2 sm:p-3 flex justify-between items-center border-slate-700"><div><p class="text-[10px] sm:text-[11px] font-black text-blue-400 uppercase leading-none mb-1 sm:mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-[10px] sm:text-[11px] font-bold text-slate-300 truncate max-w-[100px]" title="${name}">${name}</p></div><p class="text-[8px] sm:text-[9px] text-slate-500 italic">${s.total} Gms</p></div>`;
             const topMapsEl = document.getElementById('topMaps');
-            if(topMapsEl) topMapsEl.innerHTML = sortedMaps.slice(0, 3).map(([n,s]) => renderM(n,s)).join('');
+            if(topMapsEl) topMapsEl.innerHTML = sortedMaps.slice(0, 10).map(([n,s]) => renderM(n,s)).join('');
         }
 
         function updateStatsChart(wins, losses) {
@@ -1570,7 +1582,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.28.00
+        v.1.30.00
     </div>
 </body>
 </html>
