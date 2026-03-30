@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.11 - Season-Based Database Storage -->
+<!-- Version: 1.13.00 - Added Anime Tracking System -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OW2 Team Dashboard</title>
+    <title>OW2 & Anime Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -109,9 +109,6 @@
             opacity: 1;
         }
 
-        .ticket-card {
-            border: 1px solid var(--card-border);
-        }
         .ticket-open { border-left: 4px solid #3b82f6 !important; }
         .ticket-closed { border-left: 4px solid #10b981 !important; opacity: 0.75; }
         .ticket-bug { border-left: 4px solid #ef4444 !important; }
@@ -128,6 +125,16 @@
         .divider-dark {
             border-color: var(--divider);
         }
+
+        /* Anime Ratings Colors */
+        .rank-S-plus { color: #facc15; border-color: rgba(250, 204, 21, 0.3); background-color: rgba(250, 204, 21, 0.1); }
+        .rank-S { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); background-color: rgba(251, 146, 60, 0.1); }
+        .rank-A { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background-color: rgba(74, 222, 128, 0.1); }
+        .rank-B { color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background-color: rgba(96, 165, 250, 0.1); }
+        .rank-C { color: #818cf8; border-color: rgba(129, 140, 248, 0.3); background-color: rgba(129, 140, 248, 0.1); }
+        .rank-D { color: #c084fc; border-color: rgba(192, 132, 252, 0.3); background-color: rgba(192, 132, 252, 0.1); }
+        .rank-E { color: #f472b6; border-color: rgba(244, 114, 182, 0.3); background-color: rgba(244, 114, 182, 0.1); }
+        .rank-F { color: #f87171; border-color: rgba(248, 113, 113, 0.3); background-color: rgba(248, 113, 113, 0.1); }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -135,10 +142,10 @@
     <nav class="border-b border-white/10 py-4 px-8 sticky top-0 bg-[#0f172a]/95 backdrop-blur-2xl z-40 flex items-center justify-between">
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="window.showPage('dashboard')">
-                <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-105 transition-transform">
+                <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-105 transition-transform">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"></path></svg>
                 </div>
-                <h1 class="text-xl font-black tracking-tight uppercase italic">Team Stats</h1>
+                <h1 class="text-xl font-black tracking-tight uppercase italic text-white group-hover:text-orange-400 transition-colors">Team Stats</h1>
             </div>
             
             <div class="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full" id="cloudStatusContainer">
@@ -147,17 +154,18 @@
             </div>
         </div>
 
-        <div class="flex gap-4 md:gap-10">
-            <button onclick="window.showPage('dashboard')" id="nav-dashboard" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1">Dashboard</button>
-            <button onclick="window.showPage('players')" id="nav-players" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1">Spieler</button>
-            <button onclick="window.showPage('entry')" id="nav-entry" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1">Eintragen</button>
-            <button onclick="window.showPage('tickets')" id="nav-tickets" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 flex items-center gap-2">
+        <div class="flex gap-4 md:gap-8 overflow-x-auto custom-scrollbar">
+            <button onclick="window.showPage('dashboard')" id="nav-dashboard" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Dashboard</button>
+            <button onclick="window.showPage('players')" id="nav-players" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Spieler</button>
+            <button onclick="window.showPage('entry')" id="nav-entry" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Eintragen</button>
+            <button onclick="window.showPage('anime')" id="nav-anime" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0 text-yellow-500/80 hover:text-yellow-400">Animes</button>
+            <button onclick="window.showPage('tickets')" id="nav-tickets" class="nav-link text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 flex items-center gap-2 shrink-0">
                 <span class="w-2 h-2 bg-red-500 rounded-full hidden shadow-[0_0_8px_rgba(239,68,68,0.6)]" id="ticketAlert"></span> Tickets
             </button>
         </div>
     </nav>
 
-    <div class="max-w-[1500px] mx-auto px-8 pt-6 flex flex-wrap justify-between items-end border-b border-white/10 gap-4">
+    <div id="filter-bar" class="max-w-[1500px] mx-auto px-8 pt-6 flex flex-wrap justify-between items-end border-b border-white/10 gap-4">
         <div class="flex gap-10">
             <button onclick="window.setSeason(21)" id="season-21" class="season-tab pb-4 text-xs font-black uppercase tracking-[0.2em] active">Season 21</button>
             <button onclick="window.setSeason(22)" id="season-22" class="season-tab pb-4 text-xs font-black uppercase tracking-[0.2em]">Season 22</button>
@@ -243,6 +251,52 @@
         <!-- PLAYERS -->
         <div id="page-players" class="page hidden animate-in">
              <div id="playersGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-8"></div>
+        </div>
+
+        <!-- ANIMES -->
+        <div id="page-anime" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-8 animate-in">
+            <div class="md:col-span-2 glass-card p-10 space-y-8 h-fit">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20 shadow-lg shadow-yellow-500/5">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-black italic uppercase tracking-tighter text-yellow-500">Anime Watchlist</h2>
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Bewertungen & Archiv</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2.5">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Titel des Animes</label>
+                        <input type="text" id="animeTitle" placeholder="z.B. Jujutsu Kaisen, Solo Leveling..." class="w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white focus:border-yellow-500 transition-colors">
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Deine Bewertung</label>
+                        <select id="animeRating" class="custom-select w-full bg-[#1e293b] border border-white/10 p-4 rounded-xl outline-none text-sm font-bold text-white">
+                            <option value="S+">S+ (Meisterwerk - 10/10)</option>
+                            <option value="S">S (Überragend - 9/10)</option>
+                            <option value="A">A (Sehr Gut - 8/10)</option>
+                            <option value="B">B (Gut - 7/10)</option>
+                            <option value="C">C (Durchschnitt - 6/10)</option>
+                            <option value="D">D (Mäßig - 5/10)</option>
+                            <option value="E">E (Schlecht - 3-4/10)</option>
+                            <option value="F">F (Zeitverschwendung - 0-2/10)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="space-y-2.5">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
+                    <textarea id="animeComment" rows="3" placeholder="Was hat dir gefallen? Was nicht?" class="w-full bg-[#1e293b] border border-white/10 p-5 rounded-xl outline-none text-sm font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
+                </div>
+                <button onclick="window.saveAnime()" class="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-[#0f172a] rounded-xl font-black uppercase tracking-[0.2em] shadow-lg shadow-yellow-500/20 transition-all hover:scale-[1.01] active:scale-95">
+                    Anime Speichern
+                </button>
+            </div>
+            <div class="glass-card p-6 space-y-6 flex flex-col border border-slate-700">
+                <h2 class="text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Deine Liste</h2>
+                <div id="animesList" class="space-y-4 overflow-y-auto max-h-[600px] custom-scrollbar pr-2"></div>
+            </div>
         </div>
 
         <!-- TICKETS -->
@@ -378,7 +432,7 @@
             db = getFirestore(app);
         } catch(e) { console.warn(e); }
 
-        let matches = [], playerRanks = {}, tickets = [];
+        let matches = [], playerRanks = {}, tickets = [], animes = [];
         let openPlayerDetails = new Set(); 
         let currentSeason = 21, currentViewMode = 'Alle', currentMatchType = 'Rangliste', currentResult = 'Win';
         
@@ -417,13 +471,8 @@
         const ranksRanked = [{ name: "Bronze", icon: "🥉" }, { name: "Silver", icon: "🥈" }, { name: "Gold", icon: "🥇" }, { name: "Platinum", icon: "💠" }, { name: "Diamond", icon: "💎" }, { name: "Master", icon: "🔱" }, { name: "Grandmaster", icon: "⚛️" }, { name: "Champion", icon: "🌌" }];
         const ranksStadium = [{ name: "Rookie", emoji: "🥉" }, { name: "Novice", emoji: "🥈" }, { name: "Contender", emoji: "🛡️" }, { name: "Elite", emoji: "💎" }, { name: "Pro", emoji: "🏆" }, { name: "All-Star", emoji: "⚡" }, { name: "Legend", emoji: "👑" }];
 
-        // Helper: Safe innerText
-        function setSafeText(id, text) {
-            const el = document.getElementById(id);
-            if (el) el.innerText = text;
-        }
+        function setSafeText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
 
-        // Helper: Custom Select
         function initCustomSelects() {
             const selects = document.querySelectorAll('select.custom-select');
             for(let s = 0; s < selects.length; s++) {
@@ -479,9 +528,7 @@
                         addOption(child, dropdown, select, trigger);
                     }
                 }
-                
-                container.appendChild(trigger); 
-                container.appendChild(dropdown);
+                container.appendChild(trigger); container.appendChild(dropdown);
                 select.parentNode.insertBefore(container, select.nextSibling);
             }
         }
@@ -498,9 +545,7 @@
                 dropdown.classList.remove('opacity-100', 'visible');
                 dropdown.classList.add('opacity-0', 'invisible');
                 const divItems = dropdown.querySelectorAll('div');
-                for(let d = 0; d < divItems.length; d++) {
-                    divItems[d].classList.remove('text-orange-400', 'font-bold');
-                }
+                for(let d = 0; d < divItems.length; d++) divItems[d].classList.remove('text-orange-400', 'font-bold');
                 item.classList.add('text-orange-400', 'font-bold');
                 select.dispatchEvent(new Event('change', { bubbles: true }));
             });
@@ -519,121 +564,81 @@
             if (!db) return;
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), (snapshot) => {
                 setCloudStatus('Cloud Sync Active', 'success');
-                
-                // Wir sammeln alte einzelne Matches und neue Season-Matches in einem Array
                 let loadedMatches = [];
                 snapshot.docs.forEach(d => {
                     const data = d.data();
-                    if (data.matches && Array.isArray(data.matches)) {
-                        loadedMatches = loadedMatches.concat(data.matches);
-                    } else if (data.id) {
-                        // Legacy support für einzelne Matches, die noch in der DB liegen
-                        loadedMatches.push(data);
-                    }
+                    if (data.matches && Array.isArray(data.matches)) loadedMatches = loadedMatches.concat(data.matches);
+                    else if (data.id) loadedMatches.push(data);
                 });
-                
                 matches = loadedMatches.sort((a, b) => (b.id || 0) - (a.id || 0));
                 localStorage.setItem('ow_stats_v2', JSON.stringify(matches));
                 refreshCurrentPage();
             });
-            
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), (docSnap) => {
                 if (docSnap.exists()) playerRanks = docSnap.data();
                 if (!document.getElementById('page-players').classList.contains('hidden')) window.updatePlayerDashboards();
             });
-            
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), (snapshot) => {
                 tickets = snapshot.docs.map(d => d.data()).sort((a, b) => b.id - a.id);
                 if (!document.getElementById('page-tickets').classList.contains('hidden')) window.updateTicketsList();
             });
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), (snapshot) => {
+                animes = snapshot.docs.map(d => d.data()).sort((a, b) => b.id - a.id);
+                if (!document.getElementById('page-anime').classList.contains('hidden')) window.updateAnimeList();
+            });
         }
 
         function refreshCurrentPage() {
-            const pageDash = document.getElementById('page-dashboard');
-            const pagePlayers = document.getElementById('page-players');
-            const pageEntry = document.getElementById('page-entry');
-            const pageTickets = document.getElementById('page-tickets');
-
-            if (pageDash && !pageDash.classList.contains('hidden')) window.updateDashboard();
-            if (pagePlayers && !pagePlayers.classList.contains('hidden')) window.updatePlayerDashboards();
-            if (pageEntry && !pageEntry.classList.contains('hidden')) window.updateRecentMatches();
-            if (pageTickets && !pageTickets.classList.contains('hidden')) window.updateTicketsList();
+            const pDash = document.getElementById('page-dashboard'), pPlayers = document.getElementById('page-players'), pEntry = document.getElementById('page-entry'), pTickets = document.getElementById('page-tickets'), pAnime = document.getElementById('page-anime');
+            if (pDash && !pDash.classList.contains('hidden')) window.updateDashboard();
+            if (pPlayers && !pPlayers.classList.contains('hidden')) window.updatePlayerDashboards();
+            if (pEntry && !pEntry.classList.contains('hidden')) window.updateRecentMatches();
+            if (pTickets && !pTickets.classList.contains('hidden')) window.updateTicketsList();
+            if (pAnime && !pAnime.classList.contains('hidden')) window.updateAnimeList();
         }
 
         window.exportData = function() {
-            const data = {
-                matches: matches,
-                playerRanks: playerRanks,
-                tickets: tickets
-            };
+            const data = { matches: matches, playerRanks: playerRanks, tickets: tickets, animes: animes };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            const date = new Date().toLocaleDateString('de-DE').replace(/\./g, '-');
-            downloadAnchorNode.setAttribute("download", "ow_tracker_backup_" + date + ".json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+            const a = document.createElement('a'); a.setAttribute("href", dataStr);
+            a.setAttribute("download", "ow_tracker_backup_" + new Date().toLocaleDateString('de-DE').replace(/\./g, '-') + ".json");
+            document.body.appendChild(a); a.click(); a.remove();
             showBanner("Daten erfolgreich exportiert!", "success");
         };
 
         window.importData = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
-                    let importCount = 0;
-
+                    const data = JSON.parse(e.target.result); let importCount = 0;
                     if(data.matches && Array.isArray(data.matches)) {
                         const mergedMatches = [...data.matches, ...matches];
-                        const uniqueMatches = Array.from(new Map(mergedMatches.map(item => [item.id, item])).values());
-                        matches = uniqueMatches.sort((a, b) => (b.id || 0) - (a.id || 0));
+                        matches = Array.from(new Map(mergedMatches.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
                         localStorage.setItem('ow_stats_v2', JSON.stringify(matches));
-                        
-                        // Sortieren nach Season für das neue Format
-                        const matchesBySeason = {};
-                        matches.forEach(m => {
-                            if(!matchesBySeason[m.season]) matchesBySeason[m.season] = [];
-                            matchesBySeason[m.season].push(m);
-                        });
-                        
-                        Object.keys(matchesBySeason).forEach(season => {
-                            if (currentUser && db) {
-                                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${season}`), { matches: matchesBySeason[season] });
-                            }
-                        });
+                        const mSeason = {}; matches.forEach(m => { if(!mSeason[m.season]) mSeason[m.season] = []; mSeason[m.season].push(m); });
+                        Object.keys(mSeason).forEach(s => { if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${s}`), { matches: mSeason[s] }); });
                         importCount++;
                     }
                     if(data.playerRanks) {
-                        playerRanks = { ...playerRanks, ...data.playerRanks };
-                        localStorage.setItem('ow_player_ranks', JSON.stringify(playerRanks));
+                        playerRanks = { ...playerRanks, ...data.playerRanks }; localStorage.setItem('ow_player_ranks', JSON.stringify(playerRanks));
                         if (currentUser && db) setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), playerRanks, { merge: true });
                         importCount++;
                     }
                     if(data.tickets && Array.isArray(data.tickets)) {
-                        const mergedTickets = [...data.tickets, ...tickets];
-                        tickets = Array.from(new Map(mergedTickets.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
-                        data.tickets.forEach(t => {
-                            if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), t.id.toString()), t);
-                        });
+                        const mergedTickets = [...data.tickets, ...tickets]; tickets = Array.from(new Map(mergedTickets.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
+                        data.tickets.forEach(t => { if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), t.id.toString()), t); });
                         importCount++;
                     }
-                    
-                    if (importCount > 0) {
-                        showBanner("Import erfolgreich! Daten strukturiert geladen.", "success");
-                        refreshCurrentPage();
-                    } else {
-                        showBanner("Keine passenden Daten gefunden.", "error");
+                    if(data.animes && Array.isArray(data.animes)) {
+                        const mergedAnimes = [...data.animes, ...animes]; animes = Array.from(new Map(mergedAnimes.map(item => [item.id, item])).values()).sort((a, b) => (b.id || 0) - (a.id || 0));
+                        data.animes.forEach(a => { if (currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), a.id.toString()), a); });
+                        importCount++;
                     }
-                } catch (err) {
-                    console.error(err);
-                    showBanner("Import fehlgeschlagen! Ungültige Datei.", "error");
-                }
+                    if (importCount > 0) { showBanner("Import erfolgreich! Daten strukturiert geladen.", "success"); refreshCurrentPage(); } else showBanner("Keine passenden Daten gefunden.", "error");
+                } catch (err) { console.error(err); showBanner("Import fehlgeschlagen! Ungültige Datei.", "error"); }
                 event.target.value = ''; 
-            };
-            reader.readAsText(file);
+            }; reader.readAsText(file);
         };
 
         window.setSeason = function(s) {
@@ -662,65 +667,47 @@
             if(targetPage) targetPage.classList.remove('hidden');
             
             const links = document.querySelectorAll('.nav-link');
-            for(let i=0; i<links.length; i++) {
-                links[i].classList.remove('active');
-                links[i].classList.replace('text-white', 'text-slate-400');
-            }
+            for(let i=0; i<links.length; i++) { links[i].classList.remove('active'); links[i].classList.replace('text-white', 'text-slate-400'); }
             const activeBtn = document.getElementById(`nav-${id}`);
-            if(activeBtn) {
-                activeBtn.classList.add('active');
-                activeBtn.classList.replace('text-slate-400', 'text-white');
-            }
+            if(activeBtn) { activeBtn.classList.add('active'); activeBtn.classList.replace('text-slate-400', 'text-white'); }
             
-            if(id === 'tickets') {
+            const filterBar = document.getElementById('filter-bar');
+            if(id === 'tickets' || id === 'anime') {
                 const alert = document.getElementById('ticketAlert');
                 if(alert) alert.classList.add('hidden');
+                if(filterBar) filterBar.classList.add('hidden');
+            } else {
+                if(filterBar) filterBar.classList.remove('hidden');
             }
             refreshCurrentPage();
         }
 
         window.setMatchType = function(type) {
             currentMatchType = type;
-            const typeR = document.getElementById('typeRanked');
-            const typeS = document.getElementById('typeStadium');
+            const typeR = document.getElementById('typeRanked'), typeS = document.getElementById('typeStadium');
             if(typeR) typeR.classList.toggle('active', type === 'Rangliste');
             if(typeS) typeS.classList.toggle('active', type === 'Stadion');
             
-            const pCont = document.getElementById('punkteContainer');
+            const pCont = document.getElementById('punkteContainer'), mCont = document.getElementById('mapContainer');
             if(pCont) pCont.classList.toggle('hidden', type !== 'Stadion');
-            
-            const mCont = document.getElementById('mapContainer');
             if(mCont) mCont.classList.toggle('hidden', type === 'Stadion');
             
-            window.updateRankOptions(); 
-            window.updateMapOptions();
-            
+            window.updateRankOptions(); window.updateMapOptions();
             const selects = document.querySelectorAll('#matchPlayersList select');
-            for(let i=0; i<selects.length; i++) {
-                if(selects[i].onchange && selects[i].onchange.toString().includes('updateHeroSelect')) window.updateHeroSelect(selects[i]);
-            }
+            for(let i=0; i<selects.length; i++) if(selects[i].onchange && selects[i].onchange.toString().includes('updateHeroSelect')) window.updateHeroSelect(selects[i]);
         }
 
         window.updateRankOptions = function(skipInit = false) {
-            const startSelect = document.getElementById('matchRankStart');
-            const endSelect = document.getElementById('matchRankEnd');
+            const startSelect = document.getElementById('matchRankStart'), endSelect = document.getElementById('matchRankEnd');
             if(!startSelect || !endSelect) return;
             startSelect.innerHTML = endSelect.innerHTML = '<option value="-">-</option>';
-            const list = currentMatchType === 'Rangliste' ? ranksRanked : ranksStadium;
-            const pref = currentMatchType === 'Rangliste' ? 'icon' : 'emoji';
-            list.forEach(r => {
-                for (let i = 5; i >= 1; i--) {
-                    const optVal = `${r[pref]} ${r.name} ${i}`;
-                    startSelect.innerHTML += `<option value="${optVal}">${optVal}</option>`;
-                    endSelect.innerHTML += `<option value="${optVal}">${optVal}</option>`;
-                }
-            });
+            const list = currentMatchType === 'Rangliste' ? ranksRanked : ranksStadium, pref = currentMatchType === 'Rangliste' ? 'icon' : 'emoji';
+            list.forEach(r => { for (let i = 5; i >= 1; i--) { const optVal = `${r[pref]} ${r.name} ${i}`; startSelect.innerHTML += `<option value="${optVal}">${optVal}</option>`; endSelect.innerHTML += `<option value="${optVal}">${optVal}</option>`; } });
             if(!skipInit) initCustomSelects();
         }
 
         window.updateMapOptions = function(skipInit = false) {
-            const mapSelect = document.getElementById('matchMap');
-            if(!mapSelect) return;
+            const mapSelect = document.getElementById('matchMap'); if(!mapSelect) return;
             mapSelect.innerHTML = '<option value="">Wähle Karte</option>';
             const categories = mapsByType[currentMatchType === 'Rangliste' ? 'ranked' : 'stadium'];
             for (const [cat, maps] of Object.entries(categories)) {
@@ -733,164 +720,105 @@
 
         window.setResult = function(res) {
             currentResult = res;
-            const winBtn = document.getElementById('resWin');
-            const lossBtn = document.getElementById('resLoss');
+            const winBtn = document.getElementById('resWin'), lossBtn = document.getElementById('resLoss');
             if(winBtn) winBtn.classList.toggle('active', res === 'Win');
             if(lossBtn) lossBtn.classList.toggle('active', res === 'Lose');
         }
 
         window.updateHeroSelect = function(roleSelect) {
-            const heroSelect = roleSelect.parentElement.querySelectorAll('select')[2];
-            if (!heroSelect) return;
+            const heroSelect = roleSelect.parentElement.querySelectorAll('select')[2]; if (!heroSelect) return;
             heroSelect.innerHTML = '<option value="">Held wählen</option>';
-            
             const listSource = currentMatchType === 'Stadion' ? stadiumHeroes : heroesByRole;
-            const roleKey = roleSelect.value === 'heal' ? 'support' : roleSelect.value;
-            const currentList = listSource[roleKey];
-            
-            if (currentList) {
-                currentList.forEach(h => { 
-                    const opt = document.createElement('option'); 
-                    opt.value = h; 
-                    opt.textContent = h; 
-                    heroSelect.appendChild(opt); 
-                });
-            }
+            const currentList = listSource[roleSelect.value === 'heal' ? 'support' : roleSelect.value];
+            if (currentList) currentList.forEach(h => { const opt = document.createElement('option'); opt.value = h; opt.textContent = h; heroSelect.appendChild(opt); });
             initCustomSelects();
         }
 
         window.addPlayerToMatch = function() {
-            const container = document.getElementById('matchPlayersList');
-            if (!container || container.children.length >= 5) return;
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.className = "flex gap-3 items-center animate-in bg-white/[0.02] p-3 rounded-2xl border border-slate-700";
-            const defaultRole = index >= 3 ? 'support' : (index === 0 ? 'tank' : 'dps');
-            div.innerHTML = `
-                <div class="grid grid-cols-3 gap-3 flex-1">
-                    <select class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-bold text-white">
-                        ${knownPlayers.map((p, i) => `<option ${i === index ? 'selected' : ''}>${p}</option>`).join('')}
-                    </select>
-                    <select onchange="window.updateHeroSelect(this)" class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs text-slate-400 font-bold">
-                        <option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option>
-                        <option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option>
-                        <option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option>
-                    </select>
-                    <select class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-bold text-white">
-                        <option value="">Held wählen</option>
-                    </select>
-                </div>
-                <button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-3 text-red-500/40 hover:text-red-500">🗑️</button>
-            `;
-            container.appendChild(div);
-            window.updateHeroSelect(div.querySelectorAll('select')[1]);
-            window.updateAddButtonState();
+            const container = document.getElementById('matchPlayersList'); if (!container || container.children.length >= 5) return;
+            const index = container.children.length, defaultRole = index >= 3 ? 'support' : (index === 0 ? 'tank' : 'dps');
+            const div = document.createElement('div'); div.className = "flex gap-3 items-center animate-in bg-white/[0.02] p-3 rounded-2xl border border-slate-700";
+            div.innerHTML = `<div class="grid grid-cols-3 gap-3 flex-1"><select class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-bold text-white">${knownPlayers.map((p, i) => `<option ${i === index ? 'selected' : ''}>${p}</option>`).join('')}</select><select onchange="window.updateHeroSelect(this)" class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs text-slate-400 font-bold"><option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option><option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option><option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option></select><select class="custom-select p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-bold text-white"><option value="">Held wählen</option></select></div><button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-3 text-red-500/40 hover:text-red-500">🗑️</button>`;
+            container.appendChild(div); window.updateHeroSelect(div.querySelectorAll('select')[1]); window.updateAddButtonState();
         }
 
         window.updateAddButtonState = function() {
-            const btn = document.getElementById('btnAddPlayer');
-            const list = document.getElementById('matchPlayersList');
+            const btn = document.getElementById('btnAddPlayer'), list = document.getElementById('matchPlayersList');
             if(btn && list) btn.disabled = list.children.length >= 5;
         }
 
         window.saveMatch = function() {
-            const players = [];
-            const rows = document.getElementById('matchPlayersList').children;
-            const names = new Set();
+            const players = [], rows = document.getElementById('matchPlayersList').children, names = new Set();
             for (let row of rows) {
                 const selects = row.querySelectorAll('select');
                 if (names.has(selects[0].value)) { showBanner("Spieler doppelt!", "error"); return; }
-                names.add(selects[0].value);
-                players.push({ name: selects[0].value, role: selects[1].value, hero: selects[2].value });
+                names.add(selects[0].value); players.push({ name: selects[0].value, role: selects[1].value, hero: selects[2].value });
             }
             if (!players.length) return;
-            const rStart = document.getElementById('matchRankStart').value;
-            const rEnd = document.getElementById('matchRankEnd').value;
-            const matchMapEl = document.getElementById('matchMap');
-            const matchScoreEl = document.getElementById('matchScore');
-            const matchLeaverEl = document.getElementById('matchLeaver');
-            
-            const match = { 
-                id: Date.now(), 
-                season: parseInt(document.getElementById('matchSeason').value), 
-                type: currentMatchType, 
-                result: currentResult, 
-                rank: (rStart !== '-' && rEnd !== '-') ? `${rStart} - ${rEnd.split(' ').pop()}` : (rStart !== '-' ? rStart : '-'), 
-                map: matchMapEl ? matchMapEl.value : '', 
-                score: matchScoreEl ? matchScoreEl.value : '', 
-                leaver: matchLeaverEl ? matchLeaverEl.checked : false, 
-                players, 
-                date: new Date().toLocaleDateString('de-DE'), 
-                time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) 
-            };
-            
+            const rStart = document.getElementById('matchRankStart').value, rEnd = document.getElementById('matchRankEnd').value;
+            const matchMapEl = document.getElementById('matchMap'), matchScoreEl = document.getElementById('matchScore'), matchLeaverEl = document.getElementById('matchLeaver');
+            const match = { id: Date.now(), season: parseInt(document.getElementById('matchSeason').value), type: currentMatchType, result: currentResult, rank: (rStart !== '-' && rEnd !== '-') ? `${rStart} - ${rEnd.split(' ').pop()}` : (rStart !== '-' ? rStart : '-'), map: matchMapEl ? matchMapEl.value : '', score: matchScoreEl ? matchScoreEl.value : '', leaver: matchLeaverEl ? matchLeaverEl.checked : false, players, date: new Date().toLocaleDateString('de-DE'), time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) };
             if (currentUser && db) {
-                // Lokales Update zur schnellen Anzeige
-                const newMatchesForSeason = matches.filter(m => m.season === match.season);
-                newMatchesForSeason.push(match);
-                newMatchesForSeason.sort((a, b) => b.id - a.id);
-
-                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${match.season}`), { matches: newMatchesForSeason }).then(() => {
-                    showBanner("Match gespeichert!", "success");
-                    if(matchScoreEl) matchScoreEl.value = ''; 
-                    if(matchLeaverEl) matchLeaverEl.checked = false;
-                }).catch(e => showBanner("Cloud-Fehler", "error"));
+                const newMatchesForSeason = matches.filter(m => m.season === match.season); newMatchesForSeason.push(match); newMatchesForSeason.sort((a, b) => b.id - a.id);
+                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${match.season}`), { matches: newMatchesForSeason }).then(() => { showBanner("Match gespeichert!", "success"); if(matchScoreEl) matchScoreEl.value = ''; if(matchLeaverEl) matchLeaverEl.checked = false; }).catch(e => showBanner("Cloud-Fehler", "error"));
             }
         }
 
         window.savePlayerRank = function(pName, category, role, value) {
-            if (!playerRanks[pName]) playerRanks[pName] = {};
-            playerRanks[pName][`${role}_${category}`] = value;
+            if (!playerRanks[pName]) playerRanks[pName] = {}; playerRanks[pName][`${role}_${category}`] = value;
             if (currentUser && db) setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), playerRanks, { merge: true });
         }
 
         window.saveTicket = function() {
-            const author = document.getElementById('ticketAuthor').value.trim();
-            const type = document.getElementById('ticketType').value;
-            const msg = document.getElementById('ticketMessage').value.trim();
+            const author = document.getElementById('ticketAuthor').value.trim(), type = document.getElementById('ticketType').value, msg = document.getElementById('ticketMessage').value.trim();
             if(!author || !msg) { showBanner("Felder fehlen!", "error"); return; }
             const ticket = { id: Date.now(), author, type, message: msg, date: new Date().toLocaleDateString('de-DE'), status: 'Offen' };
-            if(currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), ticket.id.toString()), ticket).then(() => { 
-                showBanner("Support Ticket erstellt!", "success"); 
-                const authInput = document.getElementById('ticketAuthor');
-                const msgInput = document.getElementById('ticketMessage');
-                if(authInput) authInput.value = ''; 
-                if(msgInput) msgInput.value = ''; 
-            });
+            if(currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), ticket.id.toString()), ticket).then(() => { showBanner("Support Ticket erstellt!", "success"); document.getElementById('ticketAuthor').value = ''; document.getElementById('ticketMessage').value = ''; });
         }
-
-        window.toggleTicketStatus = function(id) {
-            const t = tickets.find(x => x.id === id);
-            if(t && currentUser && db) updateDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString()), { status: t.status === 'Abgeschlossen' ? 'Offen' : 'Abgeschlossen' });
-        }
-
-        window.deleteTicket = function(id) {
-            if(confirm("Löschen?") && currentUser && db) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString()));
-        }
-
+        window.toggleTicketStatus = function(id) { const t = tickets.find(x => x.id === id); if(t && currentUser && db) updateDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString()), { status: t.status === 'Abgeschlossen' ? 'Offen' : 'Abgeschlossen' }); }
+        window.deleteTicket = function(id) { if(confirm("Löschen?") && currentUser && db) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString())); }
         window.updateTicketsList = function() {
-            const list = document.getElementById('ticketsList');
-            if(!list) return;
-            list.innerHTML = tickets.map(t => `
-                <div class="glass-card p-5 border-slate-700 border-l-4 ${t.status === 'Abgeschlossen' ? 'ticket-closed' : (t.type === 'Problem' ? 'ticket-bug' : 'ticket-open')}">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-black uppercase text-slate-500">${t.type} · ${t.date}</span>
-                        <div class="flex gap-2">
-                            <button onclick="window.toggleTicketStatus(${t.id})" class="text-xs p-1 bg-white/5 border border-slate-700 rounded">${t.status === 'Abgeschlossen' ? '✅' : '✔️'}</button>
-                            <button onclick="window.deleteTicket(${t.id})" class="text-xs p-1 bg-white/5 border border-slate-700 rounded opacity-40">🗑️</button>
-                        </div>
+            const list = document.getElementById('ticketsList'); if(!list) return;
+            list.innerHTML = tickets.map(t => `<div class="glass-card p-5 border-slate-700 border-l-4 ${t.status === 'Abgeschlossen' ? 'ticket-closed' : (t.type === 'Problem' ? 'ticket-bug' : 'ticket-open')}"><div class="flex justify-between items-start mb-2"><span class="text-[10px] font-black uppercase text-slate-500">${t.type} · ${t.date}</span><div class="flex gap-2"><button onclick="window.toggleTicketStatus(${t.id})" class="text-xs p-1 bg-white/5 border border-slate-700 rounded">${t.status === 'Abgeschlossen' ? '✅' : '✔️'}</button><button onclick="window.deleteTicket(${t.id})" class="text-xs p-1 bg-white/5 border border-slate-700 rounded opacity-40">🗑️</button></div></div><p class="text-[12px] font-bold text-slate-200 ${t.status === 'Abgeschlossen' ? 'line-through text-slate-500' : ''}">${t.message}</p><div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-700"><p class="text-[10px] text-slate-600 font-bold">Reporter: ${t.author}</p><span class="text-[9px] bg-white/10 px-2 py-0.5 rounded text-slate-400 font-black uppercase">${t.status}</span></div></div>`).join('');
+        }
+
+        /* ANIME LOGIC */
+        window.saveAnime = function() {
+            const title = document.getElementById('animeTitle').value.trim();
+            const rating = document.getElementById('animeRating').value;
+            const comment = document.getElementById('animeComment').value.trim();
+            if(!title) { showBanner("Bitte einen Titel eingeben!", "error"); return; }
+
+            const anime = { id: Date.now(), title, rating, comment, date: new Date().toLocaleDateString('de-DE') };
+            if(currentUser && db) {
+                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), anime.id.toString()), anime).then(() => {
+                    showBanner("Anime bewertet!", "success");
+                    document.getElementById('animeTitle').value = '';
+                    document.getElementById('animeComment').value = '';
+                });
+            }
+        }
+        window.deleteAnime = function(id) { if(confirm("Anime löschen?") && currentUser && db) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'animes'), id.toString())); }
+        window.updateAnimeList = function() {
+            const list = document.getElementById('animesList'); if(!list) return;
+            const formatRating = (val) => val === 'S+' ? 'S-plus' : val; 
+            list.innerHTML = animes.map(a => `
+                <div class="glass-card p-5 border-slate-700 flex flex-col relative group transition-all hover:border-slate-500">
+                    <button onclick="window.deleteAnime(${a.id})" class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 text-red-500 transition-opacity">🗑️</button>
+                    <div class="flex items-center justify-between mb-3 pr-6">
+                        <h3 class="text-lg font-black text-white italic truncate pr-2">${a.title}</h3>
+                        <span class="text-sm font-black px-3 py-1 rounded-xl border rank-${formatRating(a.rating)}">${a.rating}</span>
                     </div>
-                    <p class="text-[12px] font-bold text-slate-200 ${t.status === 'Abgeschlossen' ? 'line-through text-slate-500' : ''}">${t.message}</p>
-                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-700">
-                        <p class="text-[10px] text-slate-600 font-bold">Reporter: ${t.author}</p>
-                        <span class="text-[9px] bg-white/10 px-2 py-0.5 rounded text-slate-400 font-black uppercase">${t.status}</span>
+                    ${a.comment ? `<p class="text-xs text-slate-400 font-medium mb-3 italic break-words line-clamp-3">"${a.comment}"</p>` : ''}
+                    <div class="mt-auto pt-3 border-t border-slate-700 flex justify-between items-center text-[9px] text-slate-500 font-black uppercase tracking-widest">
+                        <span>Hinzugefügt am</span><span>${a.date}</span>
                     </div>
-                </div>`).join('');
+                </div>
+            `).join('');
         }
 
         window.toggleDetails = function(pName) {
-            const el = document.getElementById(`details-${pName}`);
-            const btn = document.getElementById(`btn-${pName}`);
+            const el = document.getElementById(`details-${pName}`), btn = document.getElementById(`btn-${pName}`);
             if(!el || !btn) return;
             if(el.classList.contains('open')) { el.classList.remove('open'); btn.innerText = "Details Anzeigen"; openPlayerDetails.delete(pName); }
             else { el.classList.add('open'); btn.innerText = "Details Ausblenden"; openPlayerDetails.add(pName); }
@@ -898,31 +826,17 @@
 
         window.updateDashboard = function() {
             const filtered = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
-            const total = filtered.length, wins = filtered.filter(m => m.result === 'Win').length, leavers = filtered.filter(m => m.leaver).length;
-            
-            setSafeText('globalWinrate', total > 0 ? Math.round((wins / total) * 100) + "%" : "");
-            setSafeText('globalMatches', total); 
-            setSafeText('globalWins', wins);
-            setSafeText('globalLosses', total - wins); 
-            setSafeText('globalLeavers', leavers);
-            setSafeText('globalLeaverPerc', total > 0 ? Math.round((leavers / total) * 100) + "%" : "");
-            setSafeText('lastPlayedDate', filtered.length > 0 ? filtered[0].date : "-");
-            
-            updateStatsChart(wins, total - wins);
-            
+            const total = filtered.length, wins = filtered.filter(m => m.result === 'Win').length, leavers = filtered.filter(m => m.leaver).length, losses = total - wins;
+            setSafeText('globalWinrate', total > 0 ? Math.round((wins / total) * 100) + "%" : ""); setSafeText('globalMatches', total); setSafeText('globalWins', wins); setSafeText('globalLosses', losses); setSafeText('globalLeavers', leavers); setSafeText('globalLeaverPerc', total > 0 ? Math.round((leavers / total) * 100) + "%" : ""); setSafeText('lastPlayedDate', filtered.length > 0 ? filtered[0].date : "-");
+            updateStatsChart(wins, losses);
             let curW = 0, curL = 0, maxW = 0, maxL = 0;
             [...filtered].reverse().forEach(m => { if (m.result === 'Win') { curW++; curL = 0; if (curW > maxW) maxW = curW; } else { curL++; curW = 0; if (curL > maxL) maxL = curL; } });
-            
-            setSafeText('maxWinStreak', maxW); 
-            setSafeText('maxLossStreak', maxL);
-            
+            setSafeText('maxWinStreak', maxW); setSafeText('maxLossStreak', maxL);
             const combos = {};
             filtered.forEach(m => { if (!m.players) return; for (let i = 0; i < m.players.length; i++) for (let j = i + 1; j < m.players.length; j++) { const key = [m.players[i].name, m.players[j].name].sort().join(' · '); if (!combos[key]) combos[key] = { wins: 0, total: 0 }; combos[key].total++; if (m.result === 'Win') combos[key].wins++; } });
             const sorted = Object.entries(combos).sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total));
             const renderC = (name, s) => `<div class="glass-card p-4 flex justify-between items-center border-slate-700"><div><p class="text-[11px] font-black text-orange-500 uppercase leading-none mb-1.5">${Math.round((s.wins/s.total)*100)}% WR</p><p class="text-xs font-bold text-slate-300">${name}</p></div><p class="text-[10px] text-slate-500 italic">${s.total} Gms</p></div>`;
-            
-            const bestEl = document.getElementById('bestCombos');
-            const worstEl = document.getElementById('worstCombos');
+            const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
             if(bestEl) bestEl.innerHTML = sorted.slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
             if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 3).map(([n,s]) => renderC(n,s)).join('');
         }
@@ -1002,22 +916,9 @@
 
         window.deleteMatch = function(id) { 
             if (!confirm("Match löschen?") || !currentUser) return; 
-            
-            const matchToDelete = matches.find(m => m.id === id);
-            if (!matchToDelete) return;
-            const targetSeason = matchToDelete.season;
-            
-            // Remove locally
-            matches = matches.filter(m => m.id !== id);
-            const seasonMatches = matches.filter(m => m.season === targetSeason);
-            
-            // Update the season document
-            setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${targetSeason}`), { matches: seasonMatches })
-            .then(() => {
-                showBanner("Gelöscht!", "success");
-                // Optional: delete old single document if it exists, to clean up
-                deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), id.toString())).catch(()=>{});
-            }); 
+            const matchToDelete = matches.find(m => m.id === id); if (!matchToDelete) return;
+            matches = matches.filter(m => m.id !== id); const seasonMatches = matches.filter(m => m.season === matchToDelete.season);
+            setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${matchToDelete.season}`), { matches: seasonMatches }).then(() => { showBanner("Gelöscht!", "success"); deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), id.toString())).catch(()=>{}); }); 
         }
         
         function showBanner(text, type) { const banner = document.createElement('div'); banner.className = `fixed bottom-12 left-1/2 -translate-x-1/2 px-10 py-5 rounded-[2.5rem] text-[11px] font-black z-[100] ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white border border-white/20 animate-in tracking-widest uppercase italic shadow-2xl`; banner.innerText = text; document.body.appendChild(banner); setTimeout(() => banner.remove(), 3500); }
@@ -1025,5 +926,9 @@
         signInAnonymously(auth).catch(e => setCloudStatus('Auth Error', 'error'));
         window.showPage('dashboard'); window.updateRankOptions(true); window.updateMapOptions(true); window.addPlayerToMatch();
     </script>
+
+    <div class="fixed bottom-4 right-6 text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-3 py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
+        v.1.13.00
+    </div>
 </body>
 </html>
