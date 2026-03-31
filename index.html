@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.33.00 - Dashboard Redesign, History Refactoring & Changelog Filter Fix -->
+<!-- Version: 1.34.00 - Added Edit Match Functionality & Smart Cloud Sync -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -189,7 +189,7 @@
     <main class="max-w-[1500px] mx-auto p-4 sm:p-8">
 
         <!-- DASHBOARD -->
-        <div id="page-dashboard" class="page space-y-6 sm:space-y-8 animate-in hidden">
+        <div id="page-dashboard" class="page space-y-6 sm:space-y-10 animate-in hidden">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter">Performance <span class="active-season-label text-orange-500">S21</span></h2>
@@ -507,24 +507,6 @@
             </div>
         </div>
 
-        <!-- CHANGELOGS -->
-        <div id="page-changelogs" class="page hidden animate-in max-w-4xl mx-auto">
-            <div class="glass-card p-6 sm:p-10 space-y-8">
-                <div class="flex items-center gap-4 sm:gap-5">
-                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 border border-indigo-500/20 shadow-lg shadow-indigo-500/5 shrink-0">
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    </div>
-                    <div>
-                        <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-indigo-400">Patch Notes</h2>
-                        <p class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Updates & Bugfixes</p>
-                    </div>
-                </div>
-                <div id="changelogList" class="space-y-6 pt-4">
-                    <!-- JS injected changelogs -->
-                </div>
-            </div>
-        </div>
-
         <!-- TICKETS -->
         <div id="page-tickets" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 animate-in">
             <div class="md:col-span-2 glass-card p-6 sm:p-10 space-y-6 sm:space-y-8 h-fit">
@@ -568,7 +550,7 @@
         <!-- ENTRY -->
         <div id="page-entry" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 animate-in">
             <div class="md:col-span-2 glass-card p-6 sm:p-10 space-y-6 sm:space-y-8">
-                <h2 class="text-2xl font-black italic uppercase tracking-tighter">Match Logbuch</h2>
+                <h2 id="entryFormTitle" class="text-2xl font-black italic uppercase tracking-tighter transition-colors">Match Logbuch</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Season</label>
@@ -624,9 +606,14 @@
                     <div id="matchPlayersList" class="space-y-3 sm:space-y-4"></div>
                     <button onclick="window.addPlayerToMatch()" id="btnAddPlayer" class="text-[9px] sm:text-[10px] font-black text-blue-400 hover:text-white transition-all uppercase bg-blue-500/10 hover:bg-blue-600 px-3 sm:px-4 py-2 rounded-xl border border-blue-500/20">+ Spieler</button>
                 </div>
-                <button onclick="window.saveMatch()" class="w-full py-4 sm:py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl transition-all hover:scale-[1.01] text-xs sm:text-sm">
-                    Match Speichern
-                </button>
+                <div class="flex gap-4">
+                    <button onclick="window.cancelEdit()" id="btnCancelEdit" class="hidden w-1/3 py-4 sm:py-5 bg-slate-700 hover:bg-slate-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-[1.01] text-xs sm:text-sm">
+                        Abbrechen
+                    </button>
+                    <button onclick="window.saveMatch()" id="btnSaveMatch" class="w-full py-4 sm:py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl transition-all hover:scale-[1.01] text-xs sm:text-sm">
+                        Match Speichern
+                    </button>
+                </div>
             </div>
             <div class="glass-card flex flex-col border border-slate-700 pt-6">
                 <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
@@ -634,6 +621,24 @@
                 </div>
                 <!-- Clean seamless list container -->
                 <div id="recentMatchesList" class="flex flex-col"></div>
+            </div>
+        </div>
+
+        <!-- CHANGELOGS -->
+        <div id="page-changelogs" class="page hidden animate-in max-w-4xl mx-auto">
+            <div class="glass-card p-6 sm:p-10 space-y-8">
+                <div class="flex items-center gap-4 sm:gap-5">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 border border-indigo-500/20 shadow-lg shadow-indigo-500/5 shrink-0">
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-indigo-400">Patch Notes</h2>
+                        <p class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Updates & Bugfixes</p>
+                    </div>
+                </div>
+                <div id="changelogList" class="space-y-6 pt-4">
+                    <!-- JS injected changelogs -->
+                </div>
             </div>
         </div>
 
@@ -668,6 +673,10 @@
         let openPlayerDetails = new Set(); 
         let currentSeason = 21, currentViewMode = 'Alle', currentMatchType = 'Rangliste', currentResult = 'Win';
         let currentAnimeTab = 'Gesamt';
+        
+        // Editing Logic State
+        let editingMatchId = null;
+        let editingMatchOriginalSeason = null;
         
         const knownPlayers = ["Pudelmuetze", "Nora", "Philipp", "Simon", "Noobie", "Christoph"];
         const roles = {
@@ -962,7 +971,6 @@
             if (pEntry && !pEntry.classList.contains('hidden')) window.updateRecentMatches();
             if (pTickets && !pTickets.classList.contains('hidden')) window.updateTicketsList();
             if (pAnime && !pAnime.classList.contains('hidden')) window.updateAnimeList();
-            // changelogs doesn't need data refresh
         }
 
         window.exportData = function() {
@@ -1142,6 +1150,142 @@
             if(btn && list) btn.disabled = list.children.length >= 5;
         }
 
+        // --- EDIT MATCH LOGIC ---
+        window.editMatch = function(id) {
+            const match = matches.find(m => m.id === id);
+            if (!match) return;
+
+            editingMatchId = match.id;
+            editingMatchOriginalSeason = match.season;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const titleEl = document.getElementById('entryFormTitle');
+            if(titleEl) {
+                titleEl.innerText = 'Match Bearbeiten';
+                titleEl.classList.add('text-blue-400');
+            }
+            
+            const btnSave = document.getElementById('btnSaveMatch');
+            if(btnSave) {
+                btnSave.innerText = 'Änderungen Speichern';
+                btnSave.classList.replace('w-full', 'w-2/3');
+            }
+            const btnCancel = document.getElementById('btnCancelEdit');
+            if(btnCancel) btnCancel.classList.remove('hidden');
+
+            const seasonSelect = document.getElementById('matchSeason');
+            if(seasonSelect) { seasonSelect.value = match.season; seasonSelect.dispatchEvent(new Event('change')); }
+
+            window.setMatchType(match.type);
+            window.setResult(match.result);
+
+            if (match.rank && match.rank !== '-') {
+                const parts = match.rank.split(' - ');
+                const startSelect = document.getElementById('matchRankStart');
+                if(startSelect && parts[0]) {
+                    startSelect.value = parts[0];
+                    startSelect.dispatchEvent(new Event('change'));
+                }
+                const endSelect = document.getElementById('matchRankEnd');
+                if(endSelect && parts.length > 1) {
+                    for(let i=0; i<endSelect.options.length; i++) {
+                        if(endSelect.options[i].value.endsWith(parts[1])) {
+                            endSelect.value = endSelect.options[i].value;
+                            endSelect.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+            } else {
+                const s1 = document.getElementById('matchRankStart');
+                const s2 = document.getElementById('matchRankEnd');
+                if(s1) { s1.value = '-'; s1.dispatchEvent(new Event('change')); }
+                if(s2) { s2.value = '-'; s2.dispatchEvent(new Event('change')); }
+            }
+
+            const mapSelect = document.getElementById('matchMap');
+            if (mapSelect) {
+                mapSelect.value = match.map || "";
+                mapSelect.dispatchEvent(new Event('change'));
+            }
+            
+            const scoreEl = document.getElementById('matchScore');
+            if(scoreEl) scoreEl.value = match.score || '';
+            
+            const leaverEl = document.getElementById('matchLeaver');
+            if(leaverEl) leaverEl.checked = !!match.leaver;
+
+            const container = document.getElementById('matchPlayersList');
+            if(container) {
+                container.innerHTML = '';
+                match.players.forEach((p) => {
+                    window.addPlayerToMatch(); 
+                    const row = container.children[container.children.length - 1];
+                    const selects = row.querySelectorAll('select');
+                    
+                    selects[0].value = p.name;
+                    selects[0].dispatchEvent(new Event('change'));
+                    
+                    selects[1].value = p.role;
+                    selects[1].dispatchEvent(new Event('change')); 
+                    
+                    window.updateHeroSelect(selects[1]);
+                    
+                    const heroSelect = row.querySelectorAll('select')[2];
+                    if (match.type === 'Rangliste' && p.heroes && p.heroes.length > 0) {
+                        for(let i=0; i<heroSelect.options.length; i++) {
+                            if(p.heroes.includes(heroSelect.options[i].value)) {
+                                heroSelect.options[i].selected = true;
+                            }
+                        }
+                    } else if (p.hero && p.hero !== "Held wählen") {
+                        heroSelect.value = p.hero;
+                    }
+                    heroSelect.dispatchEvent(new Event('change'));
+                });
+            }
+        };
+
+        window.cancelEdit = function() {
+            editingMatchId = null;
+            editingMatchOriginalSeason = null;
+            
+            const titleEl = document.getElementById('entryFormTitle');
+            if(titleEl) {
+                titleEl.innerText = 'Match Logbuch';
+                titleEl.classList.remove('text-blue-400');
+            }
+            
+            const btnSave = document.getElementById('btnSaveMatch');
+            if(btnSave) {
+                btnSave.innerText = 'Match Speichern';
+                btnSave.classList.replace('w-2/3', 'w-full');
+            }
+            const btnCancel = document.getElementById('btnCancelEdit');
+            if(btnCancel) btnCancel.classList.add('hidden');
+            
+            const scoreEl = document.getElementById('matchScore');
+            if(scoreEl) scoreEl.value = '';
+            
+            const leaverEl = document.getElementById('matchLeaver');
+            if(leaverEl) leaverEl.checked = false;
+            
+            const s1 = document.getElementById('matchRankStart');
+            const s2 = document.getElementById('matchRankEnd');
+            if(s1) { s1.value = '-'; s1.dispatchEvent(new Event('change')); }
+            if(s2) { s2.value = '-'; s2.dispatchEvent(new Event('change')); }
+            
+            const mapSelect = document.getElementById('matchMap');
+            if(mapSelect) { mapSelect.value = ''; mapSelect.dispatchEvent(new Event('change')); }
+            
+            const container = document.getElementById('matchPlayersList');
+            if(container) {
+                container.innerHTML = '';
+                window.addPlayerToMatch();
+            }
+        };
+
         window.saveMatch = function() {
             const players = [], rows = document.getElementById('matchPlayersList').children, names = new Set();
             for (let row of rows) {
@@ -1160,10 +1304,45 @@
             if (!players.length) return;
             const rStart = document.getElementById('matchRankStart').value, rEnd = document.getElementById('matchRankEnd').value;
             const matchMapEl = document.getElementById('matchMap'), matchScoreEl = document.getElementById('matchScore'), matchLeaverEl = document.getElementById('matchLeaver');
-            const match = { id: Date.now(), season: parseInt(document.getElementById('matchSeason').value), type: currentMatchType, result: currentResult, rank: (rStart !== '-' && rEnd !== '-') ? `${rStart} - ${rEnd.split(' ').pop()}` : (rStart !== '-' ? rStart : '-'), map: matchMapEl ? matchMapEl.value : '', score: matchScoreEl ? matchScoreEl.value : '', leaver: matchLeaverEl ? matchLeaverEl.checked : false, players, date: new Date().toLocaleDateString('de-DE'), time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) };
+            
+            const match = { 
+                id: editingMatchId || Date.now(), 
+                season: parseInt(document.getElementById('matchSeason').value), 
+                type: currentMatchType, 
+                result: currentResult, 
+                rank: (rStart !== '-' && rEnd !== '-') ? (rStart === rEnd ? rStart : `${rStart} - ${rEnd.split(' ').pop()}`) : (rStart !== '-' ? rStart : '-'), 
+                map: matchMapEl ? matchMapEl.value : '', 
+                score: matchScoreEl ? matchScoreEl.value : '', 
+                leaver: matchLeaverEl ? matchLeaverEl.checked : false, 
+                players
+            };
+
+            if (editingMatchId) {
+                const originalMatch = matches.find(m => m.id === editingMatchId);
+                if (originalMatch) {
+                    match.date = originalMatch.date;
+                    match.time = originalMatch.time;
+                }
+            } else {
+                match.date = new Date().toLocaleDateString('de-DE');
+                match.time = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            }
+
             if (currentUser && db) {
-                const newMatchesForSeason = matches.filter(m => m.season === match.season); newMatchesForSeason.push(match); newMatchesForSeason.sort((a, b) => b.id - a.id);
-                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${match.season}`), { matches: newMatchesForSeason }).then(() => { showBanner("Match gespeichert!", "success"); if(matchScoreEl) matchScoreEl.value = ''; if(matchLeaverEl) matchLeaverEl.checked = false; }).catch(e => showBanner("Cloud-Fehler", "error"));
+                if (editingMatchId && editingMatchOriginalSeason && editingMatchOriginalSeason !== match.season) {
+                    const oldSeasonMatches = matches.filter(m => m.season === editingMatchOriginalSeason && m.id !== editingMatchId);
+                    setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${editingMatchOriginalSeason}`), { matches: oldSeasonMatches });
+                }
+                
+                matches = matches.filter(m => m.id !== match.id); 
+                const newMatchesForSeason = matches.filter(m => m.season === match.season); 
+                newMatchesForSeason.push(match); 
+                newMatchesForSeason.sort((a, b) => b.id - a.id);
+                
+                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${match.season}`), { matches: newMatchesForSeason }).then(() => { 
+                    showBanner(editingMatchId ? "Match aktualisiert!" : "Match gespeichert!", "success"); 
+                    window.cancelEdit(); 
+                }).catch(e => showBanner("Cloud-Fehler", "error"));
             }
         }
 
@@ -1172,256 +1351,12 @@
             if (currentUser && db) setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), playerRanks, { merge: true });
         }
 
-        window.saveTicket = function() {
-            const author = document.getElementById('ticketAuthor').value.trim(), type = document.getElementById('ticketType').value, msg = document.getElementById('ticketMessage').value.trim();
-            if(!author || !msg) { showBanner("Felder fehlen!", "error"); return; }
-            const ticket = { id: Date.now(), author, type, message: msg, date: new Date().toLocaleDateString('de-DE'), status: 'Offen' };
-            if(currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), ticket.id.toString()), ticket).then(() => { showBanner("Support Ticket erstellt!", "success"); document.getElementById('ticketAuthor').value = ''; document.getElementById('ticketMessage').value = ''; });
-        }
-        window.toggleTicketStatus = function(id) { const t = tickets.find(x => x.id === id); if(t && currentUser && db) updateDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString()), { status: t.status === 'Abgeschlossen' ? 'Offen' : 'Abgeschlossen' }); }
-        window.deleteTicket = function(id) { if(confirm("Löschen?") && currentUser && db) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString())); }
-        window.updateTicketsList = function() {
-            const list = document.getElementById('ticketsList'); if(!list) return;
-            list.innerHTML = tickets.map(t => `<div class="glass-card p-4 sm:p-5 border-slate-700 border-l-4 ${t.status === 'Abgeschlossen' ? 'ticket-closed' : (t.type === 'Problem' ? 'ticket-bug' : 'ticket-open')}"><div class="flex justify-between items-start mb-2"><span class="text-[9px] sm:text-[10px] font-black uppercase text-slate-500">${t.type} · ${t.date}</span><div class="flex gap-2"><button onclick="window.toggleTicketStatus(${t.id})" class="text-[10px] sm:text-xs p-1 bg-white/5 border border-slate-700 rounded">${t.status === 'Abgeschlossen' ? '✅' : '✔️'}</button><button onclick="window.deleteTicket(${t.id})" class="text-[10px] sm:text-xs p-1 bg-white/5 border border-slate-700 rounded opacity-40">🗑️</button></div></div><p class="text-[10px] sm:text-[12px] font-bold text-slate-200 ${t.status === 'Abgeschlossen' ? 'line-through text-slate-500' : ''}">${t.message}</p><div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-700"><p class="text-[9px] sm:text-[10px] text-slate-600 font-bold">Reporter: ${t.author}</p><span class="text-[8px] sm:text-[9px] bg-white/10 px-2 py-0.5 rounded text-slate-400 font-black uppercase">${t.status}</span></div></div>`).join('');
-        }
-
-        /* ANIME LOGIC */
-        function getAnimeRankFromScore(total) {
-            if(total >= 98) return 'S+';
-            if(total >= 90) return 'S';
-            if(total >= 80) return 'A';
-            if(total >= 65) return 'B';
-            if(total >= 50) return 'C';
-            if(total >= 35) return 'D';
-            if(total >= 20) return 'E';
-            return 'F';
-        }
-
-        window.calcAnimeRank = function() {
-            const getVal = (id) => {
-                const el = document.getElementById(id);
-                let val = parseInt(el ? el.value : 0);
-                if (isNaN(val)) val = 0;
-                return val;
-            };
-            
-            const cats = ['animeStory', 'animeAnim', 'animeCast', 'animeDev', 'animeWorld', 'animePacing', 'animeSound', 'animeVoice', 'animeImpact', 'animeEnjoy'];
-            let total = 0;
-            for(let i=0; i<cats.length; i++) total += getVal(cats[i]);
-            
-            setSafeText('animeTotalScore', total);
-            const rank = getAnimeRankFromScore(total);
-            
-            const rankEl = document.getElementById('animeCalcRank');
-            if(rankEl) {
-                rankEl.innerText = rank;
-                const formatRating = (val) => val === 'S+' ? 'S-plus' : val;
-                rankEl.className = `text-2xl sm:text-3xl font-black px-4 sm:px-5 py-1.5 sm:py-2 rounded-xl border shadow-lg rank-${formatRating(rank)}`;
-            }
-            return { total, rank };
-        };
-
-        window.saveAnime = function() {
-            const title = document.getElementById('animeTitle').value.trim();
-            const reviewer = document.getElementById('animeReviewer').value;
-            const comment = document.getElementById('animeComment').value.trim();
-            if(!title) { showBanner("Bitte einen Titel eingeben!", "error"); return; }
-            if(selectedAnimeGenres.length === 0) { showBanner("Wähle mindestens ein Genre aus!", "error"); return; }
-
-            const { total, rank } = window.calcAnimeRank();
-
-            const anime = { 
-                id: Date.now(), 
-                title, 
-                genres: [...selectedAnimeGenres], 
-                reviewer, 
-                rating: rank, 
-                score: total, 
-                comment, 
-                date: new Date().toLocaleDateString('de-DE') 
-            };
-            
-            if(currentUser && db) {
-                const reviewerAnimes = animes.filter(a => a.reviewer === reviewer);
-                reviewerAnimes.push(anime);
-                reviewerAnimes.sort((a, b) => b.id - a.id);
-                
-                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), reviewer), { animes: reviewerAnimes }).then(() => {
-                    showBanner("Anime im Archiv gespeichert!", "success");
-                    document.getElementById('animeTitle').value = '';
-                    document.getElementById('animeComment').value = '';
-                    selectedAnimeGenres = [];
-                    window.initAnimeGenresUI();
-                    
-                    const cats = ['animeStory', 'animeAnim', 'animeCast', 'animeDev', 'animeWorld', 'animePacing', 'animeSound', 'animeVoice', 'animeImpact', 'animeEnjoy'];
-                    for(let i=0; i<cats.length; i++) {
-                        const el = document.getElementById(cats[i]);
-                        if(el) {
-                            el.value = '5';
-                            // Reset Custom Select UI programmatically
-                            const container = el.nextElementSibling;
-                            if(container && container.classList.contains('custom-select-container')) {
-                                const span = container.querySelector('.truncate');
-                                if(span) span.innerText = '5';
-                                const opts = container.querySelectorAll('.cursor-pointer');
-                                for(let j=0; j<opts.length; j++) {
-                                    if(opts[j].innerText === '5') {
-                                        opts[j].classList.add('text-orange-400', 'font-bold');
-                                        if(opts[j].querySelector('span.text-orange-500')) opts[j].querySelector('span.text-orange-500').style.display = 'inline';
-                                    } else {
-                                        opts[j].classList.remove('text-orange-400', 'font-bold');
-                                        if(opts[j].querySelector('span.text-orange-500')) opts[j].querySelector('span.text-orange-500').style.display = 'none';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    window.calcAnimeRank();
-                });
-            }
-        }
-        
-        window.deleteAnime = function(id) { 
-            if(confirm("Anime unwiderruflich löschen?") && currentUser && db) {
-                const animeToDelete = animes.find(a => a.id === id);
-                if(!animeToDelete) return;
-                const reviewer = animeToDelete.reviewer;
-                const newAnimes = animes.filter(a => a.reviewer === reviewer && a.id !== id);
-                setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), reviewer), { animes: newAnimes });
-            }
-        }
-        
-        window.updateAnimeList = function() {
-            const listBody = document.getElementById('animesListBody'); 
-            const listTitle = document.getElementById('animeListTitle');
-            const actionHead = document.getElementById('animeTableActionHead');
-            if(!listBody) return;
-            const formatRating = (val) => val === 'S+' ? 'S-plus' : val; 
-            
-            let html = '';
-            
-            if (currentAnimeTab === 'Gesamt') {
-                if(listTitle) listTitle.innerText = "Globale Tier-List";
-                if(actionHead) actionHead.innerText = "Infos";
-                
-                const agg = {};
-                for(let i=0; i<animes.length; i++) {
-                    const a = animes[i];
-                    const t = a.title.toLowerCase().trim();
-                    if(!agg[t]) agg[t] = { title: a.title, scoreSum: 0, count: 0, genres: {}, raters: {} };
-                    agg[t].scoreSum += a.score;
-                    agg[t].count++;
-                    
-                    if(a.genres && Array.isArray(a.genres)) {
-                        for(let g=0; g<a.genres.length; g++) agg[t].genres[a.genres[g]] = true;
-                    } else if (a.genre) {
-                        agg[t].genres[a.genre] = true;
-                    }
-                    if(a.reviewer) agg[t].raters[a.reviewer] = true;
-                }
-                
-                const aggregatedList = [];
-                for(const key in agg) {
-                    const g = agg[key];
-                    const avgScore = Math.round(g.scoreSum / g.count);
-                    const rank = getAnimeRankFromScore(avgScore);
-                    
-                    const genreArray = []; for(const gen in g.genres) genreArray.push(gen);
-                    const raterArray = []; for(const r in g.raters) raterArray.push(r);
-                    
-                    aggregatedList.push({
-                        title: g.title, score: avgScore, rank: rank,
-                        genres: genreArray,
-                        raters: raterArray.join(', '),
-                        count: g.count
-                    });
-                }
-                aggregatedList.sort((a, b) => b.score - a.score);
-                
-                setSafeText('animeCount', aggregatedList.length);
-                
-                html = aggregatedList.map((a, i) => {
-                    const badges = a.genres.length > 0 
-                        ? a.genres.map(g => `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">${g}</span>`).join('')
-                        : `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">Unbekannt</span>`;
-                        
-                    return `
-                    <tr class="border-b border-slate-700 hover:bg-white/[0.02] transition-colors">
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 min-w-[200px]">
-                            <div class="text-[11px] sm:text-sm font-black text-white italic tracking-tight mb-1 sm:mb-1.5"><span class="text-slate-500 mr-1">#${i+1}</span> ${a.title}</div>
-                            <div class="flex flex-wrap gap-1 mb-1 sm:mb-2">${badges}</div>
-                            <div class="text-[8px] sm:text-[9px] text-slate-500 mt-1.5 sm:mt-2 font-bold uppercase tracking-widest truncate max-w-[250px] sm:max-w-md">Gesehen von: ${a.raters}</div>
-                        </td>
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
-                            <span class="text-[10px] sm:text-xs font-black text-slate-300 bg-black/20 px-1.5 sm:px-2 py-1 rounded-md border border-slate-700">${a.score}/100 Ø</span>
-                        </td>
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
-                            <span class="text-[10px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border rank-${formatRating(a.rank)}">${a.rank}</span>
-                        </td>
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-right align-middle whitespace-nowrap">
-                            <span class="text-[8px] sm:text-[9px] font-black text-slate-500 bg-black/20 px-1.5 sm:px-2 py-1 rounded-lg">${a.count} Votes</span>
-                        </td>
-                    </tr>
-                `}).join('');
-                
-            } else {
-                if(listTitle) listTitle.innerText = `Archiv: ${currentAnimeTab}`;
-                if(actionHead) actionHead.innerText = "Aktion";
-                
-                const filtered = animes.filter(a => a.reviewer === currentAnimeTab);
-                setSafeText('animeCount', filtered.length);
-                
-                html = filtered.map(a => {
-                    const gList = (a.genres && Array.isArray(a.genres)) ? a.genres : (a.genre ? [a.genre] : []);
-                    const badges = gList.length > 0 
-                        ? gList.map(g => `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">${g}</span>`).join('')
-                        : `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">Unbekannt</span>`;
-                    
-                    return `
-                    <tr class="border-b border-slate-700 hover:bg-white/[0.02] transition-colors group">
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 min-w-[200px]">
-                            <div class="text-[11px] sm:text-sm font-black text-white italic tracking-tight mb-1 sm:mb-1.5">${a.title}</div>
-                            <div class="flex flex-wrap gap-1 mb-1 sm:mb-2">${badges}</div>
-                            ${a.comment ? `<div class="text-[9px] sm:text-[10px] text-slate-400 italic line-clamp-2 max-w-[250px] sm:max-w-md">"${a.comment}"</div>` : ''}
-                            <div class="text-[8px] sm:text-[9px] text-slate-600 mt-1.5 sm:mt-2 font-bold uppercase tracking-widest">${a.date}</div>
-                        </td>
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
-                            <span class="text-[10px] sm:text-xs font-black text-slate-300 bg-black/20 px-1.5 sm:px-2 py-1 rounded-md border border-slate-700">${a.score !== undefined ? a.score : '-'}/100</span>
-                        </td>
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
-                            <span class="text-[10px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border rank-${formatRating(a.rating)}">${a.rating}</span>
-                        </td>
-                        <td class="py-3 sm:py-4 px-2 sm:px-4 text-right align-middle whitespace-nowrap">
-                            <button onclick="window.deleteAnime(${a.id})" class="opacity-0 group-hover:opacity-100 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-1.5 sm:p-2 rounded-lg transition-all">🗑️</button>
-                        </td>
-                    </tr>
-                `}).join('');
-            }
-            listBody.innerHTML = html;
-        }
-
-        window.toggleDetails = function(pName) {
-            const el = document.getElementById(`details-${pName}`);
-            const btn = document.getElementById(`btn-${pName}`);
-            if(!el || !btn) return;
-            if(el.classList.contains('open')) { 
-                el.classList.remove('open'); 
-                btn.innerText = "Details Anzeigen"; 
-                openPlayerDetails.delete(pName); 
-            } else { 
-                el.classList.add('open'); 
-                btn.innerText = "Details Ausblenden"; 
-                openPlayerDetails.add(pName); 
-            }
-        }
-
         window.updateDashboard = function() {
             const filtered = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
             const total = filtered.length, wins = filtered.filter(m => m.result === 'Win').length, leavers = filtered.filter(m => m.leaver).length, losses = total - wins;
             setSafeText('globalWinrate', total > 0 ? Math.round((wins / total) * 100) + "%" : ""); setSafeText('globalMatches', total); setSafeText('globalWins', wins); setSafeText('globalLosses', losses); setSafeText('globalLeavers', leavers); setSafeText('globalLeaverPerc', total > 0 ? Math.round((leavers / total) * 100) + "%" : ""); setSafeText('lastPlayedDate', filtered.length > 0 ? filtered[0].date : "-");
             updateStatsChart(wins, losses);
             
-            // Draw Chart Center Text manually here to keep it perfectly responsive
             document.getElementById('chartCenterText').innerText = total > 0 ? Math.round((wins / total) * 100) + "%" : "0%";
             
             let curW = 0, curL = 0, maxW = 0, maxL = 0;
@@ -1527,6 +1462,21 @@
             statsChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: hasData ? [wins, losses] : [1], backgroundColor: hasData ? ['#22c55e', '#ef4444'] : ['#334155'], borderColor: 'transparent', borderWidth: 0, cutout: '78%', borderRadius: 10 }] }, options: { plugins: { legend: { display: false } }, animation: { duration: 1200 } } });
         }
 
+        window.toggleDetails = function(pName) {
+            const el = document.getElementById(`details-${pName}`);
+            const btn = document.getElementById(`btn-${pName}`);
+            if(!el || !btn) return;
+            if(el.classList.contains('open')) { 
+                el.classList.remove('open'); 
+                btn.innerText = "Details Anzeigen"; 
+                openPlayerDetails.delete(pName); 
+            } else { 
+                el.classList.add('open'); 
+                btn.innerText = "Details Ausblenden"; 
+                openPlayerDetails.add(pName); 
+            }
+        }
+
         window.updatePlayerDashboards = function() {
             const grid = document.getElementById('playersGrid'); if(!grid) return; grid.innerHTML = "";
             const seasonMatches = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
@@ -1622,7 +1572,10 @@
 
             list.innerHTML = `<div class="glass-card flex flex-col border border-slate-700">` + filteredMatches.slice(0, 15).map(m => `
                 <div class="p-4 sm:p-5 border-b border-slate-700/50 hover:bg-white/[0.02] transition-colors relative group flex flex-col md:flex-row md:items-center justify-between gap-4 last:border-0">
-                    <button onclick="window.deleteMatch(${m.id})" class="absolute right-4 top-4 md:top-1/2 md:-translate-y-1/2 p-1.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10">🗑️</button>
+                    <div class="absolute right-4 sm:right-6 top-4 md:top-1/2 md:-translate-y-1/2 flex items-center gap-2 z-10 opacity-0 group-hover:opacity-100 transition-all">
+                        <button onclick="window.editMatch(${m.id})" class="p-1.5 bg-blue-500/10 hover:bg-blue-500 text-blue-500 hover:text-white rounded-lg transition-all" title="Bearbeiten">✏️</button>
+                        <button onclick="window.deleteMatch(${m.id})" class="p-1.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition-all" title="Löschen">🗑️</button>
+                    </div>
                     
                     <div class="flex flex-col gap-1.5">
                         <div class="flex items-center gap-3">
@@ -1637,7 +1590,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex flex-wrap md:justify-end gap-1.5 w-full md:w-auto md:pr-12">
+                    <div class="flex flex-wrap md:justify-end gap-1.5 w-full md:w-auto md:pr-16">
                         ${(m.players || []).map(p => {
                             let heroStr = '';
                             if(p.heroes && p.heroes.length > 0) heroStr = p.heroes.join(', ');
@@ -1664,6 +1617,7 @@
         // --- CHANGELOG LOGIC ---
         const changelogs = [
             // KI: Ab hier neue Versionen eintragen
+            { version: "1.34.00", date: "31.03.2026", changes: ["Edit-Funktion für Matches hinzugefügt", "Matches können im Nachhinein komfortabel bearbeitet werden", "Automatischer Cloud-Sync bei versehentlich falsch gewählter Season"] },
             { version: "1.33.00", date: "30.03.2026", changes: ["Komplettes Dashboard Redesign", "10er Listen Layout verbessert & Scrollbalken entfernt", "Match Historie als zentrierte Guss-Tabelle", "Prozentzahl direkt ins Kuchendiagramm verlagert", "Ticket/Changelog Overlay Filter Fix"] },
             { version: "1.32.00", date: "30.03.2026", changes: ["Neuer 'Changelogs' Tab hinzugefügt", "Automatische Pflege der Patch-Notes durch KI implementiert"] },
             { version: "1.31.00", date: "30.03.2026", changes: ["Verbessertes Match History UI", "Bessere Skalierung und Konturen bei Team-Setups", "Zentrierung der Sieges/Niederlage Anzeige"] },
@@ -1715,7 +1669,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.33.00
+        v.1.34.00
     </div>
 </body>
 </html>
