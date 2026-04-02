@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.36.00 - Added Player Roles to Best Teams / Hard Matches -->
+<!-- Version: 1.38.00 - Critical Bugfix: Removed duplicate HTML blocks causing invisible data -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -256,7 +256,7 @@
                         <span class="w-2 h-2 bg-purple-500 rounded-full shadow-[0_0_8px_rgba(168,85,247,0.8)]"></span>
                         <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Top 10 Helden</h3>
                     </div>
-                    <div id="topHeroes" class="flex flex-col max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                    <div id="topHeroes" class="flex flex-col"></div>
                 </div>
                 
                 <div class="glass-card flex flex-col overflow-hidden">
@@ -264,7 +264,7 @@
                         <span class="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
                         <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Top 10 Maps</h3>
                     </div>
-                    <div id="topMaps" class="flex flex-col max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                    <div id="topMaps" class="flex flex-col"></div>
                 </div>
                 
                 <div class="glass-card flex flex-col overflow-hidden">
@@ -272,7 +272,7 @@
                         <span class="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
                         <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Best Teams</h3>
                     </div>
-                    <div id="bestCombos" class="flex flex-col max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                    <div id="bestCombos" class="flex flex-col"></div>
                 </div>
                 
                 <div class="glass-card flex flex-col overflow-hidden">
@@ -280,7 +280,7 @@
                         <span class="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
                         <h3 class="text-[11px] font-black uppercase text-slate-300 tracking-[0.2em]">Hard Matches</h3>
                     </div>
-                    <div id="worstCombos" class="flex flex-col max-h-[320px] overflow-y-auto custom-scrollbar pr-2"></div>
+                    <div id="worstCombos" class="flex flex-col"></div>
                 </div>
             </div>
         </div>
@@ -304,7 +304,6 @@
                 </div>
                 
                 <div class="space-y-6 border-t border-slate-700 pt-6 sm:pt-8">
-                    <!-- Top Reihe: Titel, Bewerter, Genres -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="space-y-2 md:col-span-2">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Titel des Animes</label>
@@ -317,12 +316,10 @@
                         <div class="space-y-2 md:col-span-3">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Genres (Mehrfachauswahl)</label>
                             <div id="animeGenreContainer" class="flex flex-wrap gap-2 bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl max-h-[140px] overflow-y-auto custom-scrollbar shadow-inner">
-                                <!-- JS Injected Buttons (Checkboxes) -->
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Mitte: 10 Kategorien ausgeschrieben mit Infos -->
                     <div class="space-y-2 pt-2">
                         <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-1 block">Punktevergabe (1 - 10)</label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
@@ -399,7 +396,6 @@
                         </div>
                     </div>
 
-                    <!-- Unten: Fazit & Ergebnis -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-2">
                         <div class="md:col-span-2 space-y-2">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
@@ -478,7 +474,6 @@
                 </div>
             </div>
             
-            <!-- Compact List -->
             <div class="glass-card p-6 sm:p-8 flex flex-col border border-slate-700">
                 <div class="flex gap-2 overflow-x-auto hide-scroll pb-3 mb-4 sm:mb-6 border-b border-slate-700" id="animeTabsContainer">
                     <!-- JS injected Subtabs -->
@@ -504,6 +499,123 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- TICKETS -->
+        <div id="page-tickets" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 animate-in">
+            <div class="md:col-span-2 glass-card p-6 sm:p-10 space-y-6 sm:space-y-8 h-fit">
+                <div class="flex items-center gap-4 sm:gap-5">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 border border-red-500/20 shadow-lg shadow-red-500/5 shrink-0">
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-black italic uppercase tracking-tighter">Support</h2>
+                        <p class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Feedback & Bugs</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kategorie</label>
+                        <select id="ticketType" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white">
+                            <option value="Problem">⚠️ Problem / Bug</option>
+                            <option value="Feature">✨ Feature Vorschlag</option>
+                            <option value="Content">🗺️ Fehlendes</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Absender</label>
+                        <input type="text" id="ticketAuthor" placeholder="Dein Name" class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white">
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nachricht</label>
+                    <textarea id="ticketMessage" rows="5" placeholder="..." class="w-full bg-[#1e293b] border border-white/10 p-4 sm:p-5 rounded-xl outline-none text-xs sm:text-sm font-medium text-slate-200 resize-none"></textarea>
+                </div>
+                <button onclick="window.saveTicket()" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-black uppercase tracking-[0.2em] shadow-lg transition-all hover:scale-[1.01] text-xs sm:text-sm">
+                    Absenden
+                </button>
+            </div>
+            <div class="glass-card p-6 space-y-6 flex flex-col border border-slate-700">
+                <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Alle Tickets</h2>
+                <div id="ticketsList" class="space-y-4 overflow-y-auto max-h-[600px] custom-scrollbar pr-2"></div>
+            </div>
+        </div>
+
+        <!-- ENTRY -->
+        <div id="page-entry" class="page hidden grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 animate-in">
+            <div class="md:col-span-2 glass-card p-6 sm:p-10 space-y-6 sm:space-y-8">
+                <h2 id="entryFormTitle" class="text-2xl font-black italic uppercase tracking-tighter transition-colors">Match Logbuch</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Season</label>
+                        <select id="matchSeason" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm text-orange-500 font-black italic">
+                            <option value="21" selected>Season 21</option>
+                            <option value="22">Season 22</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Modus</label>
+                        <div class="flex gap-2 sm:gap-3">
+                            <button onclick="window.setMatchType('Rangliste')" id="typeRanked" class="flex-1 py-3 sm:py-4 btn-toggle active text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Rangliste</button>
+                            <button onclick="window.setMatchType('Stadion')" id="typeStadium" class="flex-1 py-3 sm:py-4 btn-toggle text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Stadion</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Ergebnis</label>
+                        <div class="flex gap-2 sm:gap-3">
+                            <button onclick="window.setResult('Win')" id="resWin" class="flex-1 py-3 sm:py-4 btn-toggle active border-green-500/40 text-green-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Win</button>
+                            <button onclick="window.setResult('Lose')" id="resLoss" class="flex-1 py-3 sm:py-4 btn-toggle border-red-500/40 text-red-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Lose</button>
+                        </div>
+                    </div>
+                    <div class="space-y-2 min-w-0">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Lobby Rang</label>
+                        <div class="flex items-center gap-2 sm:gap-3 w-full bg-[#1e293b] border border-white/10 p-1.5 sm:p-2 rounded-xl">
+                            <select id="matchRankStart" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-[10px] sm:text-xs font-bold"></select>
+                            <span class="text-slate-600 font-black text-[9px] sm:text-[10px] uppercase">bis</span>
+                            <select id="matchRankEnd" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-[10px] sm:text-xs font-bold"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="space-y-2" id="mapContainer">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Karte / Arena</label>
+                        <select id="matchMap" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white"></select>
+                    </div>
+                    <div class="space-y-2 hidden" id="punkteContainer">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Punkte Score</label>
+                        <input type="text" id="matchScore" placeholder="12.500" class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white">
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-red-500/5 rounded-2xl border border-red-500/20 w-max">
+                    <input type="checkbox" id="matchLeaver" class="w-4 h-4 sm:w-5 sm:h-5 rounded-md border-white/20 bg-[#0f172a] accent-red-500 cursor-pointer">
+                    <label for="matchLeaver" class="text-[10px] sm:text-[11px] font-black text-red-400 uppercase tracking-widest cursor-pointer">Leaver Vorfall?</label>
+                </div>
+                <div class="pt-6 sm:pt-8 border-t border-slate-700 space-y-4 sm:space-y-5">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-[10px] sm:text-xs font-black uppercase text-slate-400 tracking-[0.2em]">Team Setup</h3>
+                        <span class="text-[9px] text-slate-500 italic bg-black/20 px-2 py-1 rounded">Ranked = Mehrfachauswahl möglich</span>
+                    </div>
+                    <div id="matchPlayersList" class="space-y-3 sm:space-y-4"></div>
+                    <button onclick="window.addPlayerToMatch()" id="btnAddPlayer" class="text-[9px] sm:text-[10px] font-black text-blue-400 hover:text-white transition-all uppercase bg-blue-500/10 hover:bg-blue-600 px-3 sm:px-4 py-2 rounded-xl border border-blue-500/20">+ Spieler</button>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="window.cancelEdit()" id="btnCancelEdit" class="hidden w-1/3 py-4 sm:py-5 bg-slate-700 hover:bg-slate-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-[1.01] text-xs sm:text-sm">
+                        Abbrechen
+                    </button>
+                    <button onclick="window.saveMatch()" id="btnSaveMatch" class="w-full py-4 sm:py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-[0.3em] shadow-xl transition-all hover:scale-[1.01] text-xs sm:text-sm">
+                        Match Speichern
+                    </button>
+                </div>
+            </div>
+            <div class="glass-card flex flex-col border border-slate-700 pt-6">
+                <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
+                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
+                </div>
+                <!-- Clean seamless list container -->
+                <div id="recentMatchesList" class="flex flex-col"></div>
             </div>
         </div>
 
@@ -828,11 +940,13 @@
             });
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), (docSnap) => {
                 if (docSnap.exists()) playerRanks = docSnap.data();
-                if (!document.getElementById('page-players').classList.contains('hidden')) window.updatePlayerDashboards();
+                const pPage = document.getElementById('page-players');
+                if (pPage && !pPage.classList.contains('hidden')) window.updatePlayerDashboards();
             });
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), (snapshot) => {
                 tickets = snapshot.docs.map(d => d.data()).sort((a, b) => b.id - a.id);
-                if (!document.getElementById('page-tickets').classList.contains('hidden')) window.updateTicketsList();
+                const tPage = document.getElementById('page-tickets');
+                if (tPage && !tPage.classList.contains('hidden')) window.updateTicketsList();
             });
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'anime_lists'), (snapshot) => {
                 let loadedAnimes = [];
@@ -843,7 +957,8 @@
                     }
                 });
                 animes = loadedAnimes.sort((a, b) => (b.id || 0) - (a.id || 0));
-                if (!document.getElementById('page-anime').classList.contains('hidden')) window.updateAnimeList();
+                const aPage = document.getElementById('page-anime');
+                if (aPage && !aPage.classList.contains('hidden')) window.updateAnimeList();
             });
         }
 
@@ -1512,6 +1627,8 @@
         // --- CHANGELOG LOGIC ---
         const changelogs = [
             // KI: Ab hier neue Versionen eintragen
+            { version: "1.38.00", date: "02.04.2026", changes: ["Kritischer Bugfix: Duplizierter HTML-Code entfernt (Daten der Anime-Liste werden wieder korrekt angezeigt)"] },
+            { version: "1.37.00", date: "01.04.2026", changes: ["Bugfix: Fehler beim Laden der Datenbank behoben (Cannot read properties of null 'classList')"] },
             { version: "1.36.00", date: "31.03.2026", changes: ["Best Teams und Hard Matches im Dashboard zeigen nun zusätzlich die gespielte Rolle der jeweiligen Spieler an (z.B. Tank, DPS)."] },
             { version: "1.35.00", date: "31.03.2026", changes: ["Top 10 Helden im Dashboard benötigen nun mindestens 10 Matches für eine Platzierung (verhindert 100% Winrate bei 1 Match)"] },
             { version: "1.34.00", date: "31.03.2026", changes: ["Edit-Funktion für Matches hinzugefügt", "Matches können im Nachhinein komfortabel bearbeitet werden", "Automatischer Cloud-Sync bei versehentlich falsch gewählter Season"] },
@@ -1566,7 +1683,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.36.00
+        v.1.38.00
     </div>
 </body>
 </html>
