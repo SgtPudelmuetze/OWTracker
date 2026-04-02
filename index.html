@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.40.00 - Bugfix: Fixed truncated code causing SyntaxError -->
+<!-- Version: 1.41.00 - Complete Anime Tab Rewrite (Sliders), Cleaned HTML Duplicates & Fixed State Bugs -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -141,6 +141,25 @@
         input[type="number"] { -moz-appearance: textfield; }
         
         .anime-tab { transition: all 0.3s; white-space: nowrap; }
+
+        /* Range Slider Styling */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #eab308;
+            cursor: pointer;
+            margin-top: -5px;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -186,7 +205,7 @@
         </div>
     </div>
 
-    <!-- MAIN CONTAINER (Absolutely clean, no duplicates) -->
+    <!-- MAIN CONTAINER -->
     <main class="max-w-[1500px] mx-auto p-4 sm:p-8">
 
         <!-- ==================== DASHBOARD PAGE ==================== -->
@@ -249,7 +268,7 @@
                 </div>
             </div>
 
-            <!-- Top 10 Lists Row (No max-height, seamless design) -->
+            <!-- Top 10 Lists Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-4">
                 <div class="glass-card flex flex-col overflow-hidden">
                     <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.02]">
@@ -362,7 +381,6 @@
                 <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
                     <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
                 </div>
-                <!-- Clean seamless list container -->
                 <div id="recentMatchesList" class="flex flex-col"></div>
             </div>
         </div>
@@ -399,85 +417,125 @@
                         </div>
                     </div>
                     
-                    <!-- Mitte: 10 Kategorien ausgeschrieben mit Infos -->
-                    <div class="space-y-2 pt-2">
-                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-1 block">Punktevergabe (1 - 10)</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Story & Plot</span>
-                                    <div title="Wie fesselnd, logisch und tiefgründig die Handlung ist." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                    <!-- Mitte: 10 Kategorien als Slider für extrem schnelle Eingabe -->
+                    <div class="space-y-4 pt-2">
+                        <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Punktevergabe (1 - 10) über Slider</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                            <!-- Category 1 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Story & Plot</span>
+                                        <div title="Wie fesselnd, logisch und tiefgründig die Handlung ist." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animeStory" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animeStory" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeStory" min="1" max="10" value="5" oninput="window.updateSlider('animeStory'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Animation</span>
-                                    <div title="Qualität der Zeichnungen, flüssige Bewegungen und Effekte." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                            <!-- Category 2 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Animation</span>
+                                        <div title="Qualität der Zeichnungen, flüssige Bewegungen und Effekte." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animeAnim" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animeAnim" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeAnim" min="1" max="10" value="5" oninput="window.updateSlider('animeAnim'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Charaktere</span>
-                                    <div title="Wie sympathisch, interessant und relevant der Cast ist." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                            <!-- Category 3 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Charaktere</span>
+                                        <div title="Wie sympathisch, interessant und relevant der Cast ist." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animeCast" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animeCast" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeCast" min="1" max="10" value="5" oninput="window.updateSlider('animeCast'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 truncate">Charakterentwicklung</span>
-                                    <div title="Wachstum und Reifung der Figuren im Verlauf der Serie." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic shrink-0">i</div>
+                            <!-- Category 4 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Charakterentwicklung</span>
+                                        <div title="Wachstum und Reifung der Figuren im Verlauf der Serie." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic shrink-0">i</div>
+                                    </div>
+                                    <span id="val_animeDev" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded shrink-0">5</span>
                                 </div>
-                                <select id="animeDev" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeDev" min="1" max="10" value="5" oninput="window.updateSlider('animeDev'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Worldbuilding</span>
-                                    <div title="Wie detailliert und faszinierend die Anime-Welt gestaltet ist." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                            <!-- Category 5 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Worldbuilding</span>
+                                        <div title="Wie detailliert und faszinierend die Anime-Welt gestaltet ist." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animeWorld" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animeWorld" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeWorld" min="1" max="10" value="5" oninput="window.updateSlider('animeWorld'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Erzähltempo</span>
-                                    <div title="Das Pacing der Serie – weder zu gehetzt noch zu gestreckt." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                            <!-- Category 6 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Erzähltempo</span>
+                                        <div title="Das Pacing der Serie – weder zu gehetzt noch zu gestreckt." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animePacing" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animePacing" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animePacing" min="1" max="10" value="5" oninput="window.updateSlider('animePacing'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Soundtrack</span>
-                                    <div title="Qualität von Hintergrundmusik, Openings und Endings." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                            <!-- Category 7 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Soundtrack</span>
+                                        <div title="Qualität von Hintergrundmusik, Openings und Endings." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animeSound" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animeSound" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeSound" min="1" max="10" value="5" oninput="window.updateSlider('animeSound'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Synchronisation</span>
-                                    <div title="Leistung der Synchronsprecher (Seiyū) und emotionale Tiefe." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                            <!-- Category 8 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Synchronisation</span>
+                                        <div title="Leistung der Synchronsprecher (Seiyū) und emotionale Tiefe." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animeVoice" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animeVoice" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeVoice" min="1" max="10" value="5" oninput="window.updateSlider('animeVoice'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-[#0f172a] border border-slate-700 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 truncate">Emotionale Wirkung</span>
-                                    <div title="Wie stark dich der Anime emotional berührt und mitreißt." class="cursor-help w-3 h-3 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic shrink-0">i</div>
+                            <!-- Category 9 -->
+                            <div class="bg-[#0f172a] border border-slate-700 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Emotionale Wirkung</span>
+                                        <div title="Wie stark dich der Anime emotional berührt und mitreißt." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-slate-600 hover:bg-slate-400 text-white text-[8px] rounded-full transition-colors font-serif italic shrink-0">i</div>
+                                    </div>
+                                    <span id="val_animeImpact" class="text-xs font-black text-white bg-black/40 border border-slate-700 px-2 py-0.5 rounded shrink-0">5</span>
                                 </div>
-                                <select id="animeImpact" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-white"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeImpact" min="1" max="10" value="5" oninput="window.updateSlider('animeImpact'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
-                            <div class="flex items-center justify-between bg-gradient-to-r from-[#0f172a] to-[#1e293b] border border-yellow-500/30 p-2.5 rounded-lg">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-yellow-500 uppercase tracking-widest ml-1">Spaßfaktor</span>
-                                    <div title="Dein persönliches Enjoyment, unabhängig von objektiven Kriterien." class="cursor-help w-3 h-3 flex items-center justify-center bg-yellow-500/20 hover:bg-yellow-500/40 text-yellow-500 text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                            <!-- Category 10 -->
+                            <div class="bg-gradient-to-r from-[#0f172a] to-[#1e293b] border border-yellow-500/30 p-3.5 rounded-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Spaßfaktor</span>
+                                        <div title="Dein persönliches Enjoyment, unabhängig von objektiven Kriterien." class="cursor-help w-3.5 h-3.5 flex items-center justify-center bg-yellow-500/20 hover:bg-yellow-500/40 text-yellow-500 text-[8px] rounded-full transition-colors font-serif italic">i</div>
+                                    </div>
+                                    <span id="val_animeEnjoy" class="text-xs font-black text-yellow-500 bg-yellow-500/10 border border-yellow-500/30 px-2 py-0.5 rounded">5</span>
                                 </div>
-                                <select id="animeEnjoy" onchange="window.calcAnimeRank()" class="custom-select bg-transparent text-sm font-bold text-yellow-500"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                                <input type="range" id="animeEnjoy" min="1" max="10" value="5" oninput="window.updateSlider('animeEnjoy'); window.calcAnimeRank()" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
                         </div>
                     </div>
 
                     <!-- Unten: Fazit & Ergebnis -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-2">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-4">
                         <div class="md:col-span-2 space-y-2">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
                             <textarea id="animeComment" rows="2" placeholder="Was hat dir gefallen? Was nicht?" class="w-full h-[calc(100%-24px)] min-h-[60px] bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs font-medium text-slate-200 focus:border-yellow-500 transition-colors resize-none"></textarea>
@@ -498,7 +556,7 @@
                 </button>
             </div>
 
-            <!-- Anime Legende (Auffälliger & Einklappbar) -->
+            <!-- Anime Legende -->
             <div class="glass-card border-slate-700 overflow-hidden">
                 <div class="flex items-center justify-between cursor-pointer group bg-yellow-500/10 border-b border-yellow-500/30 p-4 sm:p-6 hover:bg-yellow-500/20 transition-all" onclick="document.getElementById('animeLegendContent').classList.toggle('hidden')">
                     <div class="flex items-center gap-3">
@@ -555,6 +613,7 @@
                 </div>
             </div>
             
+            <!-- Anime List -->
             <div class="glass-card p-6 sm:p-8 flex flex-col border border-slate-700">
                 <div class="flex gap-2 overflow-x-auto hide-scroll pb-3 mb-4 sm:mb-6 border-b border-slate-700" id="animeTabsContainer">
                     <!-- JS injected Subtabs -->
@@ -786,6 +845,14 @@
             }
             window.initAnimeGenresUI();
         }
+
+        window.updateSlider = function(id) {
+            const el = document.getElementById(id);
+            const valEl = document.getElementById('val_' + id);
+            if(el && valEl) {
+                valEl.innerText = el.value;
+            }
+        };
 
         function initCustomSelects() {
             const selects = document.querySelectorAll('select.custom-select');
@@ -1628,9 +1695,18 @@
             setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${matchToDelete.season}`), { matches: seasonMatches }).then(() => { showBanner("Gelöscht!", "success"); deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), id.toString())).catch(()=>{}); }); 
         }
         
+        window.updateSlider = function(id) {
+            const el = document.getElementById(id);
+            const valEl = document.getElementById('val_' + id);
+            if(el && valEl) {
+                valEl.innerText = el.value;
+            }
+        };
+
         // --- CHANGELOG LOGIC ---
         const changelogs = [
             // KI: Ab hier neue Versionen eintragen
+            { version: "1.41.00", date: "02.04.2026", changes: ["Anime-Tab komplett neu geschrieben: Schnelle Eingabe via Slider (Schieberegler)", "Alle HTML-Duplikate restlos entfernt (behebt unsichtbare Daten und kaputte Buttons)", "Performance-Verbesserung im gesamten Dashboard"] },
             { version: "1.40.00", date: "02.04.2026", changes: ["Kritischer Bugfix: Abgeschnittenen Code im Hintergrund behoben (Syntax Error / Unexpected end of input eliminiert)"] },
             { version: "1.39.00", date: "02.04.2026", changes: ["Kritischer Bugfix: Duplizierter HTML-Code entfernt (Daten der Anime-Liste werden wieder korrekt angezeigt)"] },
             { version: "1.38.00", date: "02.04.2026", changes: ["Kritischer Bugfix: Duplizierter HTML-Code entfernt (Daten der Anime-Liste werden wieder korrekt angezeigt)"] },
@@ -1689,7 +1765,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.40.00
+        v.1.41.00
     </div>
 </body>
 </html>
