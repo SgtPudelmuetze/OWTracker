@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.43.00 - Critical Bugfix: Restored accidentally deleted Anime JavaScript Logic (Slider calc, save, render list) -->
+<!-- Version: 1.46.00 - Feature: Search input in dropdowns is automatically focused upon opening -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -379,6 +379,7 @@
                 <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
                     <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
                 </div>
+                <!-- Clean seamless list container -->
                 <div id="recentMatchesList" class="flex flex-col"></div>
             </div>
         </div>
@@ -718,6 +719,7 @@
         let currentAnimeTab = 'Gesamt';
         let selectedAnimeGenres = [];
         
+        // Editing Logic State
         let editingMatchId = null;
         let editingMatchOriginalSeason = null;
         
@@ -746,7 +748,7 @@
                 "Hybrid": ["Blizzard World", "Eichenwalde", "Hollywood", "King's Row", "Midtown", "Numbani", "Paraíso"].sort(),
                 "Escort": ["Circuit Royal", "Dorado", "Havana", "Junkertown", "Rialto", "Route 66", "Shambali Monastery", "Watchpoint: Gibraltar"].sort(),
                 "Control": ["Antarctic Peninsula", "Busan", "Ilios", "Lijiang Tower", "Nepal", "Oasis", "Samoa"].sort(),
-                "Clash": ["Hanaoka", "Throne of Anubis"].sort()
+                "Clash": ["Aatlis", "Hanaoka", "Throne of Anubis"].sort()
             },
             stadium: {
                 "Stadium": ["Busan Stadium", "Estádio das Rãs", "Sydney Harbour Arena"].sort()
@@ -762,6 +764,13 @@
             "Psychological", "Romance", "School", "Sci-Fi", "Seinen", "Shōjo", "Shōnen", 
             "Slice of Life", "Sports", "Supernatural", "Thriller"
         ];
+
+        function formatShortDate(dStr) {
+            if(!dStr) return '';
+            const p = dStr.split('.');
+            if(p.length === 3) return p[0].padStart(2, '0') + '.' + p[1].padStart(2, '0') + '.' + p[2].slice(-2);
+            return dStr.slice(0,5);
+        }
 
         function setSafeText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
 
@@ -819,7 +828,7 @@
             const anime = { 
                 id: Date.now(), 
                 title, 
-                genres: [...selectedAnimeGenres], 
+                genres: [...selectedAnimeGenres].sort(), 
                 reviewer, 
                 rating: rank, 
                 score: total, 
@@ -898,6 +907,7 @@
                     const rank = getAnimeRankFromScore(avgScore);
                     
                     const genreArray = []; for(const gen in g.genres) genreArray.push(gen);
+                    genreArray.sort();
                     const raterArray = []; for(const r in g.raters) raterArray.push(r);
                     
                     aggregatedList.push({
@@ -944,6 +954,7 @@
                 
                 html = filtered.map(a => {
                     const gList = (a.genres && Array.isArray(a.genres)) ? a.genres : (a.genre ? [a.genre] : []);
+                    gList.sort();
                     const badges = gList.length > 0 
                         ? gList.map(g => `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">${g}</span>`).join('')
                         : `<span class="text-[7px] sm:text-[8px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-widest inline-block">Unbekannt</span>`;
@@ -1078,9 +1089,11 @@
                 dropdown.className = 'absolute left-0 top-[calc(100%+4px)] min-w-full w-max bg-[#1e293b] border border-slate-700 rounded-xl shadow-2xl opacity-0 invisible transition-all z-[100] max-h-60 overflow-y-auto custom-scrollbar';
                 if (select.classList.contains('text-right')) { dropdown.classList.replace('left-0', 'right-0'); }
                 
-                container.addEventListener('blur', () => { 
-                    dropdown.classList.remove('opacity-100', 'visible'); 
-                    dropdown.classList.add('opacity-0', 'invisible'); 
+                container.addEventListener('focusout', (e) => { 
+                    if (!container.contains(e.relatedTarget)) {
+                        dropdown.classList.remove('opacity-100', 'visible'); 
+                        dropdown.classList.add('opacity-0', 'invisible'); 
+                    }
                 });
                 
                 trigger.addEventListener('click', () => { 
@@ -1093,9 +1106,48 @@
                     if (!isOpen) {
                         dropdown.classList.remove('opacity-0', 'invisible');
                         dropdown.classList.add('opacity-100', 'visible');
-                        container.focus();
+                        const searchInp = dropdown.querySelector('input[type="text"]');
+                        if(searchInp) { 
+                            searchInp.value = ''; 
+                            searchInp.dispatchEvent(new Event('input')); 
+                            setTimeout(() => searchInp.focus(), 50); 
+                        } else {
+                            container.focus();
+                        }
                     }
                 });
+
+                if (select.options.length > 6) {
+                    const searchContainer = document.createElement('div');
+                    searchContainer.className = 'sticky top-0 bg-[#1e293b] z-20 p-2 border-b border-slate-700';
+                    const searchInput = document.createElement('input');
+                    searchInput.type = 'text';
+                    searchInput.placeholder = 'Suchen...';
+                    searchInput.className = 'w-full bg-[#0f172a] border border-slate-700 rounded p-1.5 text-[10px] sm:text-xs text-white outline-none';
+                    searchInput.onclick = (e) => e.stopPropagation();
+                    searchInput.onkeydown = (e) => e.stopPropagation();
+                    searchInput.oninput = (e) => {
+                        const term = e.target.value.toLowerCase();
+                        const items = dropdown.querySelectorAll('.select-item-row');
+                        items.forEach(item => {
+                            const text = item.querySelector('span').innerText.toLowerCase();
+                            if(text.includes(term)) item.style.display = 'flex';
+                            else item.style.display = 'none';
+                        });
+                        const groups = dropdown.querySelectorAll('.optgroup-label');
+                        groups.forEach(g => {
+                            let hasVisible = false;
+                            let next = g.nextElementSibling;
+                            while(next && next.classList.contains('select-item-row')) {
+                                if(next.style.display !== 'none') hasVisible = true;
+                                next = next.nextElementSibling;
+                            }
+                            g.style.display = hasVisible ? 'block' : 'none';
+                        });
+                    };
+                    searchContainer.appendChild(searchInput);
+                    dropdown.appendChild(searchContainer);
+                }
 
                 const children = select.children;
                 let optIndex = 0;
@@ -1103,7 +1155,7 @@
                     const child = children[i];
                     if (child.tagName === 'OPTGROUP') {
                         const groupLabel = document.createElement('div');
-                        groupLabel.className = 'px-4 py-2 text-[9px] font-black text-slate-500 uppercase bg-[#0f172a] sticky top-0 border-y border-slate-700';
+                        groupLabel.className = 'optgroup-label px-4 py-2 text-[9px] font-black text-slate-500 uppercase bg-[#0f172a] sticky top-0 border-y border-slate-700';
                         groupLabel.innerText = child.label; dropdown.appendChild(groupLabel);
                         const options = child.querySelectorAll('option');
                         for(let j = 0; j < options.length; j++) {
@@ -1120,7 +1172,7 @@
         
         function addOption(opt, dropdown, select, updateTrigger, isMulti, index) {
             const item = document.createElement('div');
-            item.className = 'px-4 py-2.5 text-[10px] sm:text-xs text-slate-300 hover:bg-white/10 cursor-pointer transition-colors border-b border-slate-700 last:border-0 whitespace-nowrap flex items-center justify-between';
+            item.className = 'select-item-row px-4 py-2.5 text-[10px] sm:text-xs text-slate-300 hover:bg-white/10 cursor-pointer transition-colors border-b border-slate-700 last:border-0 whitespace-nowrap flex items-center justify-between';
             
             const textSpan = document.createElement('span');
             textSpan.innerText = opt.text;
@@ -1409,6 +1461,7 @@
             if(btn && list) btn.disabled = list.children.length >= 5;
         }
 
+        // --- EDIT MATCH LOGIC ---
         window.editMatch = function(id) {
             const match = matches.find(m => m.id === id);
             if (!match) return;
@@ -1656,7 +1709,14 @@
                 } 
             });
             
-            const sorted = []; for(const k in combos) sorted.push([k, combos[k]]); sorted.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
+            const sortedCombos = []; 
+            for(const k in combos) {
+                if (combos[k].total >= 5) {
+                    sortedCombos.push([k, combos[k]]); 
+                }
+            }
+            sortedCombos.sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total) || b[1].total - a[1].total);
+            
             const renderC = (name, s, index) => `
                 <div class="flex items-center justify-between p-3 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
                     <div class="flex items-center gap-3">
@@ -1669,8 +1729,20 @@
                     </div>
                 </div>`;
             const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
-            if(bestEl) bestEl.innerHTML = sorted.slice(0, 10).map((item, idx) => renderC(item[0], item[1], idx)).join('');
-            if(worstEl) worstEl.innerHTML = [...sorted].reverse().slice(0, 10).map((item, idx) => renderC(item[0], item[1], idx)).join('');
+            if(bestEl) {
+                if (sortedCombos.length > 0) {
+                    bestEl.innerHTML = sortedCombos.slice(0, 10).map((item, idx) => renderC(item[0], item[1], idx)).join('');
+                } else {
+                    bestEl.innerHTML = '<div class="text-slate-500 text-[10px] font-bold uppercase tracking-widest text-center py-8">Mindestens 5 Matches benötigt</div>';
+                }
+            }
+            if(worstEl) {
+                if (sortedCombos.length > 0) {
+                    worstEl.innerHTML = [...sortedCombos].reverse().slice(0, 10).map((item, idx) => renderC(item[0], item[1], idx)).join('');
+                } else {
+                    worstEl.innerHTML = '<div class="text-slate-500 text-[10px] font-bold uppercase tracking-widest text-center py-8">Mindestens 5 Matches benötigt</div>';
+                }
+            }
             
             const sortedHeroes = []; 
             for(const h in heroStats) {
@@ -1820,7 +1892,7 @@
                             </div>
                             <div class="pt-3 sm:pt-4 border-t border-slate-700">
                                 <table class="w-full text-[9px] sm:text-[10px] text-slate-300 font-bold uppercase">
-                                    <tbody>${pMatches.slice(0, 5).map(m => `<tr class="border-b border-white/5 last:border-0"><td class="py-1.5 sm:py-2 opacity-60">${m.date.slice(0, 5)}</td><td class="py-1.5 sm:py-2 ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result}</td><td class="py-1.5 sm:py-2 text-right">${roles[m.players.find(p => p.name === pName).role].icon}</td></tr>`).join('')}</tbody>
+                                    <tbody>${pMatches.slice(0, 5).map(m => `<tr class="border-b border-white/5 last:border-0"><td class="py-1.5 sm:py-2 opacity-60">${formatShortDate(m.date)}</td><td class="py-1.5 sm:py-2 ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result}</td><td class="py-1.5 sm:py-2 text-right">${roles[m.players.find(p => p.name === pName).role].icon}</td></tr>`).join('')}</tbody>
                                 </table>
                             </div>
                         </div>`;
@@ -1884,16 +1956,11 @@
             setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${matchToDelete.season}`), { matches: seasonMatches }).then(() => { showBanner("Gelöscht!", "success"); deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), id.toString())).catch(()=>{}); }); 
         }
         
-        window.updateSlider = function(id) {
-            const el = document.getElementById(id);
-            const valEl = document.getElementById('val_' + id);
-            if(el && valEl) {
-                valEl.innerText = el.value;
-            }
-        };
-
         // --- CHANGELOG LOGIC ---
         const changelogs = [
+            { version: "1.46.00", date: "04.04.2026", changes: ["Suchfeld in Dropdown-Menüs fokussiert sich nun automatisch beim Öffnen"] },
+            { version: "1.45.00", date: "03.04.2026", changes: ["SyntaxError behoben: Doppelte Deklaration einer Variable entfernt, wodurch die Anwendung wieder fehlerfrei lädt."] },
+            { version: "1.44.00", date: "03.04.2026", changes: ["Aatlis Map hinzugefügt", "Best Teams und Hard Matches benötigen nun mind. 5 Matches", "Dropdown Menüs (Maps/Helden) haben nun eine Suchfunktion (Eingabe) zum schnellen Finden", "Anime Genres werden nach Alphabet sortiert angezeigt", "Datum bei Spieler-Details auf sauberes Format (TT.MM.YY) angepasst"] },
             { version: "1.43.00", date: "03.04.2026", changes: ["Hard-Reset der HTML Struktur zur Behebung der Slider-Probleme und unsichtbarer Datenbank-Einträge.", "Fehlende Anime-Skriptlogik wiederhergestellt"] },
             { version: "1.42.00", date: "03.04.2026", changes: ["Ultimate Clean-Up: Alle Duplikate aus der Datei entfernt", "Slider-Rechnung und Auto-Init für Genres repariert", "Unsichtbare Geister-Daten komplett behoben"] },
             { version: "1.41.00", date: "02.04.2026", changes: ["Anime-Tab komplett neu geschrieben: Schnelle Eingabe via Slider (Schieberegler)", "Alle HTML-Duplikate restlos entfernt (behebt unsichtbare Daten und kaputte Buttons)", "Performance-Verbesserung im gesamten Dashboard"] },
@@ -1957,7 +2024,7 @@
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.43.00
+        v.1.46.00
     </div>
 </body>
 </html>
