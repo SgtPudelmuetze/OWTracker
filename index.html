@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Version: 1.46.00 - Feature: Search input in dropdowns is automatically focused upon opening -->
+<!-- Version: 1.47.00 - Active Season 2, Archive Tab, Auto-Fill Players, Sierra added, Lobby Rank removed -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,28 +44,6 @@
         .btn-toggle.active {
             border-color: var(--accent-blue);
             background-color: rgba(59, 130, 246, 0.15);
-        }
-
-        .season-tab {
-            position: relative;
-            transition: color 0.3s;
-            color: #94a3b8;
-        }
-
-        .season-tab.active {
-            color: var(--accent-orange);
-            font-weight: 800;
-        }
-
-        .season-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--accent-orange);
-            border-radius: 3px;
         }
 
         .dash-tab {
@@ -181,6 +159,7 @@
             <button onclick="window.showPage('dashboard')" id="nav-dashboard" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Dashboard</button>
             <button onclick="window.showPage('players')" id="nav-players" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Spieler</button>
             <button onclick="window.showPage('entry')" id="nav-entry" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0">Eintragen</button>
+            <button onclick="window.showPage('archive')" id="nav-archive" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0 text-orange-400/80 hover:text-orange-400">Archiv</button>
             <button onclick="window.showPage('anime')" id="nav-anime" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 shrink-0 text-yellow-500/80 hover:text-yellow-400">Animes</button>
             <button onclick="window.showPage('tickets')" id="nav-tickets" class="nav-link text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest py-1 flex items-center gap-2 shrink-0">
                 <span class="w-2 h-2 bg-red-500 rounded-full hidden shadow-[0_0_8px_rgba(239,68,68,0.6)]" id="ticketAlert"></span> Tickets
@@ -192,10 +171,6 @@
     </nav>
 
     <div id="filter-bar" class="max-w-[1500px] mx-auto px-4 sm:px-8 pt-6 flex flex-col md:flex-row flex-wrap justify-between items-start md:items-end border-b border-white/10 gap-4 pb-2 md:pb-0">
-        <div class="flex gap-4 sm:gap-10 overflow-x-auto hide-scroll w-full md:w-auto pb-1">
-            <button onclick="window.setSeason(21)" id="season-21" class="season-tab pb-2 md:pb-4 text-xs font-black uppercase tracking-[0.2em] active shrink-0">Season 21</button>
-            <button onclick="window.setSeason(22)" id="season-22" class="season-tab pb-2 md:pb-4 text-xs font-black uppercase tracking-[0.2em] shrink-0">Season 22</button>
-        </div>
         <div class="flex gap-1 overflow-x-auto hide-scroll w-full md:w-auto pb-1">
             <button onclick="window.setViewMode('Alle')" id="viewModeAlle" class="dash-tab active shrink-0">Alle Modi</button>
             <button onclick="window.setViewMode('Rangliste')" id="viewModeRanked" class="dash-tab shrink-0">Rangliste</button>
@@ -210,7 +185,7 @@
         <div id="page-dashboard" class="page space-y-6 sm:space-y-10 animate-in hidden">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter">Performance <span class="active-season-label text-orange-500">S21</span></h2>
+                    <h2 class="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter">Performance <span class="active-season-label text-orange-500">Season 2</span></h2>
                     <p class="text-slate-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
                         <span class="w-3 h-[1px] bg-slate-700"></span> <span id="active-mode-label">Alle Modi</span>
                     </p>
@@ -222,9 +197,7 @@
                 </div>
             </div>
 
-            <!-- Top Stats & Chart Row -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                <!-- Quick Stats -->
                 <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                     <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center relative overflow-hidden group">
                         <div class="absolute right-0 top-0 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl -mr-8 -mt-8 transition-transform group-hover:scale-150"></div>
@@ -253,7 +226,6 @@
                     </div>
                 </div>
 
-                <!-- Win/Loss Chart -->
                 <div class="glass-card p-6 flex flex-col items-center justify-center relative min-h-[250px]">
                     <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 absolute top-6 left-6">Ratio</h3>
                     <div class="relative w-full max-w-[180px] sm:max-w-[200px] mx-auto mt-4">
@@ -266,7 +238,6 @@
                 </div>
             </div>
 
-            <!-- Top 10 Lists Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-4">
                 <div class="glass-card flex flex-col overflow-hidden">
                     <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.02]">
@@ -300,6 +271,110 @@
                     <div id="worstCombos" class="flex flex-col"></div>
                 </div>
             </div>
+            
+            <div class="glass-card flex flex-col border border-slate-700 pt-6">
+                <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
+                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Aktueller Verlauf (Season 2)</h2>
+                </div>
+                <div id="recentMatchesList" class="flex flex-col"></div>
+            </div>
+        </div>
+
+        <!-- ==================== ARCHIVE PAGE ==================== -->
+        <div id="page-archive" class="page space-y-6 sm:space-y-10 animate-in hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/50 pb-6">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter text-orange-400/80">Archivierte Seasons</h2>
+                    <p class="text-slate-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
+                        Vergangene Statistiken
+                    </p>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Wähle eine alte Season</label>
+                    <select id="archiveSeasonSelect" onchange="window.setArchiveSeason(this.value)" class="custom-select w-full min-w-[200px] bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm text-orange-500 font-black italic">
+                        <option value="21" selected>Season 21</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Top Stats & Chart Row (Archiv) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Globale Winrate</p>
+                        <p id="archive-globalWinrate" class="text-4xl sm:text-5xl font-black text-slate-300 drop-shadow-md">0%</p>
+                    </div>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Gespielte Matches</p>
+                        <p id="archive-globalMatches" class="text-3xl sm:text-4xl font-black text-slate-400">0</p>
+                    </div>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-green-500/50 uppercase tracking-widest mb-1">Siege (Wins)</p>
+                        <p id="archive-globalWins" class="text-3xl sm:text-4xl font-black text-green-400/50">0</p>
+                    </div>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-red-500/50 uppercase tracking-widest mb-1">Niederlagen</p>
+                        <p id="archive-globalLosses" class="text-3xl sm:text-4xl font-black text-red-400/50">0</p>
+                    </div>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Longest Win-Streak</p>
+                        <p id="archive-maxWinStreak" class="text-3xl sm:text-4xl font-black text-slate-500">0</p>
+                    </div>
+                    <div class="bg-[#1e293b] rounded-2xl p-5 border border-slate-700/50 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Longest Loss-Streak</p>
+                        <p id="archive-maxLossStreak" class="text-3xl sm:text-4xl font-black text-slate-500">0</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 flex flex-col items-center justify-center relative min-h-[250px] opacity-70">
+                    <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 absolute top-6 left-6">Ratio</h3>
+                    <div class="relative w-full max-w-[180px] sm:max-w-[200px] mx-auto mt-4">
+                        <canvas id="archive-winLossChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-1">
+                            <span class="text-3xl sm:text-4xl font-black text-slate-300 drop-shadow-md" id="archive-chartCenterText">0%</span>
+                            <span class="text-[8px] font-bold uppercase tracking-widest text-slate-500">Wins</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 10 Lists Row (Archiv) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-4 opacity-80">
+                <div class="glass-card flex flex-col overflow-hidden border-slate-700">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.01]">
+                        <h3 class="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em]">Top 10 Helden</h3>
+                    </div>
+                    <div id="archive-topHeroes" class="flex flex-col"></div>
+                </div>
+                
+                <div class="glass-card flex flex-col overflow-hidden border-slate-700">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.01]">
+                        <h3 class="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em]">Top 10 Maps</h3>
+                    </div>
+                    <div id="archive-topMaps" class="flex flex-col"></div>
+                </div>
+                
+                <div class="glass-card flex flex-col overflow-hidden border-slate-700">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.01]">
+                        <h3 class="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em]">Best Teams</h3>
+                    </div>
+                    <div id="archive-bestCombos" class="flex flex-col"></div>
+                </div>
+                
+                <div class="glass-card flex flex-col overflow-hidden border-slate-700">
+                    <div class="p-4 sm:p-5 border-b border-slate-700/50 flex items-center gap-3 bg-white/[0.01]">
+                        <h3 class="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em]">Hard Matches</h3>
+                    </div>
+                    <div id="archive-worstCombos" class="flex flex-col"></div>
+                </div>
+            </div>
+            
+            <div class="glass-card flex flex-col border border-slate-700 pt-6 opacity-80">
+                <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
+                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf im Archiv</h2>
+                </div>
+                <div id="archive-recentMatchesList" class="flex flex-col"></div>
+            </div>
         </div>
 
         <!-- ==================== PLAYERS PAGE ==================== -->
@@ -315,8 +390,8 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Season</label>
                         <select id="matchSeason" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm text-orange-500 font-black italic">
-                            <option value="21" selected>Season 21</option>
-                            <option value="22">Season 22</option>
+                            <option value="2" selected>Season 2</option>
+                            <option value="21">Season 21</option>
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -335,29 +410,22 @@
                             <button onclick="window.setResult('Lose')" id="resLoss" class="flex-1 py-3 sm:py-4 btn-toggle border-red-500/40 text-red-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest">Lose</button>
                         </div>
                     </div>
-                    <div class="space-y-2 min-w-0">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Lobby Rang</label>
-                        <div class="flex items-center gap-2 sm:gap-3 w-full bg-[#1e293b] border border-white/10 p-1.5 sm:p-2 rounded-xl">
-                            <select id="matchRankStart" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-[10px] sm:text-xs font-bold"></select>
-                            <span class="text-slate-600 font-black text-[9px] sm:text-[10px] uppercase">bis</span>
-                            <select id="matchRankEnd" class="custom-select min-w-0 flex-1 bg-transparent border-0 p-2 outline-none text-[10px] sm:text-xs font-bold"></select>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div class="space-y-2" id="mapContainer">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Karte / Arena</label>
                         <select id="matchMap" class="custom-select w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white"></select>
                     </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div class="space-y-2 hidden" id="punkteContainer">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Punkte Score</label>
                         <input type="text" id="matchScore" placeholder="12.500" class="w-full bg-[#1e293b] border border-white/10 p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm font-bold text-white">
                     </div>
+                    <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-red-500/5 rounded-2xl border border-red-500/20 w-max h-[52px] mt-auto">
+                        <input type="checkbox" id="matchLeaver" class="w-4 h-4 sm:w-5 sm:h-5 rounded-md border-white/20 bg-[#0f172a] accent-red-500 cursor-pointer">
+                        <label for="matchLeaver" class="text-[10px] sm:text-[11px] font-black text-red-400 uppercase tracking-widest cursor-pointer">Leaver Vorfall?</label>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-red-500/5 rounded-2xl border border-red-500/20 w-max">
-                    <input type="checkbox" id="matchLeaver" class="w-4 h-4 sm:w-5 sm:h-5 rounded-md border-white/20 bg-[#0f172a] accent-red-500 cursor-pointer">
-                    <label for="matchLeaver" class="text-[10px] sm:text-[11px] font-black text-red-400 uppercase tracking-widest cursor-pointer">Leaver Vorfall?</label>
-                </div>
+                
                 <div class="pt-6 sm:pt-8 border-t border-slate-700 space-y-4 sm:space-y-5">
                     <div class="flex justify-between items-center">
                         <h3 class="text-[10px] sm:text-xs font-black uppercase text-slate-400 tracking-[0.2em]">Team Setup</h3>
@@ -375,12 +443,12 @@
                     </button>
                 </div>
             </div>
+            
             <div class="glass-card flex flex-col border border-slate-700 pt-6">
                 <div class="flex items-center justify-between px-6 sm:px-8 mb-4">
-                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Verlauf</h2>
+                    <h2 class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] italic text-slate-400">Neueste (Season 2)</h2>
                 </div>
-                <!-- Clean seamless list container -->
-                <div id="recentMatchesList" class="flex flex-col"></div>
+                <div id="entryRecentMatchesList" class="flex flex-col"></div>
             </div>
         </div>
 
@@ -523,7 +591,6 @@
                         </div>
                     </div>
 
-                    <!-- Unten: Fazit & Ergebnis -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-4">
                         <div class="md:col-span-2 space-y-2">
                             <label class="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kurzes Fazit (Optional)</label>
@@ -706,6 +773,7 @@
 
         let app, auth, db, currentUser = null;
         let statsChart = null;
+        let archiveChart = null;
 
         try {
             app = initializeApp(myFirebaseConfig);
@@ -715,7 +783,12 @@
 
         let matches = [], playerRanks = {}, tickets = [], animes = [];
         let openPlayerDetails = new Set(); 
-        let currentSeason = 21, currentViewMode = 'Alle', currentMatchType = 'Rangliste', currentResult = 'Win';
+        
+        let currentSeason = 2;
+        let archiveSeason = 21;
+        let isArchiveMode = false;
+        
+        let currentViewMode = 'Alle', currentMatchType = 'Rangliste', currentResult = 'Win';
         let currentAnimeTab = 'Gesamt';
         let selectedAnimeGenres = [];
         
@@ -732,7 +805,7 @@
 
         const heroesByRole = {
             tank: ["D.Va", "Domina", "Doomfist", "Hazard", "Junker Queen", "Orisa", "Ramattra", "Reinhardt", "Roadhog", "Sigma", "Winston", "Wrecking Ball", "Zarya"].sort(),
-            dps: ["Anran", "Ashe", "Bastion", "Cassidy", "Echo", "Emre", "Freya", "Genji", "Hanzo", "Junkrat", "Mei", "Pharah", "Reaper", "Sojourn", "Soldier:76", "Sombra", "Symmetra", "Torbjörn", "Tracer", "Vendetta", "Venture", "Widowmaker"].sort(),
+            dps: ["Anran", "Ashe", "Bastion", "Cassidy", "Echo", "Emre", "Freya", "Genji", "Hanzo", "Junkrat", "Mei", "Pharah", "Reaper", "Sierra", "Sojourn", "Soldier:76", "Sombra", "Symmetra", "Torbjörn", "Tracer", "Vendetta", "Venture", "Widowmaker"].sort(),
             support: ["Ana", "Baptiste", "Brigitte", "Cat", "Illari", "Juno", "Kiriko", "Lifeweaver", "Lucio", "Mercy", "Mizuki", "Moira", "Wuyang", "Zenyatta"].sort()
         };
 
@@ -755,21 +828,23 @@
             }
         };
 
-        const ranksRanked = [{ name: "Bronze", icon: "🥉" }, { name: "Silver", icon: "🥈" }, { name: "Gold", icon: "🥇" }, { name: "Platinum", icon: "💠" }, { name: "Diamond", icon: "💎" }, { name: "Master", icon: "🔱" }, { name: "Grandmaster", icon: "⚛️" }, { name: "Champion", icon: "🌌" }];
-        const ranksStadium = [{ name: "Rookie", emoji: "🥉" }, { name: "Novice", emoji: "🥈" }, { name: "Contender", emoji: "🛡️" }, { name: "Elite", emoji: "💎" }, { name: "Pro", emoji: "🏆" }, { name: "All-Star", emoji: "⚡" }, { name: "Legend", emoji: "👑" }];
-
         const animeGenresList = [
             "Abenteuer", "Action", "Comedy", "Drama", "Ecchi", "Fantasy", "Harem", 
             "Historisch", "Horror", "Isekai", "Josei", "Mecha", "Musik", "Mystery", 
             "Psychological", "Romance", "School", "Sci-Fi", "Seinen", "Shōjo", "Shōnen", 
             "Slice of Life", "Sports", "Supernatural", "Thriller"
-        ];
+        ].sort();
 
         function formatShortDate(dStr) {
             if(!dStr) return '';
             const p = dStr.split('.');
-            if(p.length === 3) return p[0].padStart(2, '0') + '.' + p[1].padStart(2, '0') + '.' + p[2].slice(-2);
-            return dStr.slice(0,5);
+            if(p.length === 3) {
+                const dd = p[0].padStart(2, '0');
+                const mm = p[1].padStart(2, '0');
+                const yy = p[2].length === 4 ? p[2].slice(-2) : p[2];
+                return `${dd}.${mm}.${yy}`;
+            }
+            return dStr;
         }
 
         function setSafeText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
@@ -965,7 +1040,7 @@
                             <div class="text-[11px] sm:text-sm font-black text-white italic tracking-tight mb-1 sm:mb-1.5">${a.title}</div>
                             <div class="flex flex-wrap gap-1 mb-1 sm:mb-2">${badges}</div>
                             ${a.comment ? `<div class="text-[9px] sm:text-[10px] text-slate-400 italic line-clamp-2 max-w-[250px] sm:max-w-md">"${a.comment}"</div>` : ''}
-                            <div class="text-[8px] sm:text-[9px] text-slate-600 mt-1.5 sm:mt-2 font-bold uppercase tracking-widest">${a.date}</div>
+                            <div class="text-[8px] sm:text-[9px] text-slate-600 mt-1.5 sm:mt-2 font-bold uppercase tracking-widest">${formatShortDate(a.date)}</div>
                         </td>
                         <td class="py-3 sm:py-4 px-2 sm:px-4 text-center align-middle">
                             <span class="text-[10px] sm:text-xs font-black text-slate-300 bg-black/20 px-1.5 sm:px-2 py-1 rounded-md border border-slate-700">${a.score !== undefined ? a.score : '-'}/100</span>
@@ -982,7 +1057,6 @@
             listBody.innerHTML = html;
         }
 
-        // Setup Anime Form
         function initAnimeReviewer() {
             const revSelect = document.getElementById('animeReviewer');
             if(!revSelect) return;
@@ -1276,8 +1350,15 @@
         }
 
         function refreshCurrentPage() {
-            const pDash = document.getElementById('page-dashboard'), pPlayers = document.getElementById('page-players'), pEntry = document.getElementById('page-entry'), pTickets = document.getElementById('page-tickets'), pAnime = document.getElementById('page-anime'), pChange = document.getElementById('page-changelogs');
+            const pDash = document.getElementById('page-dashboard');
+            const pArchive = document.getElementById('page-archive');
+            const pPlayers = document.getElementById('page-players');
+            const pEntry = document.getElementById('page-entry');
+            const pTickets = document.getElementById('page-tickets');
+            const pAnime = document.getElementById('page-anime');
+            
             if (pDash && !pDash.classList.contains('hidden')) window.updateDashboard();
+            if (pArchive && !pArchive.classList.contains('hidden')) window.updateArchive();
             if (pPlayers && !pPlayers.classList.contains('hidden')) window.updatePlayerDashboards();
             if (pEntry && !pEntry.classList.contains('hidden')) window.updateRecentMatches();
             if (pTickets && !pTickets.classList.contains('hidden')) window.updateTicketsList();
@@ -1345,13 +1426,9 @@
             }; reader.readAsText(file);
         };
 
-        window.setSeason = function(s) {
-            currentSeason = s;
-            const tabs = document.querySelectorAll('.season-tab');
-            for(let i=0; i<tabs.length; i++) tabs[i].classList.remove('active');
-            const seasonBtn = document.getElementById(`season-${s}`);
-            if(seasonBtn) seasonBtn.classList.add('active');
-            refreshCurrentPage();
+        window.setArchiveSeason = function(s) {
+            archiveSeason = parseInt(s);
+            window.updateArchive();
         }
 
         window.setViewMode = function(mode) {
@@ -1377,11 +1454,15 @@
             
             const filterBar = document.getElementById('filter-bar');
             if(id === 'tickets' || id === 'anime' || id === 'changelogs') {
-                const alert = document.getElementById('ticketAlert');
-                if(alert) alert.classList.add('hidden');
                 if(filterBar) filterBar.classList.add('hidden');
             } else {
                 if(filterBar) filterBar.classList.remove('hidden');
+            }
+            
+            if(id === 'archive') {
+                isArchiveMode = true;
+            } else {
+                isArchiveMode = false;
             }
             
             if(id === 'anime') {
@@ -1401,20 +1482,11 @@
             if(pCont) pCont.classList.toggle('hidden', type !== 'Stadion');
             if(mCont) mCont.classList.toggle('hidden', type === 'Stadion');
             
-            window.updateRankOptions(); window.updateMapOptions();
+            window.updateMapOptions();
             const selects = document.querySelectorAll('#matchPlayersList select');
             for(let i=0; i<selects.length; i++) if(selects[i].onchange && selects[i].onchange.toString().includes('updateHeroSelect')) window.updateHeroSelect(selects[i]);
             
             window.updateRecentMatches();
-        }
-
-        window.updateRankOptions = function(skipInit = false) {
-            const startSelect = document.getElementById('matchRankStart'), endSelect = document.getElementById('matchRankEnd');
-            if(!startSelect || !endSelect) return;
-            startSelect.innerHTML = endSelect.innerHTML = '<option value="-">-</option>';
-            const list = currentMatchType === 'Rangliste' ? ranksRanked : ranksStadium, pref = currentMatchType === 'Rangliste' ? 'icon' : 'emoji';
-            list.forEach(r => { for (let i = 5; i >= 1; i--) { const optVal = `${r[pref]} ${r.name} ${i}`; startSelect.innerHTML += `<option value="${optVal}">${optVal}</option>`; endSelect.innerHTML += `<option value="${optVal}">${optVal}</option>`; } });
-            if(!skipInit) initCustomSelects();
         }
 
         window.updateMapOptions = function(skipInit = false) {
@@ -1448,12 +1520,30 @@
             initCustomSelects();
         }
 
-        window.addPlayerToMatch = function() {
+        window.addPlayerToMatch = function(preName = '', preRole = '') {
             const container = document.getElementById('matchPlayersList'); if (!container || container.children.length >= 5) return;
-            const index = container.children.length, defaultRole = index >= 3 ? 'support' : (index === 0 ? 'tank' : 'dps');
+            
+            const index = container.children.length;
+            let defaultRole = preRole;
+            if(!defaultRole) defaultRole = index >= 3 ? 'support' : (index === 0 ? 'tank' : 'dps');
+            
             const div = document.createElement('div'); div.className = "flex gap-2 sm:gap-3 items-center animate-in bg-white/[0.02] p-2 sm:p-3 rounded-2xl border border-slate-700";
-            div.innerHTML = `<div class="grid grid-cols-3 gap-2 sm:gap-3 flex-1"><select class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white">${knownPlayers.map((p, i) => `<option ${i === index ? 'selected' : ''}>${p}</option>`).join('')}</select><select onchange="window.updateHeroSelect(this)" class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs text-slate-400 font-bold"><option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option><option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option><option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option></select><select ${currentMatchType === 'Rangliste' ? 'multiple' : ''} class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white"><option value="">Held wählen</option></select></div><button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-2 sm:p-3 text-red-500/40 hover:text-red-500">🗑️</button>`;
+            
+            const playerOptions = knownPlayers.map((p, i) => {
+                const isSelected = preName ? (p === preName) : (i === index);
+                return `<option ${isSelected ? 'selected' : ''}>${p}</option>`;
+            }).join('');
+            
+            div.innerHTML = `<div class="grid grid-cols-3 gap-2 sm:gap-3 flex-1"><select class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white">${playerOptions}</select><select onchange="window.updateHeroSelect(this)" class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs text-slate-400 font-bold"><option value="tank" ${defaultRole === 'tank' ? 'selected' : ''}>🛡️ Tank</option><option value="dps" ${defaultRole === 'dps' ? 'selected' : ''}>⚔️ DPS</option><option value="support" ${defaultRole === 'support' ? 'selected' : ''}>➕ Support</option></select><select ${currentMatchType === 'Rangliste' ? 'multiple' : ''} class="custom-select p-2 sm:p-3 bg-[#0f172a] border border-slate-700 rounded-xl text-[10px] sm:text-xs font-bold text-white"><option value="">Held wählen</option></select></div><button onclick="this.parentElement.remove(); window.updateAddButtonState();" class="p-2 sm:p-3 text-red-500/40 hover:text-red-500">🗑️</button>`;
             container.appendChild(div); window.updateHeroSelect(div.querySelectorAll('select')[1]); window.updateAddButtonState();
+        }
+
+        window.initDefaultPlayers = function() {
+            const container = document.getElementById('matchPlayersList');
+            if (container) container.innerHTML = '';
+            window.addPlayerToMatch('Pudelmuetze', 'tank');
+            window.addPlayerToMatch('Philipp', 'dps');
+            window.addPlayerToMatch('Nora', 'support');
         }
 
         window.updateAddButtonState = function() {
@@ -1491,30 +1581,6 @@
             window.setMatchType(match.type);
             window.setResult(match.result);
 
-            if (match.rank && match.rank !== '-') {
-                const parts = match.rank.split(' - ');
-                const startSelect = document.getElementById('matchRankStart');
-                if(startSelect && parts[0]) {
-                    startSelect.value = parts[0];
-                    startSelect.dispatchEvent(new Event('change'));
-                }
-                const endSelect = document.getElementById('matchRankEnd');
-                if(endSelect && parts.length > 1) {
-                    for(let i=0; i<endSelect.options.length; i++) {
-                        if(endSelect.options[i].value.endsWith(parts[1])) {
-                            endSelect.value = endSelect.options[i].value;
-                            endSelect.dispatchEvent(new Event('change'));
-                            break;
-                        }
-                    }
-                }
-            } else {
-                const s1 = document.getElementById('matchRankStart');
-                const s2 = document.getElementById('matchRankEnd');
-                if(s1) { s1.value = '-'; s1.dispatchEvent(new Event('change')); }
-                if(s2) { s2.value = '-'; s2.dispatchEvent(new Event('change')); }
-            }
-
             const mapSelect = document.getElementById('matchMap');
             if (mapSelect) {
                 mapSelect.value = match.map || "";
@@ -1531,18 +1597,8 @@
             if(container) {
                 container.innerHTML = '';
                 match.players.forEach((p) => {
-                    window.addPlayerToMatch(); 
+                    window.addPlayerToMatch(p.name, p.role); 
                     const row = container.children[container.children.length - 1];
-                    const selects = row.querySelectorAll('select');
-                    
-                    selects[0].value = p.name;
-                    selects[0].dispatchEvent(new Event('change'));
-                    
-                    selects[1].value = p.role;
-                    selects[1].dispatchEvent(new Event('change')); 
-                    
-                    window.updateHeroSelect(selects[1]);
-                    
                     const heroSelect = row.querySelectorAll('select')[2];
                     if (match.type === 'Rangliste' && p.heroes && p.heroes.length > 0) {
                         for(let i=0; i<heroSelect.options.length; i++) {
@@ -1582,19 +1638,10 @@
             const leaverEl = document.getElementById('matchLeaver');
             if(leaverEl) leaverEl.checked = false;
             
-            const s1 = document.getElementById('matchRankStart');
-            const s2 = document.getElementById('matchRankEnd');
-            if(s1) { s1.value = '-'; s1.dispatchEvent(new Event('change')); }
-            if(s2) { s2.value = '-'; s2.dispatchEvent(new Event('change')); }
-            
             const mapSelect = document.getElementById('matchMap');
             if(mapSelect) { mapSelect.value = ''; mapSelect.dispatchEvent(new Event('change')); }
             
-            const container = document.getElementById('matchPlayersList');
-            if(container) {
-                container.innerHTML = '';
-                window.addPlayerToMatch();
-            }
+            window.initDefaultPlayers();
         };
 
         window.saveMatch = function() {
@@ -1613,7 +1660,6 @@
                 players.push({ name: selects[0].value, role: selects[1].value, heroes: selHeroes });
             }
             if (!players.length) return;
-            const rStart = document.getElementById('matchRankStart').value, rEnd = document.getElementById('matchRankEnd').value;
             const matchMapEl = document.getElementById('matchMap'), matchScoreEl = document.getElementById('matchScore'), matchLeaverEl = document.getElementById('matchLeaver');
             
             const match = { 
@@ -1621,7 +1667,6 @@
                 season: parseInt(document.getElementById('matchSeason').value), 
                 type: currentMatchType, 
                 result: currentResult, 
-                rank: (rStart !== '-' && rEnd !== '-') ? (rStart === rEnd ? rStart : `${rStart} - ${rEnd.split(' ').pop()}`) : (rStart !== '-' ? rStart : '-'), 
                 map: matchMapEl ? matchMapEl.value : '', 
                 score: matchScoreEl ? matchScoreEl.value : '', 
                 leaver: matchLeaverEl ? matchLeaverEl.checked : false, 
@@ -1657,22 +1702,34 @@
             }
         }
 
-        window.savePlayerRank = function(pName, category, role, value) {
-            if (!playerRanks[pName]) playerRanks[pName] = {}; playerRanks[pName][`${role}_${category}`] = value;
-            if (currentUser && db) setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'ranks', 'allRanks'), playerRanks, { merge: true });
+        window.updateDashboard = function() {
+            renderDashboardData(currentSeason, '', 'winLossChart', 'statsChart');
         }
 
-        window.updateDashboard = function() {
-            const filtered = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
+        window.updateArchive = function() {
+            renderDashboardData(archiveSeason, 'archive-', 'archive-winLossChart', 'archiveChart');
+            renderRecentMatchesData(archiveSeason, 'archive-recentMatchesList');
+        }
+
+        function renderDashboardData(season, prefix, chartCanvasId, chartVarName) {
+            const filtered = matches.filter(m => m.season === season && (currentViewMode === 'Alle' || m.type === currentViewMode));
             const total = filtered.length, wins = filtered.filter(m => m.result === 'Win').length, leavers = filtered.filter(m => m.leaver).length, losses = total - wins;
-            setSafeText('globalWinrate', total > 0 ? Math.round((wins / total) * 100) + "%" : ""); setSafeText('globalMatches', total); setSafeText('globalWins', wins); setSafeText('globalLosses', losses); setSafeText('globalLeavers', leavers); setSafeText('globalLeaverPerc', total > 0 ? Math.round((leavers / total) * 100) + "%" : ""); setSafeText('lastPlayedDate', filtered.length > 0 ? filtered[0].date : "-");
-            updateStatsChart(wins, losses);
             
-            document.getElementById('chartCenterText').innerText = total > 0 ? Math.round((wins / total) * 100) + "%" : "0%";
+            setSafeText(prefix + 'globalWinrate', total > 0 ? Math.round((wins / total) * 100) + "%" : "0%"); 
+            setSafeText(prefix + 'globalMatches', total); 
+            setSafeText(prefix + 'globalWins', wins); 
+            setSafeText(prefix + 'globalLosses', losses); 
+            setSafeText(prefix + 'maxWinStreak', 0); 
+            setSafeText(prefix + 'maxLossStreak', 0);
+            
+            updateStatsChart(wins, losses, chartCanvasId, chartVarName);
+            const chartTextEl = document.getElementById(prefix + 'chartCenterText');
+            if(chartTextEl) chartTextEl.innerText = total > 0 ? Math.round((wins / total) * 100) + "%" : "0%";
             
             let curW = 0, curL = 0, maxW = 0, maxL = 0;
             [...filtered].reverse().forEach(m => { if (m.result === 'Win') { curW++; curL = 0; if (curW > maxW) maxW = curW; } else { curL++; curW = 0; if (curL > maxL) maxL = curL; } });
-            setSafeText('maxWinStreak', maxW); setSafeText('maxLossStreak', maxL);
+            setSafeText(prefix + 'maxWinStreak', maxW); 
+            setSafeText(prefix + 'maxLossStreak', maxL);
             
             const combos = {};
             const heroStats = {};
@@ -1728,7 +1785,7 @@
                         <p class="text-[9px] text-slate-500 italic mt-0.5">${s.total} Matches</p>
                     </div>
                 </div>`;
-            const bestEl = document.getElementById('bestCombos'), worstEl = document.getElementById('worstCombos');
+            const bestEl = document.getElementById(prefix + 'bestCombos'), worstEl = document.getElementById(prefix + 'worstCombos');
             if(bestEl) {
                 if (sortedCombos.length > 0) {
                     bestEl.innerHTML = sortedCombos.slice(0, 10).map((item, idx) => renderC(item[0], item[1], idx)).join('');
@@ -1769,7 +1826,7 @@
                         <p class="text-[9px] text-slate-500 italic mt-0.5">${s.total} Matches</p>
                     </div>
                 </div>`;
-            const topHeroesEl = document.getElementById('topHeroes');
+            const topHeroesEl = document.getElementById(prefix + 'topHeroes');
             if(topHeroesEl) {
                 if (sortedHeroes.length > 0) {
                     topHeroesEl.innerHTML = sortedHeroes.slice(0, 10).map((item, idx) => renderH(item[0], item[1], idx)).join('');
@@ -1793,15 +1850,15 @@
                         <p class="text-[9px] text-slate-500 italic mt-0.5">${s.total} Matches</p>
                     </div>
                 </div>`;
-            const topMapsEl = document.getElementById('topMaps');
+            const topMapsEl = document.getElementById(prefix + 'topMaps');
             if(topMapsEl) topMapsEl.innerHTML = sortedMaps.slice(0, 10).map((item, idx) => renderM(item[0], item[1], idx)).join('');
         }
 
-        function updateStatsChart(wins, losses) {
-            const ctx = document.getElementById('winLossChart'); if(!ctx) return;
-            if(statsChart) statsChart.destroy();
+        function updateStatsChart(wins, losses, canvasId, chartVarName) {
+            const ctx = document.getElementById(canvasId); if(!ctx) return;
+            if(window[chartVarName]) window[chartVarName].destroy();
             const hasData = wins > 0 || losses > 0;
-            statsChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: hasData ? [wins, losses] : [1], backgroundColor: hasData ? ['#22c55e', '#ef4444'] : ['#334155'], borderColor: 'transparent', borderWidth: 0, cutout: '78%', borderRadius: 10 }] }, options: { plugins: { legend: { display: false } }, animation: { duration: 1200 } } });
+            window[chartVarName] = new Chart(ctx, { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: hasData ? [wins, losses] : [1], backgroundColor: hasData ? ['#22c55e', '#ef4444'] : ['#334155'], borderColor: 'transparent', borderWidth: 0, cutout: '78%', borderRadius: 10 }] }, options: { plugins: { legend: { display: false } }, animation: { duration: 1200 } } });
         }
 
         window.toggleDetails = function(pName) {
@@ -1903,9 +1960,13 @@
         }
 
         window.updateRecentMatches = function() {
-            const list = document.getElementById('recentMatchesList'); if(!list) return;
+            renderRecentMatchesData(currentSeason, 'entryRecentMatchesList');
+        }
+
+        function renderRecentMatchesData(season, listId) {
+            const list = document.getElementById(listId); if(!list) return;
             
-            const filteredMatches = matches.filter(m => m.season === currentSeason && (currentViewMode === 'Alle' || m.type === currentViewMode));
+            const filteredMatches = matches.filter(m => m.season === season && (currentViewMode === 'Alle' || m.type === currentViewMode));
             
             if (filteredMatches.length === 0) {
                  list.innerHTML = '<div class="text-slate-500 text-xs font-bold uppercase tracking-widest text-center py-8">Keine Matches gefunden</div>';
@@ -1915,7 +1976,7 @@
             list.innerHTML = `<div class="glass-card flex flex-col border border-slate-700">` + filteredMatches.slice(0, 15).map(m => `
                 <div class="p-4 sm:p-5 border-b border-slate-700/50 hover:bg-white/[0.02] transition-colors relative group flex flex-col md:flex-row md:items-center justify-between gap-4 last:border-0">
                     <div class="absolute right-4 sm:right-6 top-4 md:top-1/2 md:-translate-y-1/2 flex items-center gap-2 z-10 opacity-0 group-hover:opacity-100 transition-all">
-                        <button onclick="window.editMatch(${m.id})" class="p-1.5 bg-blue-500/10 hover:bg-blue-500 text-blue-500 hover:text-white rounded-lg transition-all" title="Bearbeiten">✏️</button>
+                        ${!isArchiveMode ? `<button onclick="window.editMatch(${m.id})" class="p-1.5 bg-blue-500/10 hover:bg-blue-500 text-blue-500 hover:text-white rounded-lg transition-all" title="Bearbeiten">✏️</button>` : ''}
                         <button onclick="window.deleteMatch(${m.id})" class="p-1.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition-all" title="Löschen">🗑️</button>
                     </div>
                     
@@ -1923,10 +1984,10 @@
                         <div class="flex items-center gap-3">
                             <div class="text-[12px] sm:text-[13px] font-black uppercase italic ${m.result === 'Win' ? 'text-green-400' : 'text-red-500'}">${m.result === 'Win' ? 'Victory' : 'Defeat'}</div>
                             <div class="h-3 w-[2px] bg-slate-700"></div>
-                            <div class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest">S${m.season} · ${m.type}${m.rank && m.rank !== '-' ? ' · ' + m.rank : ''}</div>
+                            <div class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest">S${m.season} · ${m.type}</div>
                         </div>
                         <div class="text-[8px] sm:text-[9px] text-slate-500 font-bold uppercase tracking-widest flex flex-wrap items-center gap-2.5">
-                            <span class="flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ${m.date} <span class="opacity-50 ml-1">${m.time || ''}</span></span>
+                            <span class="flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ${formatShortDate(m.date)} <span class="opacity-50 ml-1">${m.time || ''}</span></span>
                             <span class="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded text-slate-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${m.map && m.map !== 'Wähle Karte' ? m.map : 'Unbekannt'}</span>
                             ${m.score ? `<span class="flex items-center gap-1.5 text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> ${m.score} Pkt</span>` : ''}
                         </div>
@@ -1956,8 +2017,22 @@
             setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), `season_${matchToDelete.season}`), { matches: seasonMatches }).then(() => { showBanner("Gelöscht!", "success"); deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'matches'), id.toString())).catch(()=>{}); }); 
         }
         
+        window.saveTicket = function() {
+            const author = document.getElementById('ticketAuthor').value.trim(), type = document.getElementById('ticketType').value, msg = document.getElementById('ticketMessage').value.trim();
+            if(!author || !msg) { showBanner("Felder fehlen!", "error"); return; }
+            const ticket = { id: Date.now(), author, type, message: msg, date: new Date().toLocaleDateString('de-DE'), status: 'Offen' };
+            if(currentUser && db) setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), ticket.id.toString()), ticket).then(() => { showBanner("Support Ticket erstellt!", "success"); document.getElementById('ticketAuthor').value = ''; document.getElementById('ticketMessage').value = ''; });
+        }
+        window.toggleTicketStatus = function(id) { const t = tickets.find(x => x.id === id); if(t && currentUser && db) updateDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString()), { status: t.status === 'Abgeschlossen' ? 'Offen' : 'Abgeschlossen' }); }
+        window.deleteTicket = function(id) { if(confirm("Löschen?") && currentUser && db) deleteDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tickets'), id.toString())); }
+        window.updateTicketsList = function() {
+            const list = document.getElementById('ticketsList'); if(!list) return;
+            list.innerHTML = tickets.map(t => `<div class="glass-card p-4 sm:p-5 border-slate-700 border-l-4 ${t.status === 'Abgeschlossen' ? 'ticket-closed' : (t.type === 'Problem' ? 'ticket-bug' : 'ticket-open')}"><div class="flex justify-between items-start mb-2"><span class="text-[9px] sm:text-[10px] font-black uppercase text-slate-500">${t.type} · ${formatShortDate(t.date)}</span><div class="flex gap-2"><button onclick="window.toggleTicketStatus(${t.id})" class="text-[10px] sm:text-xs p-1 bg-white/5 border border-slate-700 rounded">${t.status === 'Abgeschlossen' ? '✅' : '✔️'}</button><button onclick="window.deleteTicket(${t.id})" class="text-[10px] sm:text-xs p-1 bg-white/5 border border-slate-700 rounded opacity-40">🗑️</button></div></div><p class="text-[10px] sm:text-[12px] font-bold text-slate-200 ${t.status === 'Abgeschlossen' ? 'line-through text-slate-500' : ''}">${t.message}</p><div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-700"><p class="text-[9px] sm:text-[10px] text-slate-600 font-bold">Reporter: ${t.author}</p><span class="text-[8px] sm:text-[9px] bg-white/10 px-2 py-0.5 rounded text-slate-400 font-black uppercase">${t.status}</span></div></div>`).join('');
+        }
+
         // --- CHANGELOG LOGIC ---
         const changelogs = [
+            { version: "1.47.00", date: "04.04.2026", changes: ["Aktive Season auf Season 2 geändert und überall als Standard gesetzt", "Eigenen 'Archiv' Tab für vergangene Seasons (z.B. S21) hinzugefügt", "Lobby Rang komplett entfernt", "Sierra als DPS-Held hinzugefügt", "Beim Eintragen werden Pudelmuetze, Philipp und Nora nun automatisch vorausgefüllt", "Datumsformat in den Tabellen sauber auf TT.MM.YY gekürzt"] },
             { version: "1.46.00", date: "04.04.2026", changes: ["Suchfeld in Dropdown-Menüs fokussiert sich nun automatisch beim Öffnen"] },
             { version: "1.45.00", date: "03.04.2026", changes: ["SyntaxError behoben: Doppelte Deklaration einer Variable entfernt, wodurch die Anwendung wieder fehlerfrei lädt."] },
             { version: "1.44.00", date: "03.04.2026", changes: ["Aatlis Map hinzugefügt", "Best Teams und Hard Matches benötigen nun mind. 5 Matches", "Dropdown Menüs (Maps/Helden) haben nun eine Suchfunktion (Eingabe) zum schnellen Finden", "Anime Genres werden nach Alphabet sortiert angezeigt", "Datum bei Spieler-Details auf sauberes Format (TT.MM.YY) angepasst"] },
@@ -2015,16 +2090,16 @@
         
         initAnimeReviewer();
         initAnimeTabs();
-        window.initAnimeGenresUI(); // Initialisiere Genres sofort
+        window.initAnimeGenresUI(); 
         window.renderChangelogs();
+        
         window.showPage('dashboard'); 
-        window.updateRankOptions(true); 
         window.updateMapOptions(true); 
-        window.addPlayerToMatch();
+        window.initDefaultPlayers();
     </script>
 
     <div class="fixed bottom-4 right-4 sm:right-6 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest z-50 bg-[#0f172a]/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm border border-white/5 pointer-events-none">
-        v.1.46.00
+        v.1.47.00
     </div>
 </body>
 </html>
